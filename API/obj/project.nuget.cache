@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "l9RxJT7IvUE=",
+  "dgSpecHash": "dV7htM8uWg8=",
   "success": true,
   "projectFilePath": "D:\\Software\\SmartMedicalSystem\\SmartMedicalSystem\\API\\API.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "C:\\Users\\akram\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\akram\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",
     "C:\\Users\\akram\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.9\\microsoft.aspnetcore.authentication.jwtbearer.10.0.9.nupkg.sha512",
+    "C:\\Users\\akram\\.nuget\\packages\\microsoft.aspnetcore.identity\\2.3.11\\microsoft.aspnetcore.identity.2.3.11.nupkg.sha512",
     "C:\\Users\\akram\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\10.0.9\\microsoft.aspnetcore.identity.entityframeworkcore.10.0.9.nupkg.sha512",
     "C:\\Users\\akram\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.9\\microsoft.aspnetcore.openapi.10.0.9.nupkg.sha512",
     "C:\\Users\\akram\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\8.0.0\\microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
@@ -48,6 +49,18 @@
     "C:\\Users\\akram\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.4\\system.security.cryptography.protecteddata.9.0.4.nupkg.sha512"
   ],
   "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference Microsoft.AspNetCore.Identity will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "D:\\Software\\SmartMedicalSystem\\SmartMedicalSystem\\API\\API.csproj",
+      "warningLevel": 1,
+      "filePath": "D:\\Software\\SmartMedicalSystem\\SmartMedicalSystem\\API\\API.csproj",
+      "libraryId": "Microsoft.AspNetCore.Identity",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
     {
       "code": "NU1608",
       "level": "Warning",
