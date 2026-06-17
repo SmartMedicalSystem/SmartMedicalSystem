@@ -1,5 +1,5 @@
 .vs/
-[Db]in/
-[Ob]j/
-*.user
+[Bb]in/
+[Oo]bj/
 *.suo
+*.user
