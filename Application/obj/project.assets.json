@@ -165,6 +165,16 @@
             "related": ".xml"
           }
         }
+      },
+      "Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Domain.dll": {}
+        }
       }
     }
   },
@@ -480,12 +490,18 @@
         "microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
         "microsoft.identitymodel.tokens.nuspec"
       ]
+    },
+    "Domain/1.0.0": {
+      "type": "project",
+      "path": "../Domain/Domain.csproj",
+      "msbuildProject": "../Domain/Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
       "AutoMapper >= 16.1.1",
-      "AutoMapper.Extensions.Microsoft.DependencyInjection >= 12.0.1"
+      "AutoMapper.Extensions.Microsoft.DependencyInjection >= 12.0.1",
+      "Domain >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -520,7 +536,11 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Software\\SmartMedicalSystem\\SmartMedicalSystem\\Domain\\Domain.csproj": {
+              "projectPath": "D:\\Software\\SmartMedicalSystem\\SmartMedicalSystem\\Domain\\Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
