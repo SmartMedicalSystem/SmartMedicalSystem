@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Domain.Identity
 {
-    public class ApplicationUser : IdentityUser<Guid>
+    public class ApplicationUser : IdentityUser<int>
     {
     }
 }

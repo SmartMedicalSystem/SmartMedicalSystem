@@ -26,9 +26,8 @@ namespace API.StartupExtensions
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders()
-                .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, int>>()
-                .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, int>>();
+                .AddDefaultTokenProviders();
+          
 
             services.AddAuthentication(options =>
             {
