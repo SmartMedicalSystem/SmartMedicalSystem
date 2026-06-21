@@ -17,7 +17,10 @@ namespace API.StartupExtensions
             
             services.AddSwaggerGen();
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                .LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging());
+
 
 
 
@@ -51,6 +54,16 @@ namespace API.StartupExtensions
                 options.AddPolicy("LabTechnicianPolicy", policy =>
                     policy.RequireRole("LabTechnician"));
 
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("SmartMedicalSystemCorsPolicy", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
             });
 
 
