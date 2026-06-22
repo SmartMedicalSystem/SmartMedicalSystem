@@ -1,6 +1,6 @@
-﻿using Application.DTOs.Register;
+﻿using Application.DTOs.Auth;
+using Application.DTOs.Register;
 using Application.Interfaces.Services;
-using Application.Services;
 using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,30 +13,69 @@ namespace API.Controllers
     [ApiController]
     public class Account : ControllerBase
     {
-        private readonly IRegisterService _registerService;
-
-        public Account(IRegisterService registerService)
+        private readonly IAuthService _authService;
+        /// <summary>
+        /// Constructor for the Account controller, which takes an instance of IAuthService as a parameter.
+        /// </summary>
+        /// <param name="authService"></param>
+        public Account(IAuthService authService)
         {
-            _registerService = registerService;
+            _authService = authService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Register(RegisterDTO model)
+        ///<summary>
+        /// Registers a new user.
+        /// check username and email and phone number if exist or not
+        /// needs just Admin role to register new user 
+        /// just Add Doctor or Lab technician.
+        /// must be unauthenticated user to register
+        /// Need UnAuthenticated user to register
+        /// </summary>
+
+        [HttpPost("api/account/register")]
+        // unathenticated 
+
+        public async Task<IActionResult> Register(RegisterRequestDto model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            await _registerService.RegisterAsync(model);
-            return Ok(new { Message = "User registered successfully" });
+            var result = await _authService.RegisterAsync(model);
+            if (result.IsSuccess)
+            {
+                return Ok(result.AccessToken);
+            }
+            else 
+                return Unauthorized();
+          
         }
-        [HttpGet]
-        public async Task<bool> IsEmailAvailable(string email)
+      
+     
+
+        /// <summary> 
+        /// Login endpoint for user authentication.
+        /// Needs unauthenticated user to login and get the token to access the system.
+        /// Login with email or username and password.
+        /// </summary>
+        [HttpPost("api/account/login")]       
+
+        public async Task<IActionResult> Login(LoginRequestDto loginDTO)
         {
-            return !await _registerService.IsEmailExistsAsync(email);
+            var result = await _authService.LoginAsync(loginDTO);
+            if (result == "Login successful")
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return Unauthorized(result);
+            }
 
 
 
         }
 }
 }
+

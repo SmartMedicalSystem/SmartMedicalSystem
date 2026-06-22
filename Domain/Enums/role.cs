@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.Repositories
+namespace Domain.Enums
 {
-    internal class LoginRepo
+    internal class role
     {
     }
 }

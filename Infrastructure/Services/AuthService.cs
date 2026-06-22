@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Interfaces
+namespace Infrastructure.Services
 {
-    internal class ILoginRepo
+    internal class Class1
     {
     }
 }
