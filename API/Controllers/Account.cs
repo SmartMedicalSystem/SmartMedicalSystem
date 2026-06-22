@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Auth;
 using Application.DTOs.Register;
 using Application.Interfaces.Services;
+using Azure;
 using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,8 @@ namespace API.Controllers
 {
     //[AllowAnonymous]
     [ApiController]
+    [Route("api/account")]
+
     public class Account : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -59,23 +62,24 @@ namespace API.Controllers
         /// Needs unauthenticated user to login and get the token to access the system.
         /// Login with email or username and password.
         /// </summary>
-        [HttpPost("api/account/login")]       
+        /// <returns> 
+        /// auth  response of token 
+        /// </returns>
+        [HttpPost("login")]       
 
         public async Task<IActionResult> Login(LoginRequestDto loginDTO)
         {
-            var result = await _authService.LoginAsync(loginDTO);
-            if (result == "Login successful")
+            var Response = await _authService.LoginAsync(loginDTO);
+
+            if (Response.IsSuccess)
             {
-                return Ok(result);
+                return Ok(Response);
+
             }
             else
-            {
-                return Unauthorized(result);
-            }
-
-
-
+                return Unauthorized(Response.Message);
         }
+    }
 }
-}
+
 

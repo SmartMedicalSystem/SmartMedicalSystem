@@ -7,5 +7,7 @@ namespace Domain.Identity
 {
     public class ApplicationUser : IdentityUser<int>
     {
+
+        public IList<ApplicationRole> Roles { get; set; }
     }
 }
