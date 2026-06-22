@@ -1,72 +1,88 @@
-﻿using Application.Interfaces.Services;
-using Application.Services;
+﻿using Application.DTOs.Auth;
+using Application.Interfaces.Services;
 using Infrastructure.Configurations;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 
-namespace Infrastructure.Services;
-
-public class TokenService : ITokenService
+namespace Infrastructure.Services
 {
-    private readonly JwtSettings _jwtSettings;
 
-    public TokenService(IOptions<JwtSettings> jwtOptions)
+    public class TokenService : ITokenService
     {
-        _jwtSettings = jwtOptions.Value;
-    }
+        private readonly JwtSettings _jwtSettings;
 
-    public async Task<string> CreateTokenAsync(
-        string userId,
-        string userName,
-        string email,
-        IList<string> roles)
-    {
-        var claims = new List<Claim>
+        public TokenService(
+            IOptions<JwtSettings> jwtOptions)
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userId),
+            _jwtSettings = jwtOptions.Value;
+        }
 
-            new Claim(ClaimTypes.NameIdentifier, userId),
+        public Task<TokenResponseDto> CreateTokenAsync(
+            string userName,
+            string email,
+            IList<string> roles)
+        {
+            var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, userName),
+            new(ClaimTypes.Email, email),
 
-            new Claim(ClaimTypes.Name, userName),
+            new(
+                JwtRegisteredClaimNames.Email,
+                email),
 
-            new Claim(ClaimTypes.Email, email),
+            new(
+                JwtRegisteredClaimNames.UniqueName,
+                userName),
 
-            new Claim(
+            new(
                 JwtRegisteredClaimNames.Jti,
                 Guid.NewGuid().ToString())
         };
 
-        foreach (var role in roles)
-        {
-            claims.Add(
-                new Claim(ClaimTypes.Role, role));
+            foreach (var role in roles)
+            {
+                claims.Add(
+                    new Claim(
+                        ClaimTypes.Role,
+                        role));
+            }
+
+            var key =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(
+                        _jwtSettings.Key));
+
+            var credentials =
+                new SigningCredentials(
+                    key,
+                    SecurityAlgorithms.HmacSha256);
+
+            var expirationDate =
+                DateTime.UtcNow.AddMinutes(
+                    _jwtSettings.ExpireMinutes);
+
+            var token =
+                new JwtSecurityToken(
+                    issuer: _jwtSettings.Issuer,
+                    audience: _jwtSettings.Audience,
+                    claims: claims,
+                    expires: expirationDate,
+                    signingCredentials: credentials);
+
+            var jwt =
+                new JwtSecurityTokenHandler()
+                    .WriteToken(token);
+
+            return Task.FromResult(
+                new TokenResponseDto
+                {
+                    AccessToken = jwt,
+                    ExpirationDate = expirationDate
+                });
         }
-
-        var key =
-            new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    _jwtSettings.Key));
-
-        var credentials =
-            new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _jwtSettings.Issuer,
-            audience: _jwtSettings.Audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes),
-            signingCredentials: credentials);
-
-        var jwt =
-            new JwtSecurityTokenHandler()
-                .WriteToken(token);
-
-        return await Task.FromResult(jwt);
     }
 }

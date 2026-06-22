@@ -140,6 +140,8 @@ namespace API.StartupExtensions
 
 
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthService, Infrastructure.Services.AuthService>();
+            services.AddScoped<IRoleService, Infrastructure.Services.RoleService>();
 
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 

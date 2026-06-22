@@ -1,12 +1,14 @@
-﻿namespace Application.DTOs.Auth;
-
-public class AuthResponseDto
+﻿namespace Application.DTOs.Auth
 {
-    public bool IsSuccess { get; set; }
 
-    public string Message { get; set; } = string.Empty;
+    public class AuthResponseDto
+    {
+        public bool IsSuccess { get; set; }
 
-    public string? AccessToken { get; set; }
+        public string Message { get; set; } = string.Empty;
 
-    public DateTime? Expiration { get; set; }
+        public string? AccessToken { get; set; }
+
+        public DateTime? Expiration { get; set; }
+    }
 }

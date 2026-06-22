@@ -1,15 +1,10 @@
-﻿using Application.DTOs.Register;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Application.DTOs.Auth;
 
 namespace Application.Interfaces.Services
 {
-    public interface IRegisterService
+    public interface IAuthService
     {
-        public Task RegisterAsync(RegisterDTO model);
-        public Task UnregisterAsync(RegisterDTO model);
-
-
+        Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request);
+        Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
     }
 }

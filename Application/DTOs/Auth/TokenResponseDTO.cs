@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.DTOs.Auth
+﻿namespace Application.DTOs.Auth
 {
-    internal class TokenResponseDTO
+
+    public class TokenResponseDto
     {
+        public string AccessToken { get; set; } = string.Empty;
+
+        public DateTime ExpirationDate { get; set; }
     }
 }

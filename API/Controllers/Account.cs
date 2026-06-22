@@ -1,5 +1,4 @@
 ﻿using Application.DTOs.Auth;
-using Application.DTOs.Register;
 using Application.Interfaces.Services;
 using Azure;
 using Domain.Identity;
@@ -26,7 +25,7 @@ namespace API.Controllers
             _authService = authService;
         }
 
-        [HttpGet]
+
         ///<summary>
         /// Registers a new user.
         /// check username and email and phone number if exist or not
@@ -36,10 +35,10 @@ namespace API.Controllers
         /// Need UnAuthenticated user to register
         /// </summary>
 
-        [HttpPost("api/account/register")]
+        [HttpPost("register")]
         // unathenticated 
 
-        public async Task<IActionResult> Register(RegisterRequestDto model)
+        public async Task<IActionResult> Register(RegisterRequestDTO model)
         {
             if (!ModelState.IsValid)
             {
