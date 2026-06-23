@@ -1,8 +1,9 @@
-﻿using Antlr.Runtime;
-using Application.Interfaces.Services;
+﻿using Application.Interfaces.Services;
+using Application.Services;
 using Domain.Identity;
 using Infrastructure.Configurations;
 using Infrastructure.Context;
+using Infrastructure.DependencyInjection;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -140,11 +141,8 @@ namespace API.StartupExtensions
 
 
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAuthService, Infrastructure.Services.AuthService>();
-            services.AddScoped<IRoleService, Infrastructure.Services.RoleService>();
-
-            services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
-
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddInfrastructure(configuration);
 
         }
     }

@@ -7,6 +7,6 @@ namespace Domain.Identity
 {
     public  class ApplicationRole : IdentityRole<int>
     {
-        public ApplicationRole applicationRole { get; set; }
+      
     }
 }

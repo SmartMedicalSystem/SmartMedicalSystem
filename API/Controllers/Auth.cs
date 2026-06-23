@@ -11,16 +11,17 @@ namespace API.Controllers
 {
     //[AllowAnonymous]
     [ApiController]
+    [AllowAnonymous]
     [Route("api/account")]
 
-    public class Account : ControllerBase
+    public class Auth : ControllerBase
     {
         private readonly IAuthService _authService;
         /// <summary>
         /// Constructor for the Account controller, which takes an instance of IAuthService as a parameter.
         /// </summary>
         /// <param name="authService"></param>
-        public Account(IAuthService authService)
+        public Auth(IAuthService authService)
         {
             _authService = authService;
         }

@@ -7,7 +7,8 @@ namespace Domain.Identity
 {
     public class ApplicationUser : IdentityUser<int>
     {
+        public string RefreshToken { get; set; }
+        public string? PersonName { get; set; }
 
-        public IList<ApplicationRole> Roles { get; set; }
     }
 }
