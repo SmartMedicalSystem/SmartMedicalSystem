@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Configurations\" />
     <Folder Include="Authentication\" />
     <Folder Include="AI\" />
     <Folder Include="Email\" />
