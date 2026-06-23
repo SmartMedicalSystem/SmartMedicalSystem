@@ -1,7 +1,6 @@
 ﻿using Domain.Identity;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +9,11 @@ namespace API.StartupExtensions
 {
     public static class ConfigureServiceExtension
     {
-        public static void ConfigureService(this IServiceCollection services   , IConfiguration configuration)
+        public static void ConfigureService(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            
+
             services.AddSwaggerGen();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));

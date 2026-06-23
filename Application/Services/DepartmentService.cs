@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Application.DTOs.Department;
+﻿using Application.DTOs.Department;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Entities;
@@ -8,34 +7,36 @@ namespace Application.Services
 {
     public class DepartmentService : IDepartmentService
     {
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DepartmentService(IDepartmentRepository departmentRepository)
+        public DepartmentService(IUnitOfWork unitOfWork)
         {
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<DepartmentDto>> GetAllAsync()
         {
-            var departments = await _departmentRepository.GetAllAsync();
+            var departments =
+                await _unitOfWork.Departments.GetAllAsync();
 
             return departments.Select(d => new DepartmentDto
             {
-                DepartmentId = d.DepartmentId,
+                Id = d.Id,
                 Name = d.Name
             });
         }
 
         public async Task<DepartmentDto?> GetByIdAsync(int id)
         {
-            var department = await _departmentRepository.GetByIdAsync(id);
+            var department =
+                await _unitOfWork.Departments.GetByIdAsync(id);
 
             if (department == null)
                 return null;
 
             return new DepartmentDto
             {
-                DepartmentId = department.DepartmentId,
+                Id = department.Id,
                 Name = department.Name
             };
         }
@@ -47,29 +48,37 @@ namespace Application.Services
                 Name = dto.Name
             };
 
-            await _departmentRepository.AddAsync(department);
+            await _unitOfWork.Departments.AddAsync(department);
+
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task UpdateAsync(int id, UpdateDepartmentDto dto)
         {
-            var department = await _departmentRepository.GetByIdAsync(id);
+            var department =
+                await _unitOfWork.Departments.GetByIdAsync(id);
 
             if (department == null)
                 throw new Exception("Department not found");
 
             department.Name = dto.Name;
 
-            await _departmentRepository.UpdateAsync(department);
+            _unitOfWork.Departments.Update(department);
+
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var department = await _departmentRepository.GetByIdAsync(id);
+            var department =
+                await _unitOfWork.Departments.GetByIdAsync(id);
 
             if (department == null)
                 throw new Exception("Department not found");
 
-            await _departmentRepository.DeleteAsync(department);
+            _unitOfWork.Departments.Delete(department);
+
+            await _unitOfWork.CompleteAsync();
         }
     }
 }
