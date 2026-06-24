@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Services;
+﻿using API.Filters;
+using Application.Interfaces.Services;
 using Application.Services;
 using Domain.Identity;
 using Infrastructure.Configurations;
@@ -141,8 +142,15 @@ namespace API.StartupExtensions
 
 
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAuthService, AuthService>();
+            //services.AddScoped<IAuthService, AuthService>();
             services.AddInfrastructure(configuration);
+
+            services.AddHttpContextAccessor();
+
+            services.AddScoped<PermessionHandler>();
+
+            services.AddScoped<PermissionBasedAuthorizationFilter>();
+
 
         }
     }

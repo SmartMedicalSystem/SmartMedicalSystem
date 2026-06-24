@@ -2,11 +2,6 @@
 using Application.Interfaces.Services;
 using Domain.Identity;
 using Domain.Repositories;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
 
 namespace Application.Services;
 
@@ -15,98 +10,121 @@ public class AuthService : IAuthService
     private readonly IMemberRepo _memberRepo;
     private readonly ITokenService _tokenService;
 
-   
-
-    public AuthService(IMemberRepo memberRepo, ITokenService tokenService)
+public AuthService(
+    IMemberRepo memberRepo,
+    ITokenService tokenService)
     {
         _memberRepo = memberRepo;
         _tokenService = tokenService;
     }
 
-    // ---------------- REGISTER ----------------
-    public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request)
+    public async Task<AuthResponseDto> RegisterAsync(
+        RegisterRequestDTO request)
     {
         var user = new ApplicationUser
         {
             UserName = request.Username,
             Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
             EmailConfirmed = true
         };
-        //  use member repo 
 
-        var result = await _memberRepo.RegisterAsync(user);
+        var result = await _memberRepo.RegisterAsync(
+            user,
+            request.Password);
 
-        if (result!= null)
+        if (!result.Succeeded)
         {
-            throw new Exception(string.Join(", ",
+            throw new Exception(
+                string.Join(", ",
                 result.Errors.Select(e => e.Description)));
         }
-        // assign roles
-        if (request.Roles is not null && request.Roles.Any())
-        {
-           // await  _memberRepo.AddRoleAsync(user, request.Roles);
-        }
 
-        //var role
+        await _memberRepo.AddRoleAsync(
+            user,
+            request.Role);
 
-        var token = await _tokenService.CreateTokenAsync(user.UserName!, user.Email);
-        var refreshToken = _memberRepo.GenerateRefreshToken();
+        var permissions =
+            await _memberRepo.GetPermissionsAsync(
+                request.Role);
 
-        return new AuthResponseDto
-        { 
-            IsSuccess = true,
-            Message = string.Empty,
-            AccessToken = token.AccessToken,
-            Expiration = token.ExpirationDate,
-            RefreshToken = refreshToken,
-        };
-    }
+        var token =
+            await _tokenService.CreateTokenAsync(
+                user.UserName!,
+                user.Email!,
+                request.Role,
+                permissions);
 
-    // ---------------- LOGIN ----------------
-    public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
-    {
-        //user member repo ==> is valid user name 
-        var user = await _memberRepo.IsValidUsernameAsync(request.UserNameOrEmail)
-
-            //isvalidemail
-                   ?? await _memberRepo.IsValidEmailAsync(request.UserNameOrEmail);
-
-        if (user == null)
-            throw new Exception("Invalid username or email");
-
-        //user ember repo => isvalidpassword
-
-        var passwordValid = await _memberRepo.IsValidPasswordAsync( request.Password,user);
-
-        if (passwordValid==null)
-            throw new Exception("Invalid password");
-
-      //  var roles = await _memberRepo.AddRoleAsync(user);
-
-        var token = await _tokenService.CreateTokenAsync(user.UserName!, user.Email);
-
-        var refreshToken = _memberRepo.GenerateRefreshToken();
+        var refreshToken =
+            _memberRepo.GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
 
-        
+        return new AuthResponseDto
+        {
+            IsSuccess = true,
+            Message = "User registered successfully",
+            AccessToken = token.AccessToken,
+            Expiration = token.ExpirationDate,
+            RefreshToken = refreshToken
+        };
+    }
 
+    public async Task<AuthResponseDto> LoginAsync(
+        LoginRequestDto request)
+    {
+        var user =
+            await _memberRepo.IsValidUsernameAsync(
+                request.UserNameOrEmail)
+            ??
+            await _memberRepo.IsValidEmailAsync(
+                request.UserNameOrEmail);
 
+        if (user is null)
+            throw new Exception(
+                "Invalid username or email");
+
+        var validUser =
+            await _memberRepo.IsValidPasswordAsync(
+                request.Password,
+                user);
+
+        if (validUser is null)
+            throw new Exception(
+                "Invalid password");
+
+        var role =
+            await _memberRepo.GetRoleAsync(user);
+
+        if (string.IsNullOrWhiteSpace(role))
+            throw new Exception(
+                "User has no assigned role");
+
+        var permissions =
+            await _memberRepo.GetPermissionsAsync(
+                role);
+
+        var token =
+            await _tokenService.CreateTokenAsync(
+                user.UserName!,
+                user.Email!,
+                role,
+                permissions);
+
+        var refreshToken =
+            _memberRepo.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
 
         return new AuthResponseDto
         {
             IsSuccess = true,
-            Message = string.Empty,
+            Message = "Login successful",
             AccessToken = token.AccessToken,
             Expiration = token.ExpirationDate,
             RefreshToken = refreshToken
-            
         };
-
-   
     }
 
-  
 
-   
 }

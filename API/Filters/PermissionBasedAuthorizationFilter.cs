@@ -20,7 +20,7 @@ namespace API.Filters
                 {
                     context.Result = new ForbidResult();
                 }
-                var result = permessionHandler.CheckPermission();
+                var result = permessionHandler.CheckPermission(claims);
 
             }
         }
