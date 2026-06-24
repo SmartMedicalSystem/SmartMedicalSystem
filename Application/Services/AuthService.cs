@@ -1,7 +1,9 @@
 ﻿using Application.DTOs.Auth;
 using Application.Interfaces.Services;
 using Domain.Identity;
+using Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -10,17 +12,14 @@ namespace Application.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly IMemberRepo _memberRepo;
     private readonly ITokenService _tokenService;
 
-    public AuthService(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager,
-        ITokenService tokenService)
+   
+
+    public AuthService(IMemberRepo memberRepo, ITokenService tokenService)
     {
-        _userManager = userManager;
-        _roleManager = roleManager;
+        _memberRepo = memberRepo;
         _tokenService = tokenService;
     }
 
@@ -33,10 +32,11 @@ public class AuthService : IAuthService
             Email = request.Email,
             EmailConfirmed = true
         };
+        //  use member repo 
 
-        var result = await _userManager.CreateAsync(user, request.Password);
+        var result = await _memberRepo.RegisterAsync(user);
 
-        if (!result.Succeeded)
+        if (result!= null)
         {
             throw new Exception(string.Join(", ",
                 result.Errors.Select(e => e.Description)));
@@ -44,13 +44,13 @@ public class AuthService : IAuthService
         // assign roles
         if (request.Roles is not null && request.Roles.Any())
         {
-            await AddRoleAsync(user, request.Roles);
+           // await  _memberRepo.AddRoleAsync(user, request.Roles);
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        //var role
 
-        var token = await _tokenService.CreateTokenAsync(user.UserName!, user.Email, roles);
-        var refreshToken = GenerateRefreshToken();
+        var token = await _tokenService.CreateTokenAsync(user.UserName!, user.Email);
+        var refreshToken = _memberRepo.GenerateRefreshToken();
 
         return new AuthResponseDto
         { 
@@ -65,22 +65,27 @@ public class AuthService : IAuthService
     // ---------------- LOGIN ----------------
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
-        var user = await _userManager.FindByNameAsync(request.UserNameOrEmail)
-                   ?? await _userManager.FindByEmailAsync(request.UserNameOrEmail);
+        //user member repo ==> is valid user name 
+        var user = await _memberRepo.IsValidUsernameAsync(request.UserNameOrEmail)
+
+            //isvalidemail
+                   ?? await _memberRepo.IsValidEmailAsync(request.UserNameOrEmail);
 
         if (user == null)
             throw new Exception("Invalid username or email");
 
-        var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+        //user ember repo => isvalidpassword
 
-        if (!passwordValid)
+        var passwordValid = await _memberRepo.IsValidPasswordAsync( request.Password,user);
+
+        if (passwordValid==null)
             throw new Exception("Invalid password");
 
-        var roles = await _userManager.GetRolesAsync(user);
+      //  var roles = await _memberRepo.AddRoleAsync(user);
 
-        var token = await _tokenService.CreateTokenAsync(user.UserName!, user.Email, roles);
+        var token = await _tokenService.CreateTokenAsync(user.UserName!, user.Email);
 
-        var refreshToken = GenerateRefreshToken();
+        var refreshToken = _memberRepo.GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
 
@@ -101,31 +106,7 @@ public class AuthService : IAuthService
    
     }
 
-    public string GenerateRefreshToken()
-    {
-        var bytes = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(bytes);
-        return Convert.ToBase64String(bytes);
-    }
+  
 
-
-     public async Task AddRoleAsync(ApplicationUser user, IEnumerable<string> roleNames)
-        {
-            if (roleNames == null)
-                return;
-
-            foreach (var roleName in roleNames)
-            {
-                if (string.IsNullOrWhiteSpace(roleName))
-                    continue;
-
-                if (!await _roleManager.RoleExistsAsync(roleName))
-                {
-                    await _roleManager.CreateAsync(new ApplicationRole { Name = roleName });
-                }
-            }
-
-            await _userManager.AddToRolesAsync(user, roleNames);
-        }
+   
 }

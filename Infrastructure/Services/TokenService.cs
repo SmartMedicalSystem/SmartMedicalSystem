@@ -23,8 +23,8 @@ namespace Infrastructure.Services
 
         public Task<TokenResponseDto> CreateTokenAsync(
             string userName,
-            string email,
-            IList<string> roles)
+            string email
+           )
         {
             var claims = new List<Claim>
         {

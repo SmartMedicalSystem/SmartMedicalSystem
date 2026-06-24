@@ -8,7 +8,6 @@ namespace Application.Interfaces.Services
     {
         Task<TokenResponseDto> CreateTokenAsync(
             string userName,
-            string email,
-            IList<string> roles);
+            string email);
     }
 }

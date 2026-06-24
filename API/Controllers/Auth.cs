@@ -1,6 +1,8 @@
-﻿using Application.DTOs.Auth;
+﻿using API.Attributes;
+using Application.DTOs.Auth;
 using Application.Interfaces.Services;
 using Azure;
+using Domain.Enums;
 using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,7 +37,6 @@ namespace API.Controllers
         /// must be unauthenticated user to register
         /// Need UnAuthenticated user to register
         /// </summary>
-
         [HttpPost("register")]
         // unathenticated 
 
