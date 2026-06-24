@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Enums;
 
 namespace Infrastructure.Repositories
 {
@@ -48,14 +49,24 @@ namespace Infrastructure.Repositories
             return await _userManager.CreateAsync(applicationUser, password);
         }
 
-        public async Task AddRoleAsync(ApplicationUser user, string roleName)
+        public async Task AddRoleAsync(ApplicationUser user,string roleName,IEnumerable<RolePermission> permissions)
         {
-            if (!await _roleManager.RoleExistsAsync(roleName))
+            ApplicationRole? role =
+                await _roleManager.FindByNameAsync(roleName);
+
+            if (role == null)
             {
-                await _roleManager.CreateAsync(new ApplicationRole { Name = roleName });
+                role = new ApplicationRole
+                {
+                    Name = roleName
+                };
+
+                await _roleManager.CreateAsync(role);
             }
 
             await _userManager.AddToRoleAsync(user, roleName);
+
+            await AddPermessionAsync(role, permissions);
         }
 
         public async Task<string?> GetRoleAsync(ApplicationUser user)
@@ -81,6 +92,24 @@ namespace Infrastructure.Repositories
         public string GenerateRefreshToken()
         {
             return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        }
+
+        public async Task AddPermessionAsync(ApplicationRole applicationRole,IEnumerable<RolePermission> rolePermissions)
+        {
+            if (applicationRole == null)
+                throw new ArgumentNullException(nameof(applicationRole));
+
+            if (rolePermissions == null || !rolePermissions.Any())
+                return;
+
+            foreach (var permission in rolePermissions)
+            {
+                permission.RoleId = applicationRole.Id;
+
+                await _dbContext.RolePermissions.AddAsync(permission);
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
