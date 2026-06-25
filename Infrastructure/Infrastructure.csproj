@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Context\" />
     <Folder Include="Configurations\" />
     <Folder Include="Authentication\" />
     <Folder Include="AI\" />
@@ -16,7 +15,6 @@
     <Folder Include="DependencyInjection\" />
     <Folder Include="Identity\" />
     <Folder Include="UnitOfWork\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
