@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Domain.Interfaces
 {
-    internal class IUnitOfWork
+    public interface IUnitOfWork
     {
         ILabTestRepository LabTests { get; }
 
