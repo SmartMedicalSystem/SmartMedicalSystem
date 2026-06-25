@@ -12,6 +12,7 @@ namespace Infrastructure.Context
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-   
+        public DbSet<TestElements> TestElements { get; set; }
+
     }
 }
