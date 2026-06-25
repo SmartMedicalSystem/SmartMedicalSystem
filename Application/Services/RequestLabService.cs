@@ -6,97 +6,161 @@ using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Application.Services.RequestLabService;
 
 namespace Application.Services
 {
     public class RequestLabService : IRequestLabsService
     {
 
-        private readonly IRequestLabsRepository _repository;
+            private readonly IUnitOfWork _unitOfWork;
 
-        public RequestLabService(IRequestLabsRepository repository)
-        {
-            _repository = repository;
-        }
-        public async Task<RequestLabsDto> CreateAsync(CreateRequestLabsDto dto)
-        {
-
-            var requestLab = new RequestLabs
+            public RequestLabService(
+                IUnitOfWork unitOfWork)
             {
-                SessionId = dto.SessionId,
-                LabTestId = dto.LabTestId,
-                CreatedAt = DateTime.UtcNow,
-                Status = LabRequestStatus.Pending
-            };
-            await _repository.AddAsync(requestLab);
+                _unitOfWork = unitOfWork;
+            }
 
-
-            return new RequestLabsDto
+            public async Task<RequestLabsDto>
+                CreateAsync(CreateRequestLabsDto dto)
             {
-                Id = requestLab.Id,
-                SessionId = requestLab.SessionId,
-                LabTestId = requestLab.LabTestId,
-                CreatedAt = requestLab.CreatedAt,
-                Status = requestLab.Status
-            };
-        }
+                var request =
+                    new RequestLabs(
+                        dto.SessionId,
+                        dto.LabTestId);
 
-        public async Task DeleteAsync(int id)
-        {
-            var requestLab =
-                   await _repository.GetByIdAsync(id);
+                await _unitOfWork
+                    .RequestLabs
+                    .AddAsync(request);
 
-            if (requestLab == null)
-                throw new Exception("Request Lab not found");
+                await _unitOfWork
+                    .SaveChangesAsync();
 
-            await _repository.DeleteAsync(requestLab);
-        
-        }
+                return MapToDto(request);
+            }
 
-        public async Task<IEnumerable<RequestLabsDto>> GetAllAsync()
-        {
-
-            var requestLabs = await _repository.GetAllAsync();
-
-            return requestLabs.Select(requestLab => new RequestLabsDto
+            public async Task<IEnumerable<RequestLabsDto>>
+                GetAllAsync()
             {
-                Id = requestLab.Id,
-                SessionId = requestLab.SessionId,
-                LabTestId = requestLab.LabTestId,
-                CreatedAt = requestLab.CreatedAt,
-                Status = requestLab.Status
-            });
+                var requests =
+                    await _unitOfWork
+                        .RequestLabs
+                        .GetAllAsync();
 
-        }
+                return requests
+                    .Select(MapToDto);
+            }
 
-        public async Task<RequestLabsDto> GetByIdAsync(int id)
-        {
-            var requestLab = await _repository.GetByIdAsync(id);
-
-            if (requestLab == null)
-                return null;
-
-            return new RequestLabsDto
+            public async Task<RequestLabsDto?>
+                GetByIdAsync(int id)
             {
-                Id = requestLab.Id,
-                SessionId = requestLab.SessionId,
-                LabTestId = requestLab.LabTestId,
-                CreatedAt = requestLab.CreatedAt,
-                Status = requestLab.Status
-            };
-        }
+                var request =
+                    await _unitOfWork
+                        .RequestLabs
+                        .GetByIdAsync(id);
 
-        public async Task UpdateStatusAsync(int id, UpdateRequestLabsStatusDto dto)
-        {
-            var requestLab =
-                 await _repository.GetByIdAsync(id);
+                if (request == null)
+                    return null;
 
-            if (requestLab == null)
-                throw new Exception("Request Lab not found");
+                return MapToDto(request);
+            }
 
-            requestLab.Status = dto.Status;
+            public async Task<IEnumerable<RequestLabsDto>>
+                GetBySessionIdAsync(int sessionId)
+            {
+                var requests =
+                    await _unitOfWork
+                        .RequestLabs
+                        .GetBySessionIdAsync(sessionId);
 
-            await _repository.UpdateAsync(requestLab);
+                return requests
+                    .Select(MapToDto);
+            }
+
+            public async Task<IEnumerable<RequestLabsDto>>
+                GetPendingAsync()
+            {
+                var requests =
+                    await _unitOfWork
+                        .RequestLabs
+                        .GetPendingRequestsAsync();
+
+                return requests
+                    .Select(MapToDto);
+            }
+
+            public async Task StartProcessingAsync(int id)
+            {
+                var request =
+                    await _unitOfWork
+                        .RequestLabs
+                        .GetByIdAsync(id);
+
+                if (request == null)
+                    throw new Exception("Request not found");
+
+                request.StartProcessing();
+
+                _unitOfWork
+                    .RequestLabs
+                    .Update(request);
+
+                await _unitOfWork
+                    .SaveChangesAsync();
+            }
+
+            public async Task CompleteAsync(int id)
+            {
+                var request =
+                    await _unitOfWork
+                        .RequestLabs
+                        .GetByIdAsync(id);
+
+                if (request == null)
+                    throw new Exception("Request not found");
+
+                request.Complete();
+
+                _unitOfWork
+                    .RequestLabs
+                    .Update(request);
+
+                await _unitOfWork
+                    .SaveChangesAsync();
+            }
+
+            public async Task CancelAsync(int id)
+            {
+                var request =
+                    await _unitOfWork
+                        .RequestLabs
+                        .GetByIdAsync(id);
+
+                if (request == null)
+                    throw new Exception("Request not found");
+
+                request.Cancel();
+
+                _unitOfWork
+                    .RequestLabs
+                    .Update(request);
+
+                await _unitOfWork
+                    .SaveChangesAsync();
+            }
+
+            private static RequestLabsDto
+                MapToDto(RequestLabs request)
+            {
+                return new RequestLabsDto
+                {
+                    Id = request.Id,
+                    SessionId = request.SessionId,
+                    LabTestId = request.LabTestId,
+                    RequestedAt = request.RequestedAt,
+                    Status = request.Status.ToString()
+                };
+            }
         }
     }
-}
+

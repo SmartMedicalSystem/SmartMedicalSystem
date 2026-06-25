@@ -11,15 +11,17 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<RequestLabs> builder)
         {
+            builder.ToTable("RequestLabs");
+
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.CreatedAt)
              .IsRequired();
 
             builder.Property(x => x.Status)
-               .HasConversion<string>()
-               .HasMaxLength(20)
-               .IsRequired();
+                   .HasConversion<int>()
+                   .IsRequired();
+
 
             builder.HasOne(x => x.Session)
               .WithMany(x => x.RequestLabs)
