@@ -1,10 +1,18 @@
-﻿using System;
+﻿using Application.DTOs.Auth;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Application.Interfaces.Services
+namespace Application.Interfaces.Services;
+
+public interface ITokenService
 {
-    internal class ITokenService
-    {
-    }
+    Task<TokenResponseDto> CreateTokenAsync(
+        string userName,
+        string email,
+        IList<string> roles);
+
+    Task<TokenResponseDto> CreateTokenAsync(
+        string userName,
+        string email,
+        string role,
+        IEnumerable<string> permissions);
 }

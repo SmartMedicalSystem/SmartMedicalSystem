@@ -1,8 +1,10 @@
-﻿using Antlr.Runtime;
+﻿using API.Filters;
 using Application.Interfaces.Services;
+using Application.Services;
 using Domain.Identity;
 using Infrastructure.Configurations;
 using Infrastructure.Context;
+using Infrastructure.DependencyInjection;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -140,8 +142,14 @@ namespace API.StartupExtensions
 
 
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddInfrastructure(configuration);
 
-            services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+            services.AddHttpContextAccessor();
+
+            services.AddScoped<PermessionHandler>();
+
+            services.AddScoped<PermissionBasedAuthorizationFilter>();
 
 
         }
