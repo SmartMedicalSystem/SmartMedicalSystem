@@ -58,5 +58,6 @@ namespace Infrastructure.Context
                       .OnDelete(DeleteBehavior.Cascade);
             });
         }
+        public DbSet<LabTest> LabTests { get; set; }
     }
 }
