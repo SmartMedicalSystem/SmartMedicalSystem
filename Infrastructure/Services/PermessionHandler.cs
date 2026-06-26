@@ -23,9 +23,6 @@ namespace Infrastructure.Services
                 x.PermissionId.ToString() ==checkPermissionAttribute.Permission.ToString()
             );
             return HasPermissoin;
-            
-
-
         }
 
 

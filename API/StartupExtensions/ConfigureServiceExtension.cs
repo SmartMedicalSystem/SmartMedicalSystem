@@ -142,7 +142,7 @@ namespace API.StartupExtensions
 
 
             services.AddScoped<ITokenService, TokenService>();
-            //services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddInfrastructure(configuration);
 
             services.AddHttpContextAccessor();

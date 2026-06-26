@@ -10,6 +10,6 @@ namespace Domain.Identity
 
         public ApplicationRole Role { get; set; } = null!;
 
-        public Permissions Permission { get; set; }
+        public Permission permission { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace API.Attributes
     {
         public CheckPermissionAttribute(Permissions permissions) : base(permissions)
         {
+            Policy = permissions.ToString();
         }
     }
 }
