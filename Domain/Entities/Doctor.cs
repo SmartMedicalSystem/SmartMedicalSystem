@@ -25,7 +25,7 @@ namespace Domain.Entities
 
         }
 
-        public void SetName(string _name)
+        private void SetName(string _name)
         {
             if (string.IsNullOrWhiteSpace(_name))
             {
@@ -34,7 +34,7 @@ namespace Domain.Entities
             Name = _name.Trim();
 
         }
-        public void SetSpecialization(string _specialization)
+        private void SetSpecialization(string _specialization)
         {
             if (string.IsNullOrWhiteSpace(_specialization))
             {
@@ -44,7 +44,7 @@ namespace Domain.Entities
             Specialization = _specialization.Trim();
 
         }
-        public void Setcontact(string _contact)
+        private void Setcontact(string _contact)
         {
             if (string.IsNullOrWhiteSpace(_contact))
             {
@@ -70,7 +70,7 @@ namespace Domain.Entities
             Contact = _contact.Trim();
 
         }
-        public void SetDeptId(int _depdId)
+        private void SetDeptId(int _depdId)
         {
             if (_depdId <= 0)
             {
