@@ -1,16 +1,23 @@
-﻿using Domain.Identity;
+﻿using Domain.Entities;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace Infrastructure.Context
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+        public DbSet<Doctor> Doctors { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
         }
    
     }

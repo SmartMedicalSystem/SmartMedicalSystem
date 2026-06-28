@@ -1,4 +1,7 @@
 using API.StartupExtensions;
+using Domain.Interfaces;
+using Infrastructure.Context;
+using Infrastructure.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.ConfigureService(builder.Configuration);
+
+//doctor
+builder.Services.AddScoped<ApplicationDbContext>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
