@@ -10,6 +10,24 @@ namespace Domain.Entities
         public Patient
             (string ssn, string firstName, string lastName, string address, string contact, DateTime dateOfBirth)
         {
+            SetFirstName(firstName);
+            SetLastName(lastName);
+            SetContact(contact);
+            SetAddress(address);
+            SetDateOfBirth(dateOfBirth);
+            SetSSN(ssn);
+        }
+
+        public string SSN { get; private set; }
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+        public string Contact { get; private set; }
+        public DateTime DateOfBirth { get; private set; }
+        public string Address { get; private set; }
+        public virtual ICollection<Session> Sessions { get; private set; }
+        public virtual ICollection<PatientResult> PatientResults { get; private set; }
+        private void SetSSN(string ssn)
+        {
             if (string.IsNullOrWhiteSpace(ssn))
             {
                 throw new ArgumentException("SSN is required.", nameof(ssn));
@@ -26,14 +44,21 @@ namespace Domain.Entities
             }
 
             SSN = ssn;
+        }
+        private void SetFirstName(string firstName)
+        {
             if (String.IsNullOrWhiteSpace(firstName))
-                throw new ArgumentException("First Name is required",nameof(firstName));
+                throw new ArgumentException("First Name is required", nameof(firstName));
             FirstName = firstName;
-
+        }
+        private void SetLastName(string lastName)
+        {
             if (String.IsNullOrWhiteSpace(lastName))
                 throw new ArgumentException("Last Name is required", nameof(lastName));
             LastName = lastName;
-
+        }
+        private void SetContact(string contact)
+        {
             if (String.IsNullOrWhiteSpace(contact))
                 throw new ArgumentException("Contact is required", nameof(contact));
             if (!contact.All(char.IsDigit))
@@ -56,25 +81,31 @@ namespace Domain.Entities
                     nameof(contact));
             }
             Contact = contact;
-
-            if (String.IsNullOrWhiteSpace(address))
-                throw new ArgumentException("address is required",nameof(address));
-            Address = address;
+        }
+        private void SetDateOfBirth(DateTime dateOfBirth)
+        {
             if (dateOfBirth > DateTime.Today)
             {
                 throw new ArgumentException("Date of birth cannot be in the future.", nameof(dateOfBirth));
             }
             DateOfBirth = dateOfBirth;
         }
-
-        public string SSN { get; private set; }
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
-        public string Contact { get; private set; }
-        public DateTime DateOfBirth { get; private set; }
-        public string Address { get; private set; }
-        public virtual ICollection<Session> Sessions { get; private set; }
-        public virtual ICollection<PatientResult> PatientResults { get; private set; }
-
+        private void SetAddress(string address)
+        {
+            if (String.IsNullOrWhiteSpace(address))
+                throw new ArgumentException("address is required", nameof(address));
+            Address = address;
+        }
+        public void Update(
+            string firstName,
+            string lastName,
+            string contact,
+            string address)
+        {
+            SetFirstName(firstName); 
+            SetLastName(lastName); 
+            SetContact(contact); 
+            SetAddress(address);
+        }
     }
 }

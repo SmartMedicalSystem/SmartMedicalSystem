@@ -69,7 +69,14 @@ namespace Application.Services
             if (patient == null)
                 throw new KeyNotFoundException("Patient not found.");
 
-            mapper.Map(dto, patient);
+            patient.Update
+                (
+                dto.FirstName,
+                dto.LastName,
+                dto.Contact,
+                dto.Address
+                )
+                ;
 
             unit.Patients.Update(patient);
 
