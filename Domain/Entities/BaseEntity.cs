@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Domain.Entities
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
         public int Id { get; set; }
 
@@ -12,6 +12,14 @@ namespace Domain.Entities
 
         public DateTime? UpdatedAt { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; private set; }
+
+        public DateTime? DeletedAt { get; private set; }
+
+        public void Delete()
+        {
+            IsDeleted = true;
+            DeletedAt = DateTime.UtcNow;
+        }
     }
 }

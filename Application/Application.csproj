@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Mappings\" />
     <Folder Include="Helpers\" />
     <Folder Include="Validators\" />
   </ItemGroup>

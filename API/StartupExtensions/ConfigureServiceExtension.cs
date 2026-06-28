@@ -1,9 +1,12 @@
 ﻿using Antlr.Runtime;
 using Application.Interfaces.Services;
+using Application.Services;
 using Domain.Identity;
+using Domain.Interfaces;
 using Infrastructure.Configurations;
 using Infrastructure.Context;
 using Infrastructure.Services;
+using Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +33,8 @@ namespace API.StartupExtensions
                 .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging());
 
-
+            services.AddScoped<IPatientService, PatientService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
             // Configure Identity with custom user and role classes
