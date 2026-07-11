@@ -56,7 +56,8 @@ namespace MEDSYstemITI.Middleware
             var payload = JsonSerializer.Serialize(new
             {
                 statusCode = (int)statusCode,
-                message
+                message,
+                details = exception.ToString()
             });
 
             await context.Response.WriteAsync(payload);

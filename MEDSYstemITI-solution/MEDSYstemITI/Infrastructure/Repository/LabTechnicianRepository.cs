@@ -3,69 +3,57 @@ using Domain.IRepository;
 using Domain.Models;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
-    /// <summary>
-    /// Repository for managing LabTechnician entities.
-    /// Provides CRUD operations and specialized queries for lab technicians.
-    /// </summary>
     public class LabTechnicianRepository : GenericRepository<LabTechnician>, ILabTechnicianRepo
     {
-        public LabTechnicianRepository(ApplicationDbContext context) : base(context)
+        public LabTechnicianRepository(ApplicationDbContext context)
+            : base(context)
         {
         }
 
-        /// <summary>
-        /// Retrieves a lab technician by ID, excluding soft-deleted records.
-        /// </summary>
         public override async Task<LabTechnician?> GetByIdAsync(int id)
         {
             return await _context.LabTechnicians
-                .Where(lt => lt.Id == id && !lt.IsDeleted)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
-        /// <summary>
-        /// Retrieves all active (non-deleted) lab technicians from the database.
-        /// </summary>
         public override async Task<IEnumerable<LabTechnician>> GetAllAsync()
         {
             return await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted)
-                .OrderBy(lt => lt.Name)
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Searches for a lab technician by name (case-insensitive).
-        /// </summary>
-        public async Task<LabTechnician?> GetByNameAsync(string name)
+        public async Task<LabTechnician?> GetByEmployeeIdAsync(string employeeId)
         {
             return await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted && lt.Name!.ToLower().Contains(name.ToLower()))
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x =>
+                    !x.IsDeleted &&
+                    x.EmployeeId == employeeId);
         }
 
-        /// <summary>
-        /// Retrieves a paginated list of all active lab technicians.
-        /// Uses Skip and Take for pagination based on PageNumber and PageSize.
-        /// Example: Page 2, Size 10 = Skip(10).Take(10)
-        /// </summary>
+        public async Task<LabTechnician?> GetByNationalIdAsync(string nationalId)
+        {
+            return await _context.LabTechnicians
+                .FirstOrDefaultAsync(x =>
+                    !x.IsDeleted &&
+                    x.NationalId == nationalId);
+        }
+
         public override async Task<PaginatedResult<LabTechnician>> GetAllPaginatedAsync(PaginationParams pagination)
         {
-            // Get total count of active records
-            var totalCount = await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted)
-                .CountAsync();
+            var query = _context.LabTechnicians
+                .Where(x => !x.IsDeleted);
 
-            // Get paginated records using Skip/Take
-            var items = await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted)
-                .OrderBy(lt => lt.Name)
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();

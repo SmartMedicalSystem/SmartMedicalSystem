@@ -5,7 +5,8 @@ namespace Domain.IRepository
 {
     public interface ILabTechnicianRepo : IGenericRepository<LabTechnician>
     {
-        // Entity-specific reads
-        Task<LabTechnician?> GetByNameAsync(string name);
+        Task<LabTechnician?> GetByEmployeeIdAsync(string employeeId);
+
+        Task<LabTechnician?> GetByNationalIdAsync(string nationalId);
     }
 }

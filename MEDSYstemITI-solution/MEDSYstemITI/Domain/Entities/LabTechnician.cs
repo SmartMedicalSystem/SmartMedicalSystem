@@ -1,25 +1,66 @@
 using Domain.Common;
+using Domain.Enums;
 
 namespace Domain.Entities
 {
     public class LabTechnician : BaseEntity
     {
-        public string Name { get; private set; } = null!;
+        // Personal Information
 
-        public string Contact { get; private set; } = null!;
+        public string FirstName { get; set; }
 
-        private LabTechnician() { }
+        public string LastName { get; set; }
 
-        public LabTechnician(string name, string contact)
-        {
-            Name = Guard.NotNullOrWhiteSpace(name, nameof(name), 100);
-            Contact = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
-        }
+        public Gender Gender { get; set; }
 
-        public void UpdateProfile(string name, string contact)
-        {
-            Name = Guard.NotNullOrWhiteSpace(name, nameof(name), 100);
-            Contact = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
-        }
+        public DateOnly DateOfBirth { get; set; }
+
+        public string Nationality { get; set; }
+
+        public string NationalId { get; set; }
+
+        // Employment
+
+        public string EmployeeId { get; set; }
+
+        public string Laboratory { get; set; }
+
+        public string JobTitle { get; set; }
+
+        public EmploymentStatus EmploymentStatus { get; set; }
+
+        public WorkShift WorkShift { get; set; }
+
+        public DateOnly JoiningDate { get; set; }
+
+        public int YearsOfExperience { get; set; }
+
+        // Contact
+
+        public string PhoneNumber { get; set; } 
+
+        public string? AlternativePhone { get; set; }
+
+        public string Email { get; set; } 
+
+        public string Address { get; set; } 
+
+        public string City { get; set; }
+
+        public string Country { get; set; }
+
+        public string? PostalCode { get; set; }
+
+        // Account
+
+        public string Username { get; set; }
+
+        public bool AllowLogin { get; set; }
+
+        public bool AccountActive { get; set; }
+
+        public bool ReceiveNotifications { get; set; }
+
+        public string? PhotoUrl { get; set; }
     }
 }

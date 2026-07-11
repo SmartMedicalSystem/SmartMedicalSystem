@@ -2,10 +2,9 @@ using Application.Common;
 using Application.DTOs.LabTechnician;
 using Application.Services.Abstraction;
 using AutoMapper;
+using Domain.Entities;
 using Domain.IRepository;
 using Domain.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -22,8 +21,46 @@ namespace Application.Services
 
         public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
         {
-            var entity = new Domain.Entities.LabTechnician(dto.Name, dto.Contact);
+            if (await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId) is not null)
+                throw new Exception("Employee ID already exists.");
+
+            if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
+                throw new Exception("National ID already exists.");
+
+            var entity = new LabTechnician
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Gender = dto.Gender,
+                DateOfBirth = dto.DateOfBirth,
+                Nationality = dto.Nationality,
+                NationalId = dto.NationalId,
+
+                EmployeeId = dto.EmployeeId,
+                Laboratory = dto.Laboratory,
+                JobTitle = dto.JobTitle,
+                EmploymentStatus = dto.EmploymentStatus,
+                WorkShift = dto.WorkShift,
+                JoiningDate = dto.JoiningDate,
+                YearsOfExperience = dto.YearsOfExperience,
+
+                PhoneNumber = dto.PhoneNumber,
+                AlternativePhone = dto.AlternativePhone,
+                Email = dto.Email,
+                Address = dto.Address,
+                City = dto.City,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+
+                Username = dto.Username,
+                AllowLogin = dto.AllowLogin,
+                AccountActive = dto.AccountActive,
+                ReceiveNotifications = dto.ReceiveNotifications,
+                PhotoUrl = dto.PhotoUrl
+            };
+
             await _uow.LabTechnicians.AddAsync(entity);
+
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
@@ -32,8 +69,45 @@ namespace Application.Services
             var entity = await _uow.LabTechnicians.GetByIdAsync(id)
                 ?? throw new NotFoundException("LabTechnician", id);
 
-            entity.UpdateProfile(dto.Name, dto.Contact);
+            var employee = await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId);
+            if (employee != null && employee.Id != id)
+                throw new Exception("Employee ID already exists.");
+
+            var national = await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId);
+            if (national != null && national.Id != id)
+                throw new Exception("National ID already exists.");
+
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.Gender = dto.Gender;
+            entity.DateOfBirth = dto.DateOfBirth;
+            entity.Nationality = dto.Nationality;
+            entity.NationalId = dto.NationalId;
+
+            entity.EmployeeId = dto.EmployeeId;
+            entity.Laboratory = dto.Laboratory;
+            entity.JobTitle = dto.JobTitle;
+            entity.EmploymentStatus = dto.EmploymentStatus;
+            entity.WorkShift = dto.WorkShift;
+            entity.JoiningDate = dto.JoiningDate;
+            entity.YearsOfExperience = dto.YearsOfExperience;
+
+            entity.PhoneNumber = dto.PhoneNumber;
+            entity.AlternativePhone = dto.AlternativePhone;
+            entity.Email = dto.Email;
+            entity.Address = dto.Address;
+            entity.City = dto.City;
+            entity.Country = dto.Country;
+            entity.PostalCode = dto.PostalCode;
+
+            entity.Username = dto.Username;
+            entity.AllowLogin = dto.AllowLogin;
+            entity.AccountActive = dto.AccountActive;
+            entity.ReceiveNotifications = dto.ReceiveNotifications;
+            entity.PhotoUrl = dto.PhotoUrl;
+
             await _uow.LabTechnicians.UpdateAsync(entity);
+
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
@@ -41,21 +115,27 @@ namespace Application.Services
         {
             var entity = await _uow.LabTechnicians.GetByIdAsync(id)
                 ?? throw new NotFoundException("LabTechnician", id);
+
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
         public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(PaginationParams pagination)
         {
-            var page = await _uow.LabTechnicians.GetAllActivePaginatedAsync(pagination);
+            var page = await _uow.LabTechnicians.GetAllPaginatedAsync(pagination);
+
             return PaginatedResult<LabTechnicianReadDto>.Create(
                 _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
-                page.TotalCount, pagination);
+                page.TotalCount,
+                pagination);
         }
 
         public async Task DeleteAsync(int id)
         {
             var exists = await _uow.LabTechnicians.ExistsAsync(id);
-            if (!exists) throw new NotFoundException("LabTechnician", id);
+
+            if (!exists)
+                throw new NotFoundException("LabTechnician", id);
+
             await _uow.LabTechnicians.SoftDeleteAsync(id);
         }
     }
