@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
 using Infrastructure.Context;
@@ -44,10 +45,48 @@ namespace Infrastructure.Repository
                     x.NationalId == nationalId);
         }
 
-        public override async Task<PaginatedResult<LabTechnician>> GetAllPaginatedAsync(PaginationParams pagination)
+        public async Task<PaginatedResult<LabTechnician>> SearchAsync(
+        string? search,
+        string? laboratory,
+        EmploymentStatus? employmentStatus,
+        WorkShift? workShift,
+        DateOnly? joiningDate,
+        PaginationParams pagination)
         {
             var query = _context.LabTechnicians
                 .Where(x => !x.IsDeleted);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim().ToLower();
+
+                query = query.Where(x =>
+                    x.FirstName.ToLower().Contains(search) ||
+                    x.LastName.ToLower().Contains(search) ||
+                    x.EmployeeId.ToLower().Contains(search) ||
+                    x.PhoneNumber.ToLower().Contains(search) ||
+                    x.Email.ToLower().Contains(search));
+            }
+
+            if (!string.IsNullOrWhiteSpace(laboratory))
+            {
+                query = query.Where(x => x.Laboratory == laboratory);
+            }
+
+            if (employmentStatus.HasValue)
+            {
+                query = query.Where(x => x.EmploymentStatus == employmentStatus.Value);
+            }
+
+            if (workShift.HasValue)
+            {
+                query = query.Where(x => x.WorkShift == workShift.Value);
+            }
+
+            if (joiningDate.HasValue)
+            {
+                query = query.Where(x => x.JoiningDate == joiningDate.Value);
+            }
 
             var totalCount = await query.CountAsync();
 

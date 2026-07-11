@@ -21,15 +21,11 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet]
-        [HasPermission(Permissions.ReadLabTechnician)]
+        //[HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
+        [FromQuery] LabTechnicianFilterDto filter)
         {
-            var pagination = new PaginationParams(pageNumber, pageSize);
-
-            var result = await _labTechnicianService.GetAllAsync(pagination);
-
+            var result = await _labTechnicianService.GetAllAsync(filter);
             return Ok(result);
         }
 
@@ -53,7 +49,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [HasPermission(Permissions.UpdateLabTechnician)]
+        //[HasPermission(Permissions.UpdateLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> Update(
             int id,
             [FromBody] LabTechnicianUpdateDto dto)

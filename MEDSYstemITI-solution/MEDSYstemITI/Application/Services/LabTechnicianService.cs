@@ -119,14 +119,20 @@ namespace Application.Services
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(PaginationParams pagination)
+        public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(LabTechnicianFilterDto filter)
         {
-            var page = await _uow.LabTechnicians.GetAllPaginatedAsync(pagination);
+            var page = await _uow.LabTechnicians.SearchAsync(
+                filter.Search,
+                filter.Laboratory,
+                filter.EmploymentStatus,
+                filter.WorkShift,
+                filter.JoiningDate,
+                filter);
 
             return PaginatedResult<LabTechnicianReadDto>.Create(
                 _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
                 page.TotalCount,
-                pagination);
+                filter);
         }
 
         public async Task DeleteAsync(int id)
