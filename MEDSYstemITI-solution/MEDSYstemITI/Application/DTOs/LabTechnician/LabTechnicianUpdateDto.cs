@@ -5,7 +5,6 @@ namespace Application.DTOs.LabTechnician
     public class LabTechnicianUpdateDto
     {
         // Personal Information
-
         public string FirstName { get; set; } = null!;
 
         public string LastName { get; set; } = null!;
@@ -18,10 +17,7 @@ namespace Application.DTOs.LabTechnician
 
         public string NationalId { get; set; } = null!;
 
-        // Employment
-
-        public string EmployeeId { get; set; } = null!;
-
+        // Employment Information
         public string Laboratory { get; set; } = null!;
 
         public string JobTitle { get; set; } = null!;
@@ -35,7 +31,6 @@ namespace Application.DTOs.LabTechnician
         public int YearsOfExperience { get; set; }
 
         // Contact Information
-
         public string PhoneNumber { get; set; } = null!;
 
         public string? AlternativePhone { get; set; }
@@ -51,20 +46,13 @@ namespace Application.DTOs.LabTechnician
         public string? PostalCode { get; set; }
 
         // Account Information
-
         public string Username { get; set; } = null!;
-
-        public string Password { get; set; } = null!;
 
         public bool AllowLogin { get; set; }
 
         public bool AccountActive { get; set; }
 
         public bool ReceiveNotifications { get; set; }
-
-        public bool SendWelcomeEmail { get; set; }
-
-        public bool SendLoginCredentials { get; set; }
 
         public string? PhotoUrl { get; set; }
     }

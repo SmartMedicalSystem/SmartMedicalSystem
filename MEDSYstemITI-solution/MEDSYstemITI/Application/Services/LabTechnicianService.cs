@@ -69,10 +69,6 @@ namespace Application.Services
             var entity = await _uow.LabTechnicians.GetByIdAsync(id)
                 ?? throw new NotFoundException("LabTechnician", id);
 
-            var employee = await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId);
-            if (employee != null && employee.Id != id)
-                throw new Exception("Employee ID already exists.");
-
             var national = await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId);
             if (national != null && national.Id != id)
                 throw new Exception("National ID already exists.");
@@ -84,7 +80,6 @@ namespace Application.Services
             entity.Nationality = dto.Nationality;
             entity.NationalId = dto.NationalId;
 
-            entity.EmployeeId = dto.EmployeeId;
             entity.Laboratory = dto.Laboratory;
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;

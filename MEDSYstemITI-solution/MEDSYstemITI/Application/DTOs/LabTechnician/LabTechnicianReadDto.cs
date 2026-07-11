@@ -55,8 +55,6 @@ namespace Application.DTOs.LabTechnician
 
         public string Username { get; set; } = null!;
 
-        public string Password { get; set; } = null!;
-
         public bool AllowLogin { get; set; }
 
         public bool AccountActive { get; set; }

@@ -70,7 +70,7 @@ namespace Infrastructure.Repository
 
             if (!string.IsNullOrWhiteSpace(laboratory))
             {
-                query = query.Where(x => x.Laboratory == laboratory);
+                query = query.Where(x => x.Laboratory.Contains(laboratory));
             }
 
             if (employmentStatus.HasValue)
