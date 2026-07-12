@@ -10,7 +10,6 @@ using LabTestDto = Application.DTOs.LabTest;
 using TestElementDto = Application.DTOs.TestElement;
 using SessionDto = Application.DTOs.Session;
 using RequestLabsDto = Application.DTOs.RequestLabs;
-using NotificationDto = Application.DTOs.Notification;
 using LabTechnicianDto = Application.DTOs.LabTechnician;
 using PatientResultDto = Application.DTOs.PatientResult;
 using PatientResultElementDto = Application.DTOs.PatientResultElement;
@@ -53,8 +52,7 @@ namespace Application.Mapping
             CreateMap<DomainEntities.RequestLabs, RequestLabsDto.RequestLabsReadDto>()
                 .ForMember(d => d.LabTestIds, opt => opt.MapFrom(s => s.LabTests.Select(lt => lt.Id).ToList()));
 
-            CreateMap<DomainEntities.Notification, NotificationDto.NotificationReadDto>();
-
+       
             CreateMap<DomainEntities.LabTechnician, LabTechnicianDto.LabTechnicianReadDto>();
 
             CreateMap<DomainEntities.PatientResult, PatientResultDto.PatientResultReadDto>();

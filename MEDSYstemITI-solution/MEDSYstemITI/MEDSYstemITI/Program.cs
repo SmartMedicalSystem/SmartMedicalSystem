@@ -2,6 +2,7 @@ using Infrastructure.DependenciesInjection;
 using Application.DependencyInjection;
 using Infrastructure.DataSeed;
 using MEDSYstemITI.Middleware;
+using MEDSYstemITI.Hubs;
 
 namespace MEDSYstemITI
 {
@@ -30,6 +31,7 @@ namespace MEDSYstemITI
 
             builder.Services.AddinfrastructreServices(builder.Configuration);
             builder.Services.AddApplicationServices();
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
@@ -52,6 +54,8 @@ namespace MEDSYstemITI
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.MapHub<NotificationHub>("/notificationHub");
+
 
             app.MapControllers();
 

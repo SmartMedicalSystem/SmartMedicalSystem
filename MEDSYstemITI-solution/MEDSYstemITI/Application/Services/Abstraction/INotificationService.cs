@@ -1,15 +1,15 @@
-using Application.DTOs.Notification;
-using Domain.Models;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Application.Services.Abstraction
+namespace Domain.IRepository
 {
     public interface INotificationService
     {
-        Task<NotificationReadDto> CreateAsync(NotificationCreateDto dto);
-        Task<IEnumerable<NotificationReadDto>> GetUnreadByUserAsync(int userId);
-        Task<PaginatedResult<NotificationReadDto>> GetByUserAsync(int userId, PaginationParams pagination);
-        Task MarkAsReadAsync(int id);
+        Task BroadcastAsync(string title, string message);
+
+        Task SendToRoleAsync(string role, string title, string message);
+
+        Task SendToUserAsync(int userId, string message);
     }
 }

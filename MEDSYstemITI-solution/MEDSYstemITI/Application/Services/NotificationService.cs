@@ -1,57 +1,55 @@
-using Application.Common;
-using Application.DTOs.Notification;
-using Application.Services.Abstraction;
-using AutoMapper;
+﻿using Domain.Entities;
 using Domain.IRepository;
-using Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MEDSYstemITI.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
-namespace Application.Services
+namespace MEDSYstemITI.Service
 {
     public class NotificationService : INotificationService
     {
+        private readonly IHubContext<NotificationHub> _hub;
         private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
 
-        public NotificationService(IUnitOfWork uow, IMapper mapper)
+        public NotificationService(
+            IHubContext<NotificationHub> hub,
+            IUnitOfWork uow)
         {
+            _hub = hub;
             _uow = uow;
-            _mapper = mapper;
         }
 
-        public async Task<NotificationReadDto> CreateAsync(NotificationCreateDto dto)
+        public async Task BroadcastAsync(string title, string message)
         {
-            var entity = new Domain.Entities.Notification(dto.UserId, dto.Message, DateTime.UtcNow);
-            await _uow.Notifications.AddAsync(entity);
-            return _mapper.Map<NotificationReadDto>(entity);
+            await _hub.Clients.All.SendAsync(
+                "ReceiveNotification",
+                title,
+                message);
         }
 
-        public async Task<IEnumerable<NotificationReadDto>> GetUnreadByUserAsync(int userId)
+        public async Task SendToRoleAsync(string role, string title, string message)
         {
-            var items = await _uow.Notifications.GetUnreadByUserAsync(userId);
-            return _mapper.Map<IEnumerable<NotificationReadDto>>(items);
+            await _hub.Clients.Group(role).SendAsync(
+                "ReceiveNotification",
+                title,
+                message);
         }
 
-        public async Task<PaginatedResult<NotificationReadDto>> GetByUserAsync(int userId, PaginationParams pagination)
+        public async Task SendToUserAsync(int userId, string message)
         {
-            var page = await _uow.Notifications.GetByUserPaginatedAsync(userId, pagination);
-            return PaginatedResult<NotificationReadDto>.Create(
-                _mapper.Map<IEnumerable<NotificationReadDto>>(page.Items),
-                page.TotalCount, pagination);
-        }
+            // Save notification in database
+            var notification = new Notification(
+                userId,
+                message,
+                DateTime.UtcNow);
 
-        public async Task MarkAsReadAsync(int id)
-        {
-            // NOTE: INotificationRepo already exposes a MarkAsReadAsync(id) at the
-            // repository level; we call it directly here to avoid a redundant
-            // GetById + Update round trip. The entity's own MarkAsRead() method
-            // (Domain/Entities/Notification.cs) is what the repository implementation
-            // should call internally to keep the invariant in one place.
-            var exists = await _uow.Notifications.ExistsAsync(id);
-            if (!exists) throw new NotFoundException("Notification", id);
-            await _uow.Notifications.MarkAsReadAsync(id);
+            await _uow.Notifications.AddAsync(notification);
+
+            // Send notification via SignalR
+            await _hub.Clients.User(userId.ToString())
+                .SendAsync(
+                    "ReceiveNotification",
+                    notification.Message,
+                    notification.SentAt);
         }
     }
 }
