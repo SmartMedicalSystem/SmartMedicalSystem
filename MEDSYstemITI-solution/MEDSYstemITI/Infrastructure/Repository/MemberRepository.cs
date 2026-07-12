@@ -12,26 +12,28 @@ namespace Infrastructure.Repository
     /// for account operations and reads permissions straight from the
     /// RolePermissions/Permissions tables via the ApplicationDbContext.
     /// </summary>
-    public class MemberRepository : IMemberRepo
+    /// 
+
+    public class MemberRepo : IMemberRepo
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
 
-        public MemberRepository(
+        public MemberRepo(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
-            ApplicationDbContext context)
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _context = context;
+            _dbContext = dbContext;
         }
 
         public async Task<ApplicationUser?> FindByUsernameOrEmailAsync(string usernameOrEmail)
         {
             return await _userManager.FindByNameAsync(usernameOrEmail)
-                ?? await _userManager.FindByEmailAsync(usernameOrEmail);
+                   ?? await _userManager.FindByEmailAsync(usernameOrEmail);
         }
 
         public async Task<ApplicationUser?> IsValidUsernameAsync(string username)
@@ -44,55 +46,90 @@ namespace Infrastructure.Repository
             return await _userManager.FindByEmailAsync(email);
         }
 
-        public async Task<ApplicationUser?> IsValidPasswordAsync(string password, ApplicationUser user)
+        public async Task<ApplicationUser?> IsValidPasswordAsync(
+            string password,
+            ApplicationUser user)
         {
-            var isValid = await _userManager.CheckPasswordAsync(user, password);
-            return isValid ? user : null;
+            return await _userManager.CheckPasswordAsync(user, password)
+                ? user
+                : null;
         }
 
-        public async Task<IdentityResult> RegisterAsync(ApplicationUser applicationUser, string password)
+        public async Task<IdentityResult> RegisterAsync(
+            ApplicationUser applicationUser,
+            string password)
         {
             return await _userManager.CreateAsync(applicationUser, password);
         }
 
-        public async Task AddRoleAsync(ApplicationUser user, string roleName)
+        public async Task AddRoleAsync(
+            ApplicationUser user,
+            string roleName)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
-                throw new ArgumentException($"Role '{roleName}' does not exist.");
+                throw new Exception($"Role '{roleName}' does not exist.");
 
-            await _userManager.AddToRoleAsync(user, roleName);
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception(
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
         }
 
         public async Task<string?> GetRoleAsync(ApplicationUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
+
             return roles.FirstOrDefault();
         }
 
         public async Task<IEnumerable<string>> GetPermissionsAsync(string roleName)
         {
-            var role = await _roleManager.FindByNameAsync(roleName);
-            if (role is null)
+            var role = await _roleManager.Roles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Name == roleName);
+
+            if (role == null)
                 return Enumerable.Empty<string>();
 
-            return await _context.RolePermissions
+            return await _dbContext.RolePermissions
+                .AsNoTracking()
                 .Where(rp => rp.RoleId == role.Id)
-                .Join(_context.Permissions,
-                    rp => rp.PermissionId,
-                    p => p.Id,
-                    (rp, p) => p.Name)
+                .Select(rp => rp.permission.Name)
                 .ToListAsync();
         }
 
         public async Task UpdateAsync(ApplicationUser user)
         {
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception(
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
         }
 
-        public string GenerateRefreshToken()
+
+        public async Task<ApplicationUser?> GetByRefreshTokenAsync(string refreshToken)
         {
-            var randomBytes = RandomNumberGenerator.GetBytes(64);
-            return Convert.ToBase64String(randomBytes);
+            return await _userManager.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        }
+
+        public async Task<ApplicationUser?> ChangePasswordAsync(ApplicationUser user, string OldPassword, string newPassword)
+        {
+            var result = await _userManager.ChangePasswordAsync(user, OldPassword, newPassword);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception(
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+
+            return user;
+            }
         }
     }
-}

@@ -19,7 +19,6 @@ public class TokenService : ITokenService
     }
 
     public Task<TokenResponseDto> CreateTokenAsync(
-        int userId,
         string userName,
         string email,
         string role,
@@ -27,7 +26,6 @@ public class TokenService : ITokenService
     {
         var claims = new List<Claim>
     {
-        new(ClaimTypes.NameIdentifier, userId.ToString()),
         new(ClaimTypes.Name, userName),
         new(ClaimTypes.Email, email),
         new(ClaimTypes.Role, role),
@@ -69,15 +67,10 @@ public class TokenService : ITokenService
                 });
     }
 
-    public Task<TokenResponseDto> CreateTokenAsync(
-        int userId,
-        string userName,
-        string email,
-        IList<string> roles)
+    public Task<TokenResponseDto> CreateTokenAsync(string userName, string email, IList<string> roles)
     {
         var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, userId.ToString()),
                 new(ClaimTypes.Name, userName),
                 new(ClaimTypes.Email, email),
                 new(JwtRegisteredClaimNames.Email, email),
@@ -117,4 +110,16 @@ public class TokenService : ITokenService
                 ExpirationDate = expirationDate
             });
     }
+
+    public Task<TokenResponseDto> GenerateRefreshToken()
+    {
+        return Task.FromResult(
+            new TokenResponseDto
+            {
+                AccessToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
+                ExpirationDate = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes)
+            });
+    }
+
+
 }
