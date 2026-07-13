@@ -19,6 +19,6 @@ namespace Application.DTOs.Patient
 
         public string Address { get; set; } = string.Empty;
 
-        public BloodType BloodType { get; set; }s
+        public BloodType BloodType { get; set; }
     }
 }
