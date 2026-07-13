@@ -1,19 +1,17 @@
-﻿using Application.Common;
-using Application.DTOs.Auth;
+﻿using Application.DTOs.Auth;
+using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using Domain.Identity;
 using Domain.IRepository;
 
-namespace Application.Services.Auth;
+namespace Application.Services;
 
 public class AuthService : IAuthService
 {
     private readonly IMemberRepo _memberRepo;
     private readonly ITokenService _tokenService;
 
-    public AuthService(
-        IMemberRepo memberRepo,
-        ITokenService tokenService)
+    public AuthService(IMemberRepo memberRepo,ITokenService tokenService)
     {
         _memberRepo = memberRepo;
         _tokenService = tokenService;
@@ -22,10 +20,10 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request)
     {
         if (await _memberRepo.IsValidUsernameAsync(request.Username) != null)
-            throw new AuthenticationException("Username already exists.");
+            throw new Exception("Username already exists.");
 
         if (await _memberRepo.IsValidEmailAsync(request.Email) != null)
-            throw new AuthenticationException("Email already exists.");
+            throw new Exception("Email already exists.");
 
         var user = new ApplicationUser
         {
@@ -41,7 +39,7 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            throw new AuthenticationException(
+            throw new Exception(
                 string.Join(", ",
                 result.Errors.Select(e => e.Description)));
         }
@@ -63,7 +61,7 @@ public class AuthService : IAuthService
                 request.UserNameOrEmail);
 
         if (user is null)
-            throw new AuthenticationException("Invalid username or email.");
+            throw new Exception("Invalid username or email.");
 
         var validUser =
             await _memberRepo.IsValidPasswordAsync(
@@ -71,13 +69,13 @@ public class AuthService : IAuthService
                 user);
 
         if (validUser is null)
-            throw new AuthenticationException("Invalid password.");
+            throw new Exception("Invalid password.");
 
         var role =
             await _memberRepo.GetRoleAsync(user);
 
         if (string.IsNullOrWhiteSpace(role))
-            throw new AuthenticationException("User has no assigned role.");
+            throw new Exception("User has no assigned role.");
 
         return await CreateAuthResponseAsync(
             user,
@@ -85,30 +83,27 @@ public class AuthService : IAuthService
             "Login successful");
     }
 
-    private async Task<AuthResponseDto> CreateAuthResponseAsync(
-        ApplicationUser user,
-        string role,
-        string message)
+    private async Task<AuthResponseDto> CreateAuthResponseAsync(ApplicationUser user, string role, string message)
     {
         if (string.IsNullOrWhiteSpace(user.UserName))
-            throw new AuthenticationException("Username is missing.");
+            throw new Exception("Username is missing.");
 
         if (string.IsNullOrWhiteSpace(user.Email))
-            throw new AuthenticationException("Email is missing.");
+            throw new Exception("Email is missing.");
 
         var permissions =
             await _memberRepo.GetPermissionsAsync(role);
 
+
         var token =
             await _tokenService.CreateTokenAsync(
-                user.Id,
                 user.UserName,
                 user.Email,
                 role,
                 permissions);
 
         var refreshToken =
-            _memberRepo.GenerateRefreshToken();
+            _tokenService.GenerateRefreshToken().ToString();
 
         user.RefreshToken = refreshToken;
 
@@ -122,5 +117,49 @@ public class AuthService : IAuthService
             Expiration = token.ExpirationDate,
             RefreshToken = refreshToken
         };
+    }
+    public async Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request)
+    {
+        var user = await _memberRepo.GetByRefreshTokenAsync(request.RefreshToken);
+
+        if (user is null)
+            throw new Exception("Invalid refresh token.");
+
+        if (string.IsNullOrWhiteSpace(user.RefreshToken))
+            throw new Exception("Refresh token is missing.");
+
+        // If you store an expiration date, validate it here.
+        // Example:
+        // if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        //     throw new Exception("Refresh token has expired.");
+
+        var role = await _memberRepo.GetRoleAsync(user);
+
+        if (string.IsNullOrWhiteSpace(role))
+            return new AuthResponseDto
+            {
+                IsSuccess = false,
+                Message = "User has no assigned role."
+            };
+
+        return await CreateAuthResponseAsync(
+            user,
+            role,
+            "Token refreshed successfully");
+    }
+
+    public async Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request)
+    {
+        var user = await _memberRepo.FindByUsernameOrEmailAsync(request.CurrentPassword);
+
+        if (user is null)
+            throw new Exception("User not found.");
+
+        var changedUser = await _memberRepo.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+
+        return await CreateAuthResponseAsync(
+            changedUser,
+            await _memberRepo.GetRoleAsync(changedUser),
+            "Password changed successfully");
     }
 }

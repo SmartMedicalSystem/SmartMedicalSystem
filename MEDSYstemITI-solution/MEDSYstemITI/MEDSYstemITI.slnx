@@ -8,7 +8,7 @@
   <Folder Name="/infrastructure/">
     <Project Path="Infrastructure/Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/presentaionAPI/">
+  <Folder Name="/presentationAPI/">
     <Project Path="MEDSYstemITI/MEDSYstemITI.csproj" />
   </Folder>
 </Solution>
