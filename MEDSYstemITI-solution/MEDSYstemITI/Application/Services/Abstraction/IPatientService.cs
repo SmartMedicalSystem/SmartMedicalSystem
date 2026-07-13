@@ -7,9 +7,10 @@ namespace Application.Services.Abstraction
     public interface IPatientService
     {
         Task<PatientReadDto> CreateAsync(PatientCreateDto dto);
-        Task<PatientReadDto> UpdateAsync(int id, PatientUpdateDto dto);
-        Task<PatientReadDto> GetByIdAsync(int id);
+        Task<PatientReadDto> UpdateAsync(string ssn, PatientUpdateDto dto);
         Task<PaginatedResult<PatientReadDto>> GetAllAsync(PaginationParams pagination);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(string ssn);
+
+        Task<PatientReadDto> GetBySSNAsync(string ssn);
     }
 }

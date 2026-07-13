@@ -4,5 +4,6 @@ namespace Application.DTOs.LabTechnician
     {
         public string Name { get; set; } = null!;
         public string Contact { get; set; } = null!;
+        public int NationalId { get; set; }
     }
 }

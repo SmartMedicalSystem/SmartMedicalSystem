@@ -22,25 +22,19 @@ namespace Application.Services
 
         public async Task<PatientReadDto> CreateAsync(PatientCreateDto dto)
         {
-            var entity = new Domain.Entities.Patient(dto.FirstName, dto.LastName,dto.NationalId, dto.DateOfBirth, dto.Gender, dto.MobileNumber, dto.Address, dto.BloodType);
-            await _uow.Patients.AddAsync(entity);
+            var nationalId = int.TryParse(dto.NationalId, out var nid) ? nid : throw new System.ArgumentException("Invalid NationalId", nameof(dto.NationalId));
+            var entity = new Domain.Entities.Patient(dto.FirstName, dto.LastName, nationalId, dto.DateOfBirth, dto.Gender, dto.MobileNumber, dto.Address, dto.BloodType);
+            await _uow.PersonGeneric.AddPerson(dto.NationalId, entity);
             return _mapper.Map<PatientReadDto>(entity);
         }
 
-        public async Task<PatientReadDto> UpdateAsync(int id, PatientUpdateDto dto)
+        public async Task<PatientReadDto> UpdateAsync(string ssn, PatientUpdateDto dto)
         {
-            var entity = await _uow.Patients.GetByIdAsync(id)
-                ?? throw new NotFoundException("Patient", id);
+            var entity = await _uow.PersonGeneric.FindBySSN(ssn) as Domain.Entities.Patient
+                ?? throw new NotFoundException("Patient", ssn);
 
             entity.UpdateProfile(dto.FirstName, dto.LastName, dto.NationalId, dto.DateOfBirth, dto.Gender, dto.MobileNumber, dto.Address, dto.BloodType);
             await _uow.Patients.UpdateAsync(entity);
-            return _mapper.Map<PatientReadDto>(entity);
-        }
-
-        public async Task<PatientReadDto> GetByIdAsync(int id)
-        {
-            var entity = await _uow.Patients.GetByIdAsync(id)
-                ?? throw new NotFoundException("Patient", id);
             return _mapper.Map<PatientReadDto>(entity);
         }
 
@@ -52,11 +46,20 @@ namespace Application.Services
                 page.TotalCount, pagination);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string ssn)
         {
-            var exists = await _uow.Patients.ExistsAsync(id);
-            if (!exists) throw new NotFoundException("Patient", id);
-            await _uow.Patients.SoftDeleteAsync(id);
+            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+                ?? throw new NotFoundException("Patient", ssn);
+
+            await _uow.Patients.SoftDeleteAsync(person.Id);
+        }
+
+        public async Task<PatientReadDto> GetBySSNAsync(string ssn)
+        {
+            
+            var entity = await _uow.PersonGeneric.FindBySSN(ssn) as Domain.Entities.Patient
+                ?? throw new NotFoundException("Patient", ssn);
+            return _mapper.Map<PatientReadDto>(entity);
         }
     }
 }

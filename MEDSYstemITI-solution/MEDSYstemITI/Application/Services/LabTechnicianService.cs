@@ -22,25 +22,29 @@ namespace Application.Services
 
         public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
         {
-            var entity = new Domain.Entities.LabTechnician(dto.Name, dto.Contact);
-            await _uow.LabTechnicians.AddAsync(entity);
+            var entity = new Domain.Entities.LabTechnician(dto.Name, dto.Contact, dto.NationalId);
+            await _uow.PersonGeneric.AddPerson(dto.NationalId.ToString(), entity);
+            await _uow.SaveChangesAsync();
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> UpdateAsync(int id, LabTechnicianUpdateDto dto)
+        public async Task<LabTechnicianReadDto> UpdateAsync(string ssn, LabTechnicianUpdateDto dto)
         {
-            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
-                ?? throw new NotFoundException("LabTechnician", id);
+            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+                ?? throw new NotFoundException("LabTechnician", ssn);
+
+            if (person is not Domain.Entities.LabTechnician entity)
+                throw new NotFoundException("LabTechnician", ssn);
 
             entity.UpdateProfile(dto.Name, dto.Contact);
             await _uow.LabTechnicians.UpdateAsync(entity);
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> GetByIdAsync(int id)
+        public async Task<LabTechnicianReadDto> GetBySSNAsync(string ssn)
         {
-            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
-                ?? throw new NotFoundException("LabTechnician", id);
+            var entity = await _uow.PersonGeneric.FindBySSN(ssn) 
+                ?? throw new NotFoundException("LabTechnician", ssn);
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
@@ -52,11 +56,16 @@ namespace Application.Services
                 page.TotalCount, pagination);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string ssn)
         {
-            var exists = await _uow.LabTechnicians.ExistsAsync(id);
-            if (!exists) throw new NotFoundException("LabTechnician", id);
-            await _uow.LabTechnicians.SoftDeleteAsync(id);
+            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+                ?? throw new NotFoundException("LabTechnician", ssn);
+
+            await _uow.LabTechnicians.SoftDeleteAsync(person.Id);
         }
+
+
+
+      
     }
 }

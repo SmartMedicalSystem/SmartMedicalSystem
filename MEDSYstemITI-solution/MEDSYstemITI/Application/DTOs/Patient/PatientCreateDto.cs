@@ -5,11 +5,12 @@ namespace Application.DTOs.Patient
 {
     public class PatientCreateDto                          
     {
+
         public string FirstName { get; set; } = string.Empty;
 
         public string LastName { get; set; } = string.Empty;
 
-        public int NationalId { get; set; }
+        public string NationalId { get; set; }
 
         public DateTime DateOfBirth { get; set; }
 
