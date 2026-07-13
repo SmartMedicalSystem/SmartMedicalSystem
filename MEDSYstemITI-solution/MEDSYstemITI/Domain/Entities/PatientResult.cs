@@ -6,17 +6,17 @@ namespace Domain.Entities
     public class PatientResult : BaseEntity
     {
         // FKs from Patient, Session and LabTest
-        public int PatientId { get; private set; }
+        public int PatientId { get;  set; }
 
-        public int SessionId { get; private set; }
+        public int SessionId { get;  set; }
 
-        public int LabTestId { get; private set; }
+        public int LabTestId { get;  set; }
 
-        public string AIClassifiedReport { get; private set; } = string.Empty;
+        public string AIClassifiedReport { get;  set; } = string.Empty;
 
-        public string AISuggestion { get; private set; } = string.Empty;
+        public string AISuggestion { get;  set; } = string.Empty;
 
-        public string Summary { get; private set; } = string.Empty;
+        public string Summary { get;  set; } = string.Empty;
 
         // Navigation Properties
         public Patient Patient { get; set; } = null!;

@@ -6,11 +6,11 @@ namespace Domain.Entities
 {
     public class Notification : BaseEntity
     {
-        public int UserId { get; private set; }
+        public int UserId { get;  set; }
 
-        public string Message { get; private set; } = null!;
+        public string Message { get;  set; } = null!;
 
-        public DateTime SentAt { get; private set; }
+        public DateTime SentAt { get;  set; }
 
         public bool IsRead { get;  set; }
 

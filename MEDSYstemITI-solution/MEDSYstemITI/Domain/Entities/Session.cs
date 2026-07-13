@@ -5,15 +5,15 @@ namespace Domain.Entities
 {
     public class Session : BaseEntity
     {
-        public int PatientId { get; private set; }
+        public int PatientId { get;  set; }
 
-        public int DoctorId { get; private set; }
+        public int DoctorId { get;  set; }
 
-        public int DeptId { get; private set; }
+        public int DeptId { get;  set; }
 
-        public DateTime SessionDate { get; private set; }
+        public DateTime SessionDate { get;  set; }
 
-        public string? Notes { get; private set; }
+        public string? Notes { get;  set; }
 
         // Navigation Properties
         public Patient Patient { get; set; } = null!;

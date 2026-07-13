@@ -10,6 +10,8 @@ namespace Application.Services.Abstraction
         Task<DoctorReadDto> UpdateAsync(int id, DoctorUpdateDto dto);
         Task<DoctorReadDto> GetByIdAsync(int id);
         Task<PaginatedResult<DoctorReadDto>> GetByDepartmentAsync(int departmentId, PaginationParams pagination);
+        
+        Task<PaginatedResult<DoctorReadDto>> GetAllAsync(PaginationParams pagination);
         Task DeleteAsync(int id);
     }
 }

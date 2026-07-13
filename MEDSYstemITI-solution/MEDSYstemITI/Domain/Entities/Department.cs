@@ -5,11 +5,11 @@ namespace Domain.Entities
 {
     public class Department : BaseEntity
     {
-        public string Name { get; private set; } = null!;
+        public string Name { get;  set; } = null!;
 
-        public string DepartmentMangager { get; private set; } = null!; // spelling kept exactly as in the source entity
+        public string DepartmentMangager { get;  set; } = null!; // spelling kept exactly as in the source entity
 
-        public int? DoctorId { get; private set; }
+        public int? DoctorId { get;  set; }
         public Doctor? Doctor { get; set; }
 
         public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();

@@ -4,13 +4,13 @@ namespace Domain.Entities
 {
     public class PatientResultElement : BaseEntity
     {
-        public int PatientResultId { get; private set; }
+        public int PatientResultId { get;  set; }
 
-        public int TestElementId { get; private set; }
+        public int TestElementId { get;  set; }
 
-        public double Value { get; private set; }
+        public double Value { get;  set; }
 
-        public int TechId { get; private set; }
+        public int TechId { get;  set; }
 
         // Navigation Properties
         public PatientResult patientResult { get; set; } = null!; // naming kept exactly as in the source entity
