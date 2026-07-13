@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Domain.Common;
+using Domain.Entities.Baseperson;
 
 namespace Domain.Entities
 {
-    public class Patient : BaseEntity
+    public class Patient : BasePerson
     {
         // Now exposed with public getters (readable by mapping/services) while
         // keeping setters private so the only way to change them is through the

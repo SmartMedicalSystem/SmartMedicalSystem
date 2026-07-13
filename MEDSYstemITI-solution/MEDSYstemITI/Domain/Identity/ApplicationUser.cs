@@ -11,7 +11,7 @@ namespace Domain.Identity
     public class ApplicationUser : IdentityUser<int>
     {
         public string RefreshToken { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
-        public string? SSN { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
+
     }
 }

@@ -8,5 +8,6 @@ namespace Domain.Entities.Baseperson
     // which is also used by non-person entities (LabTest, Session, etc.).
     public abstract class BasePerson : BaseEntity
     {
+        public string EncryptedSSN { get; set; }
     }
 }
