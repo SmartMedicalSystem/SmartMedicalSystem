@@ -4,9 +4,9 @@ namespace Domain.Entities
 {
     public class LabTechnician : BaseEntity
     {
-        public string Name { get; private set; } = null!;
+        public string Name { get;  set; } = null!;
 
-        public string Contact { get; private set; } = null!;
+        public string Contact { get;  set; } = null!;
 
         private LabTechnician() { }
 

@@ -5,13 +5,13 @@ namespace Domain.Entities
 {
     public class TestElement : BaseEntity
     {
-        public string ElementName { get; private set; } = null!;
+        public string ElementName { get;  set; } = null!;
 
-        public string Unit { get; private set; } = null!;
+        public string Unit { get;  set; } = null!;
 
-        public float NormalMin { get; private set; }
+        public float NormalMin { get;  set; }
 
-        public float NormalMax { get; private set; }
+        public float NormalMax { get;  set; }
 
         public ICollection<LabTestElement> LabTestElements { get; } = new List<LabTestElement>();
 

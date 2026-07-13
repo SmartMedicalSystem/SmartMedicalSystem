@@ -36,7 +36,7 @@ namespace Application.Services
             var entity = await _uow.Doctors.GetByIdAsync(id)
                 ?? throw new NotFoundException("Doctor", id);
 
-            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Contact, dto.Gender);
+            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.Email, dto.MobileNumber, dto.Address);
             await _uow.Doctors.UpdateAsync(entity);
             return _mapper.Map<DoctorReadDto>(entity);
         }
@@ -61,6 +61,14 @@ namespace Application.Services
             var exists = await _uow.Doctors.ExistsAsync(id);
             if (!exists) throw new NotFoundException("Doctor", id);
             await _uow.Doctors.SoftDeleteAsync(id);
+        }
+
+        public async Task<PaginatedResult<DoctorReadDto>> GetAllAsync(PaginationParams pagination)
+        {
+            var page = await _uow.Doctors.GetAllActivePaginatedAsync(pagination);
+            return PaginatedResult<DoctorReadDto>.Create(
+                _mapper.Map<IEnumerable<DoctorReadDto>>(page.Items),
+                page.TotalCount, pagination);
         }
     }
 }

@@ -7,13 +7,13 @@ namespace Domain.Entities
 {
     public class RequestLabs : BaseEntity
     {
-        public int SessionId { get; private set; }
+        public int SessionId { get;  set; }
 
-        public DateTime RequestedAt { get; private set; }
+        public DateTime RequestedAt { get;  set; }
 
-        public LabRequestStatus Status { get; private set; }
+        public LabRequestStatus Status { get;  set; }
 
-        public virtual Session Session { get; private set; } = null!;
+        public virtual Session Session { get;  set; } = null!;
 
         public ICollection<LabTest> LabTests { get; set; } = new List<LabTest>();
 

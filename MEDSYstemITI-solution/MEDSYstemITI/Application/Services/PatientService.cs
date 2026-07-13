@@ -22,7 +22,7 @@ namespace Application.Services
 
         public async Task<PatientReadDto> CreateAsync(PatientCreateDto dto)
         {
-            var entity = new Domain.Entities.Patient(dto.FirstName, dto.LastName, dto.DateOfBirth);
+            var entity = new Domain.Entities.Patient(dto.FirstName, dto.LastName,dto.NationalId, dto.DateOfBirth, dto.Gender, dto.MobileNumber, dto.Address, dto.BloodType);
             await _uow.Patients.AddAsync(entity);
             return _mapper.Map<PatientReadDto>(entity);
         }
@@ -32,7 +32,7 @@ namespace Application.Services
             var entity = await _uow.Patients.GetByIdAsync(id)
                 ?? throw new NotFoundException("Patient", id);
 
-            entity.UpdateProfile(dto.FirstName, dto.LastName, dto.DateOfBirth);
+            entity.UpdateProfile(dto.FirstName, dto.LastName, dto.NationalId, dto.DateOfBirth, dto.Gender, dto.MobileNumber, dto.Address, dto.BloodType);
             await _uow.Patients.UpdateAsync(entity);
             return _mapper.Map<PatientReadDto>(entity);
         }
