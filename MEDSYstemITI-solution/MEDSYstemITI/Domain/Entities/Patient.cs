@@ -40,7 +40,7 @@ namespace Domain.Entities
         {
             FirstName = Guard.NotNullOrWhiteSpace(firstName, nameof(firstName), 100);
             LastName = Guard.NotNullOrWhiteSpace(lastName, nameof(lastName), 100);
-            NationalId = nationalId;
+            EncryptedSSN = nationalId.ToString(); // Assuming nationalId is the SSN
             DateOfBirth = Guard.NotInFuture(
                 Guard.NotDefault(dateOfBirth, nameof(dateOfBirth)),
                 nameof(dateOfBirth));
@@ -68,7 +68,7 @@ namespace Domain.Entities
         {
             FirstName = Guard.NotNullOrWhiteSpace(firstName, nameof(firstName), 100);
             LastName = Guard.NotNullOrWhiteSpace(lastName, nameof(lastName), 100);
-            NationalId = nationalId;
+            EncryptedSSN = nationalId.ToString(); // Assuming nationalId is the SSN
 
             DateOfBirth = Guard.NotInFuture(
                 Guard.NotDefault(dateOfBirth, nameof(dateOfBirth)),
