@@ -30,7 +30,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [HasPermission(Permissions.ReadLabTechnician)]
+        //[HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> GetById(int id)
         {
             var result = await _labTechnicianService.GetByIdAsync(id);
@@ -41,7 +41,7 @@ namespace MEDSYstemITI.Controllers
         [HttpPost]
         //[HasPermission(Permissions.CreateLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> Create(
-            [FromBody] LabTechnicianCreateDto dto)
+            [FromForm] LabTechnicianCreateDto dto)
         {
             var result = await _labTechnicianService.CreateAsync(dto);
 
@@ -52,7 +52,7 @@ namespace MEDSYstemITI.Controllers
         //[HasPermission(Permissions.UpdateLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> Update(
             int id,
-            [FromBody] LabTechnicianUpdateDto dto)
+            [FromForm] LabTechnicianUpdateDto dto)
         {
             var result = await _labTechnicianService.UpdateAsync(id, dto);
 
@@ -60,7 +60,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [HasPermission(Permissions.DeleteLabTechnician)]
+        //[HasPermission(Permissions.DeleteLabTechnician)]
         public async Task<IActionResult> Delete(int id)
         {
             await _labTechnicianService.DeleteAsync(id);

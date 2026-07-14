@@ -1,8 +1,10 @@
-using Infrastructure.DependenciesInjection;
 using Application.DependencyInjection;
+using Domain.IRepository;
 using Infrastructure.DataSeed;
-using MEDSYstemITI.Middleware;
+using Infrastructure.DependenciesInjection;
+using Infrastructure.Services;
 using MEDSYstemITI.Hubs;
+using MEDSYstemITI.Middleware;
 
 namespace MEDSYstemITI
 {
@@ -32,6 +34,7 @@ namespace MEDSYstemITI
             builder.Services.AddinfrastructreServices(builder.Configuration);
             builder.Services.AddApplicationServices();
             builder.Services.AddSignalR();
+            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
             var app = builder.Build();
 
@@ -52,6 +55,7 @@ namespace MEDSYstemITI
 
             app.UseCors("DefaultCorsPolicy");
 
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapHub<NotificationHub>("/notificationHub");

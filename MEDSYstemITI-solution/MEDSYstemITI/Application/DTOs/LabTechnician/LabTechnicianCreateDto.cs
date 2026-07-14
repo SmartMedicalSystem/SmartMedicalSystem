@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.DTOs.LabTechnician
 {
@@ -61,6 +62,6 @@ namespace Application.DTOs.LabTechnician
 
         public bool SendLoginCredentials { get; set; }
 
-        public string? PhotoUrl { get; set; }
+        public IFormFile? PhotoUrl { get; set; }
     }
 }
