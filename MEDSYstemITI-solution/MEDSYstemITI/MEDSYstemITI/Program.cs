@@ -2,6 +2,7 @@ using Infrastructure.DependenciesInjection;
 using Application.DependencyInjection;
 using Infrastructure.DataSeed;
 using MEDSYstemITI.Middleware;
+using MEDSYstemITI.Hubs;
 
 namespace MEDSYstemITI
 {
@@ -11,11 +12,12 @@ namespace MEDSYstemITI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            // Add services
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+
+            // Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             builder.Services.AddCors(options =>
             {
@@ -29,13 +31,19 @@ namespace MEDSYstemITI
 
             builder.Services.AddinfrastructreServices(builder.Configuration);
             builder.Services.AddApplicationServices();
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure HTTP pipeline
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MEDSYstemITI API V1");
+                    c.RoutePrefix = "swagger"; 
+                });
             }
 
             app.UseGlobalExceptionHandling();
@@ -46,10 +54,11 @@ namespace MEDSYstemITI
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.MapHub<NotificationHub>("/notificationHub");
+
 
             app.MapControllers();
 
-            // Applies pending migrations and seeds roles/permissions/admin user.
             using (var scope = app.Services.CreateScope())
             {
                 await DbInitializer.SeedAsync(scope.ServiceProvider);

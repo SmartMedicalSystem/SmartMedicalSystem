@@ -10,7 +10,7 @@ namespace MEDSYstemITI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     public class LabTechniciansController : ControllerBase
     {
         private readonly ILabTechnicianService _labTechnicianService;
@@ -21,11 +21,11 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet]
-        [HasPermission(Permissions.ReadLabTechnician)]
+        //[HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
-            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] LabTechnicianFilterDto filter)
         {
-            var result = await _labTechnicianService.GetAllAsync(new PaginationParams(pageNumber, pageSize));
+            var result = await _labTechnicianService.GetAllAsync(filter);
             return Ok(result);
         }
 
@@ -38,8 +38,9 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPost]
-        [HasPermission(Permissions.CreateLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> Create([FromBody] LabTechnicianCreateDto dto)
+        //[HasPermission(Permissions.CreateLabTechnician)]
+        public async Task<ActionResult<LabTechnicianReadDto>> Create(
+            [FromBody] LabTechnicianCreateDto dto)
         {
             var result = await _labTechnicianService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetBySSN), new { ssn = dto.NationalId }, result);
