@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Infrastructure.DependenciesInjection;
 using Infrastructure.Services;
 using Infrastructure.Services.EmailService;
+using Application.Services.Abstraction;
 using MEDSYstemITI.Hubs;
 using MEDSYstemITI.Middleware;
 

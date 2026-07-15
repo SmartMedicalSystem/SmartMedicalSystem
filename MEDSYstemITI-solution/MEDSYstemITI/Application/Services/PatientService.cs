@@ -50,7 +50,7 @@ namespace Application.Services
             var nationalId = int.TryParse(dto.NationalId, out var nid) ? nid : throw new System.ArgumentException("Invalid NationalId", nameof(dto.NationalId));
             var entity = new Domain.Entities.Patient(dto.FirstName, dto.LastName, dto.DateOfBirth)
             {
-                NationalId = dto.NationalId,
+                NationalId = nid,
                 Gender = dto.Gender,
                 PhoneNumber = dto.MobileNumber.ToString(),
                 Address = dto.Address,

@@ -29,5 +29,7 @@ namespace Domain.Entities
         // Staff/account fields specific to technicians
         public string EmployeeId { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
+        // National ID for the technician (string to allow leading zeros / mixed formats)
+        public string NationalId { get; set; } = string.Empty;
     }
 }

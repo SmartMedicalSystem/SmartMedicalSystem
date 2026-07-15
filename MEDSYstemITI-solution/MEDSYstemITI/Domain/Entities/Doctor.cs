@@ -6,6 +6,8 @@ namespace Domain.Entities
 {
     public class Doctor : BasePerson
     {
+        // National identifier (string allows leading zeros or mixed formats)
+        public string NationalId { get; set; } = string.Empty;
         public string Specialization { get; private set; } = string.Empty;
 
         // Keep a Name and MobileNumber property for compatibility with existing configs/queries

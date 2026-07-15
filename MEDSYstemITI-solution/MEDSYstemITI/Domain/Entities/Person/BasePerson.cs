@@ -18,9 +18,10 @@ namespace Domain.Entities.Baseperson
         public DateTime DateOfBirth { get; set; }
         public int Age { get; set; } = 0;
 
+
+
         // National identity / profile
         public string Nationality { get; set; } = string.Empty;
-        public string NationalId { get; set; } = string.Empty;
 
         // Common contact / account profile fields
         public string PhoneNumber { get; set; } = string.Empty;

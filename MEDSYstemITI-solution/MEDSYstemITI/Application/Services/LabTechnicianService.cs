@@ -18,7 +18,7 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
 
-        public LabTechnicianService(IUnitOfWork uow, IMapper mapper , IFileStorageService fileStorageService)
+        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper , IFileStorageService fileStorageService)
         {
             _uow = uow;
             _personRepo = personRepo;
@@ -38,7 +38,6 @@ namespace Application.Services
             entity.Gender = dto.Gender;
             entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
             entity.Nationality = dto.Nationality;
-            entity.NationalId = dto.NationalId;
 
             entity.Laboratory = dto.Laboratory;
             entity.JobTitle = dto.JobTitle;
@@ -59,7 +58,12 @@ namespace Application.Services
             entity.AllowLogin = dto.AllowLogin;
             entity.AccountActive = dto.AccountActive;
             entity.ReceiveNotifications = dto.ReceiveNotifications;
-            entity.PhotoUrl = dto.PhotoUrl;
+            // If a new photo file was provided, save it and update URL; otherwise keep existing
+            if (dto.PhotoUrl != null)
+            {
+                var updatedPhotoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+                entity.PhotoUrl = updatedPhotoUrl ?? entity.PhotoUrl;
+            }
 
             await _uow.LabTechnicians.UpdateAsync(entity);
             return _mapper.Map<LabTechnicianReadDto>(entity);
@@ -94,7 +98,6 @@ namespace Application.Services
                 Gender = dto.Gender,
                 DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue),
                 Nationality = dto.Nationality,
-                NationalId = dto.NationalId,
 
                 EmployeeId = dto.EmployeeId,
                 Laboratory = dto.Laboratory,
@@ -130,10 +133,19 @@ namespace Application.Services
             var person = await _personRepo.FindBySSN(ssn)
                 ?? throw new NotFoundException("LabTechnician", ssn);
 
-            var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+            // Locate the lab technician entity using the person id
+            var entity = await _uow.LabTechnicians.GetByIdAsync(person.Id)
+                ?? throw new NotFoundException("LabTechnician", person.Id);
+
+            // If provided, save new photo
+            if (dto.PhotoUrl != null)
+            {
+                var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+                entity.PhotoUrl = photoUrl ?? entity.PhotoUrl;
+            }
 
             var national = await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId);
-            if (national != null && national.Id != id)
+            if (national != null && national.Id != entity.Id)
                 throw new Exception("National ID already exists.");
 
             // Update allowed profile fields
@@ -163,7 +175,6 @@ namespace Application.Services
             entity.AllowLogin = dto.AllowLogin;
             entity.AccountActive = dto.AccountActive;
             entity.ReceiveNotifications = dto.ReceiveNotifications;
-            entity.PhotoUrl = photoUrl;
 
             await _uow.LabTechnicians.UpdateAsync(entity);
 

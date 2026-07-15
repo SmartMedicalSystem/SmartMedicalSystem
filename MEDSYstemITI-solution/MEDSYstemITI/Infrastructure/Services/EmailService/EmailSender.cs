@@ -1,9 +1,11 @@
-﻿using MailKit.Net.Smtp;
+﻿using Application.Services.Abstraction;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Infrastructure.Services.EmailService
 {
@@ -14,7 +16,7 @@ namespace Infrastructure.Services.EmailService
         {
             _emailConfig = emailConfig;
         }
-        public async Task SendEmailAsync(Message message)
+        public async Task SendEmailAsync(Application.Services.Abstraction.Message message)
         {
             try
             {
@@ -27,11 +29,14 @@ namespace Infrastructure.Services.EmailService
             }
         }
 
-        private MimeMessage CreateEmailMessage(Message message)
+        private MimeMessage CreateEmailMessage(Application.Services.Abstraction.Message message)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(MailboxAddress.Parse(_emailConfig.From));
-            emailMessage.To.AddRange(message.To);
+            foreach (var to in message.To)
+            {
+                emailMessage.To.Add(MailboxAddress.Parse(to));
+            }
             emailMessage.Subject = message.Subject;
 
             var emailContent = new BodyBuilder

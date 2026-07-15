@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.Services.EmailService
+namespace Application.Services.Abstraction
 {
     public interface IEmailSender
     {

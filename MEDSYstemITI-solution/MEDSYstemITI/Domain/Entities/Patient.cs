@@ -8,6 +8,9 @@ namespace Domain.Entities
 {
     public class Patient : BasePerson
     {
+        // National identifier stored as int in database
+        public int NationalId { get; set; }
+
         // Patient-specific properties; common personal/contact fields live in BasePerson
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
 
@@ -23,7 +26,17 @@ namespace Domain.Entities
         public Patient(string firstName, string lastName, int nationalId, DateTime dateOfBirth, Gender gender, int mobileNumber, string address, BloodType bloodType)
             : base(firstName, lastName, dateOfBirth)
         {
-            NationalId = nationalId.ToString();
+            NationalId = nationalId;
+            Gender = gender;
+            PhoneNumber = mobileNumber.ToString();
+            Address = address;
+            BloodType = bloodType;
+        }
+
+        // Backward-compatible constructor used by data seeders and existing code.
+        public Patient(string firstName, string lastName, DateTime dateOfBirth, Gender gender, int mobileNumber, string address, BloodType bloodType)
+            : base(firstName, lastName, dateOfBirth)
+        {
             Gender = gender;
             PhoneNumber = mobileNumber.ToString();
             Address = address;
