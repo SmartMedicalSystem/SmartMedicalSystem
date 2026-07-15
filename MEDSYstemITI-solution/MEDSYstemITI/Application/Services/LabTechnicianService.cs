@@ -32,7 +32,7 @@ namespace Application.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Gender = dto.Gender,
-                DateOfBirth = dto.DateOfBirth,
+                DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue),
                 Nationality = dto.Nationality,
                 NationalId = dto.NationalId,
 
@@ -76,7 +76,7 @@ namespace Application.Services
             entity.FirstName = dto.FirstName;
             entity.LastName = dto.LastName;
             entity.Gender = dto.Gender;
-            entity.DateOfBirth = dto.DateOfBirth;
+            entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
             entity.Nationality = dto.Nationality;
             entity.NationalId = dto.NationalId;
 

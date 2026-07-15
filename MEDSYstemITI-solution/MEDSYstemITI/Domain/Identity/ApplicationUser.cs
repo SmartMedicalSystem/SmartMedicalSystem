@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Baseperson;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Identity
@@ -12,6 +13,11 @@ namespace Domain.Identity
     {
         public string RefreshToken { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
-        public string? SSN { get; set; }
+
+        // Optional navigation to the domain person record that represents this account
+        public BasePerson? Person { get; set; }
+
+        public ICollection<ApplicationRole> applicationRoles { get; set; }
+            = new List<ApplicationRole>();
     }
 }
