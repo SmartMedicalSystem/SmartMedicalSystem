@@ -1,9 +1,9 @@
 using Application.DependencyInjection;
-using Diagnosis.Application.Services.EmailService;
 using Domain.IRepository;
 using Infrastructure.DataSeed;
 using Infrastructure.DependenciesInjection;
 using Infrastructure.Services;
+using Infrastructure.Services.EmailService;
 using MEDSYstemITI.Hubs;
 using MEDSYstemITI.Middleware;
 

@@ -1,13 +1,11 @@
-﻿using MimeKit;
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Diagnosis.Application.Services.EmailService
+namespace Infrastructure.Services.EmailService
 {
     public class EmailSender : IEmailSender
     {
@@ -54,12 +52,12 @@ namespace Diagnosis.Application.Services.EmailService
                 {
                     await client.ConnectAsync(_emailConfig.SmtpServer, 587, SecureSocketOptions.StartTls);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    await client.AuthenticateAsync(_emailConfig.Username,_emailConfig.Password);
+                    await client.AuthenticateAsync(_emailConfig.Username, _emailConfig.Password);
 
                     await client.SendAsync(mailMessage);
 
                 }
-                catch(Exception ex) 
+                catch (Exception ex)
                 {
                     throw new Exception("Email send Failed", ex);
                 }
@@ -72,3 +70,4 @@ namespace Diagnosis.Application.Services.EmailService
         }
     }
 }
+    
