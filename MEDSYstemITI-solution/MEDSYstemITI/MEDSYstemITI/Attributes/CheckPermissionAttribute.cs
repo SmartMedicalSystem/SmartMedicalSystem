@@ -1,9 +1,5 @@
-﻿using API.Filters;
-using Application.Interfaces.Attributes;
-using Domain.Enums;
-using Microsoft.AspNetCore.Authorization;
-using System.Net;
-using System.Security;
+﻿using Domain.Enums;
+using Application.Services.Auth;
 
 namespace API.Attributes
 {
@@ -11,7 +7,7 @@ namespace API.Attributes
     {
         public CheckPermissionAttribute(Permissions permissions) : base(permissions)
         {
-            Policy = permissions.ToString();
+            // Policy is constructed in base class using PolicyPrefix + permission
         }
     }
 }

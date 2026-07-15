@@ -11,31 +11,149 @@ namespace Application.Services
     public class LabTechnicianService : ILabTechnicianService
     {
         private readonly IUnitOfWork _uow;
+        private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
 
-        public LabTechnicianService(IUnitOfWork uow, IMapper mapper)
+        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
         {
             _uow = uow;
+            _personRepo = personRepo;
             _mapper = mapper;
+        }
+
+        // Compatibility overloads for id-based operations
+        public async Task<LabTechnicianReadDto> UpdateAsync(int id, LabTechnicianUpdateDto dto)
+        {
+            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
+                ?? throw new NotFoundException("LabTechnician", id);
+
+            // Update fields similar to SSN-based update
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.Gender = dto.Gender;
+            entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
+            entity.Nationality = dto.Nationality;
+            entity.NationalId = dto.NationalId;
+
+            entity.Laboratory = dto.Laboratory;
+            entity.JobTitle = dto.JobTitle;
+            entity.EmploymentStatus = dto.EmploymentStatus;
+            entity.WorkShift = dto.WorkShift;
+            entity.JoiningDate = dto.JoiningDate;
+            entity.YearsOfExperience = dto.YearsOfExperience;
+
+            entity.PhoneNumber = dto.PhoneNumber;
+            entity.AlternativePhone = dto.AlternativePhone;
+            entity.Email = dto.Email;
+            entity.Address = dto.Address;
+            entity.City = dto.City;
+            entity.Country = dto.Country;
+            entity.PostalCode = dto.PostalCode;
+
+            entity.Username = dto.Username;
+            entity.AllowLogin = dto.AllowLogin;
+            entity.AccountActive = dto.AccountActive;
+            entity.ReceiveNotifications = dto.ReceiveNotifications;
+            entity.PhotoUrl = dto.PhotoUrl;
+
+            await _uow.LabTechnicians.UpdateAsync(entity);
+            return _mapper.Map<LabTechnicianReadDto>(entity);
+        }
+
+        public async Task<LabTechnicianReadDto> GetByIdAsync(int id)
+        {
+            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
+                ?? throw new NotFoundException("LabTechnician", id);
+            return _mapper.Map<LabTechnicianReadDto>(entity);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _uow.LabTechnicians.SoftDeleteAsync(id);
         }
 
         public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
         {
-            var entity = new Domain.Entities.LabTechnician(dto.Name, dto.Contact, dto.NationalId);
-            await _uow.PersonGeneric.AddPerson(dto.NationalId.ToString(), entity);
-            await _uow.SaveChangesAsync();
+            if (await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId) is not null)
+                throw new Exception("Employee ID already exists.");
+
+            if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
+                throw new Exception("National ID already exists.");
+
+            var entity = new LabTechnician
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Gender = dto.Gender,
+                DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue),
+                Nationality = dto.Nationality,
+                NationalId = dto.NationalId,
+
+                EmployeeId = dto.EmployeeId,
+                Laboratory = dto.Laboratory,
+                JobTitle = dto.JobTitle,
+                EmploymentStatus = dto.EmploymentStatus,
+                WorkShift = dto.WorkShift,
+                JoiningDate = dto.JoiningDate,
+                YearsOfExperience = dto.YearsOfExperience,
+
+                PhoneNumber = dto.PhoneNumber,
+                AlternativePhone = dto.AlternativePhone,
+                Email = dto.Email,
+                Address = dto.Address,
+                City = dto.City,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+
+                Username = dto.Username,
+                AllowLogin = dto.AllowLogin,
+                AccountActive = dto.AccountActive,
+                ReceiveNotifications = dto.ReceiveNotifications,
+                PhotoUrl = dto.PhotoUrl
+            };
+
+            await _uow.LabTechnicians.AddAsync(entity);
+
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
         public async Task<LabTechnicianReadDto> UpdateAsync(string ssn, LabTechnicianUpdateDto dto)
         {
-            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+            var person = await _personRepo.FindBySSN(ssn)
                 ?? throw new NotFoundException("LabTechnician", ssn);
 
             if (person is not Domain.Entities.LabTechnician entity)
                 throw new NotFoundException("LabTechnician", ssn);
 
-            entity.UpdateProfile(dto.Name, dto.Contact);
+            // Update allowed profile fields
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.Gender = dto.Gender;
+            entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
+            entity.Nationality = dto.Nationality;
+            entity.NationalId = dto.NationalId;
+
+            entity.Laboratory = dto.Laboratory;
+            entity.JobTitle = dto.JobTitle;
+            entity.EmploymentStatus = dto.EmploymentStatus;
+            entity.WorkShift = dto.WorkShift;
+            entity.JoiningDate = dto.JoiningDate;
+            entity.YearsOfExperience = dto.YearsOfExperience;
+
+            entity.PhoneNumber = dto.PhoneNumber;
+            entity.AlternativePhone = dto.AlternativePhone;
+            entity.Email = dto.Email;
+            entity.Address = dto.Address;
+            entity.City = dto.City;
+            entity.Country = dto.Country;
+            entity.PostalCode = dto.PostalCode;
+
+            entity.Username = dto.Username;
+            entity.AllowLogin = dto.AllowLogin;
+            entity.AccountActive = dto.AccountActive;
+            entity.ReceiveNotifications = dto.ReceiveNotifications;
+            entity.PhotoUrl = dto.PhotoUrl;
+
             await _uow.LabTechnicians.UpdateAsync(entity);
 
             return _mapper.Map<LabTechnicianReadDto>(entity);
@@ -43,12 +161,21 @@ namespace Application.Services
 
         public async Task<LabTechnicianReadDto> GetBySSNAsync(string ssn)
         {
-            var entity = await _uow.PersonGeneric.FindBySSN(ssn) 
+            var entity = await _personRepo.FindBySSN(ssn)
                 ?? throw new NotFoundException("LabTechnician", ssn);
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(LabTechnicianFilterDto filter)
+        public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(PaginationParams pagination)
+        {
+            var page = await _uow.LabTechnicians.GetAllActivePaginatedAsync(pagination);
+            return PaginatedResult<LabTechnicianReadDto>.Create(
+                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
+                page.TotalCount, pagination);
+        }
+
+        // Additional overload used by some callers that accept a filter DTO
+        public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(Application.DTOs.LabTechnician.LabTechnicianFilterDto filter)
         {
             var page = await _uow.LabTechnicians.SearchAsync(
                 filter.Search,
@@ -60,17 +187,18 @@ namespace Application.Services
 
             return PaginatedResult<LabTechnicianReadDto>.Create(
                 _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
-                page.TotalCount,
-                filter);
+                page.TotalCount, filter);
         }
 
         public async Task DeleteAsync(string ssn)
         {
-            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+            var person = await _personRepo.FindBySSN(ssn)
                 ?? throw new NotFoundException("LabTechnician", ssn);
 
             await _uow.LabTechnicians.SoftDeleteAsync(person.Id);
         }
+
+        // (int-based overloads implemented above)
 
 
 

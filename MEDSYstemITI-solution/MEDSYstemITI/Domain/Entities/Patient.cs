@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Domain.Common;
 using Domain.Entities.Baseperson;
+using Domain.Enums;
 
 namespace Domain.Entities
 {
@@ -17,6 +18,21 @@ namespace Domain.Entities
             : base(firstName, lastName, dateOfBirth)
         {
         }
+
+        // Backward-compatible constructor used by data seeders and existing code.
+        public Patient(string firstName, string lastName, int nationalId, DateTime dateOfBirth, Gender gender, int mobileNumber, string address, BloodType bloodType)
+            : base(firstName, lastName, dateOfBirth)
+        {
+            NationalId = nationalId.ToString();
+            Gender = gender;
+            PhoneNumber = mobileNumber.ToString();
+            Address = address;
+            // store bloodtype in a domain-specific property
+            BloodType = bloodType;
+        }
+
+        public Enums.BloodType BloodType { get; set; }
+        public int MobileNumber { get; set; }
 
 
      

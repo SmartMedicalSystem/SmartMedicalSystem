@@ -6,6 +6,17 @@ namespace Domain.Entities
 {
     public class LabTechnician : BasePerson
     {
+        // EF materialization constructor
+        public LabTechnician() { }
+
+        public LabTechnician(string name, string contact)
+        {
+            var cleanName = Guard.NotNullOrWhiteSpace(name, nameof(name), 200);
+            var parts = cleanName.Split(' ', 2);
+            FirstName = parts[0];
+            LastName = parts.Length > 1 ? parts[1] : string.Empty;
+            PhoneNumber = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
+        }
         // Personal Information
         // Employment / lab-specific fields
         public string Laboratory { get; set; } = string.Empty;

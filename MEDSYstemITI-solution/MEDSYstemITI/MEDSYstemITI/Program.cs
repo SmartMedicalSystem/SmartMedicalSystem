@@ -1,4 +1,5 @@
 using Infrastructure.DependenciesInjection;
+using MEDSYstemITI.Hubs;
 using Application.DependencyInjection;
 using Infrastructure.DataSeed;
 using MEDSYstemITI.Middleware;

@@ -10,7 +10,7 @@ namespace Domain.Entities
 
         // Keep a Name and MobileNumber property for compatibility with existing configs/queries
         public string Name { get; private set; } = string.Empty;
-        public string MobileNumber { get; private set; } = string.Empty;
+        public string MobileNumber { get; set; } = string.Empty;
 
         public int DepartmentId { get; private set; }   // FK -> Department (required staff membership)
 
@@ -32,6 +32,24 @@ namespace Domain.Entities
             MobileNumber = PhoneNumber;
             Gender = gender;
             DepartmentId = Guard.Positive(departmentId, nameof(departmentId));
+        }
+
+        // Extended profile update to include contact details and address
+        public void UpdateProfile(string name, string specialization, string contact, Gender gender, string email, int mobileNumber, string address)
+        {
+            var cleanName = Guard.NotNullOrWhiteSpace(name, nameof(name), 200);
+            var parts = cleanName.Split(' ', 2);
+            FirstName = parts[0];
+            LastName = parts.Length > 1 ? parts[1] : string.Empty;
+            Name = cleanName;
+
+            Specialization = Guard.NotNullOrWhiteSpace(specialization, nameof(specialization), 100);
+            PhoneNumber = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
+            Gender = gender;
+
+            Email = Guard.NotNullOrWhiteSpace(email, nameof(email), 150);
+            PhoneNumber = mobileNumber.ToString();
+            Address = Guard.NotNullOrWhiteSpace(address, nameof(address), 250);
         }
 
         /// <summary>Updates the mutable profile fields of the doctor, re-validating each one.</summary>

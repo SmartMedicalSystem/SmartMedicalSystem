@@ -13,12 +13,39 @@ namespace Application.Services
     public class DoctorService : IDoctorService
     {
         private readonly IUnitOfWork _uow;
+        private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
 
-        public DoctorService(IUnitOfWork uow, IMapper mapper)
+        public DoctorService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
         {
             _uow = uow;
+            _personRepo = personRepo;
             _mapper = mapper;
+        }
+
+        // Compatibility overloads that accept entity id instead of SSN
+        public async Task<DoctorReadDto> UpdateAsync(int id, DoctorUpdateDto dto)
+        {
+            var entity = await _uow.Doctors.GetByIdAsync(id)
+                ?? throw new NotFoundException("Doctor", id);
+
+            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.Email, dto.MobileNumber, dto.Address);
+            await _uow.Doctors.UpdateAsync(entity);
+            return _mapper.Map<DoctorReadDto>(entity);
+        }
+
+        // (int-based members implemented above)
+
+        public async Task<DoctorReadDto> GetByIdAsync(int id)
+        {
+            var entity = await _uow.Doctors.GetByIdAsync(id)
+                ?? throw new NotFoundException("Doctor", id);
+            return _mapper.Map<DoctorReadDto>(entity);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _uow.Doctors.SoftDeleteAsync(id);
         }
 
         [Authorize(Roles = "Admin")]
@@ -29,7 +56,7 @@ namespace Application.Services
                 ?? throw new NotFoundException("Department", dto.DepartmentId);
 
             var entity = new Domain.Entities.Doctor(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.DepartmentId);
-            await _uow.PersonGeneric.AddPerson(dto.NationalId.ToString(), entity);
+            await _personRepo.AddPerson(dto.NationalId.ToString(), entity);
             await _uow.SaveChangesAsync();
             return _mapper.Map<DoctorReadDto>(entity);
         }
@@ -37,7 +64,7 @@ namespace Application.Services
         
         public async Task<DoctorReadDto> UpdateAsync(string ssn, DoctorUpdateDto dto)
         {
-            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+            var person = await _personRepo.FindBySSN(ssn)
                 ?? throw new NotFoundException("Doctor", ssn);
 
             if (person is not Domain.Entities.Doctor entity)
@@ -46,14 +73,14 @@ namespace Application.Services
             entity.UpdateProfile(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.Email, dto.MobileNumber, dto.Address);
 
             // Persist changes and update encrypted SSN if NationalId changed
-            await _uow.PersonGeneric.UpdateSSNAsync(entity, dto.NationalId.ToString());
+            await _personRepo.UpdateSSNAsync(entity, dto.NationalId.ToString());
 
             return _mapper.Map<DoctorReadDto>(entity);
         }
 
         public async Task<DoctorReadDto> GetBySSNAsync(string ssn)
         {
-            var entity = await _uow.PersonGeneric.FindBySSN(ssn) as Domain.Entities.Doctor
+            var entity = await _personRepo.FindBySSN(ssn) as Domain.Entities.Doctor
                 ?? throw new NotFoundException("Doctor", ssn    );
             return _mapper.Map<DoctorReadDto>(entity);
         }
@@ -68,7 +95,7 @@ namespace Application.Services
 
         public async Task DeleteAsync(string ssn)
         {
-            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+            var person = await _personRepo.FindBySSN(ssn)
                 ?? throw new NotFoundException("Doctor", ssn);
 
             await _uow.Doctors.SoftDeleteAsync(person.Id);

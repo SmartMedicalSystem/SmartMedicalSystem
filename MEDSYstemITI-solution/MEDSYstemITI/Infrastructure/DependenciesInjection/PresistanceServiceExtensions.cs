@@ -49,7 +49,14 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<IRequestLabsRepo, RequestLabsRepository>();
             services.AddScoped<ISessionRepo, SessionRepository>();
             services.AddScoped<ITestElementRepo, TestElementRepository>();
-            services.AddScoped<IMemberRepo, MemberRepo>();
+            services.AddScoped<IMemberRepo, MemberRepository>();
+
+            // Person generic repository (handles encrypted SSN lookups)
+            // Encryption service for SSN handling
+            services.AddScoped<Infrastructure.Services.EncryptionService>();
+
+            // Register IPersonGenericRepo using the closed generic implementation type
+            services.AddScoped(typeof(Domain.IRepository.IPersonGenericRepo), typeof(Infrastructure.Repository.PersonGenericRepo<Domain.Entities.Baseperson.BasePerson>));
 
             // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

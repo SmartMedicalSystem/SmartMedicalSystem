@@ -84,6 +84,7 @@ public static class DoctorSeeder
     }
 
     // ── Helper ──────────────────────────────────────────────────────────────────
+    // No-op placeholder to trigger patch apply
     private static Doctor CreateDoctor(
          string name, string specialization, string contact,
         Gender gender, int departmentId, DateTime dob, string email, string address)
@@ -94,10 +95,10 @@ public static class DoctorSeeder
         {
          
             Email        = email,
-            MobileNumber = int.Parse(mobileDigits),
+            MobileNumber = mobileDigits,
             Address      = address,
             DateOfBirth  = dob,
-            NationalId   = 10000000 + new Random().Next(1, 1000000),   // synthetic unique National ID
+            NationalId   = (10000000 + new Random().Next(1, 1000000)).ToString(),   // synthetic unique National ID
             CreatedAt    = DateTime.UtcNow
         };
         return d;
