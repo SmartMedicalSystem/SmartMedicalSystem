@@ -1,10 +1,14 @@
-using Infrastructure.DependenciesInjection;
-using MEDSYstemITI.Hubs;
 using Application.DependencyInjection;
+using Domain.IRepository;
 using Infrastructure.DataSeed;
 using MEDSYstemITI.Middleware;
 //using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Infrastructure.DependenciesInjection;
+using Infrastructure.Services;
+using Infrastructure.Services.EmailService;
+using MEDSYstemITI.Hubs;
+using MEDSYstemITI.Middleware;
 
 
 namespace MEDSYstemITI
@@ -35,6 +39,11 @@ namespace MEDSYstemITI
             builder.Services.AddinfrastructreServices(builder.Configuration);
             builder.Services.AddApplicationServices();
             builder.Services.AddSignalR();
+            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+            var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+            builder.Services.AddSingleton(emailConfig);
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
 
             builder.Services.AddSwaggerGen();
             var app = builder.Build();
@@ -55,6 +64,7 @@ namespace MEDSYstemITI
 
             app.UseCors("DefaultCorsPolicy");
 
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapHub<NotificationHub>("/notificationHub");

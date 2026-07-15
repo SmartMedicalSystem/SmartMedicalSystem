@@ -34,6 +34,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPatientResultService, PatientResultService>();
             services.AddScoped<IPatientResultElementService, PatientResultElementService>();
             services.AddScoped<IAuthService, AuthService>();
+            
 
             return services;
         }

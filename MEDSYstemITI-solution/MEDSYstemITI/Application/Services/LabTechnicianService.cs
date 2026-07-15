@@ -5,6 +5,9 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.IRepository;
 using Domain.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
 namespace Application.Services
 {
@@ -13,12 +16,14 @@ namespace Application.Services
         private readonly IUnitOfWork _uow;
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
+        private readonly IFileStorageService _fileStorageService;
 
-        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
+        public LabTechnicianService(IUnitOfWork uow, IMapper mapper , IFileStorageService fileStorageService)
         {
             _uow = uow;
             _personRepo = personRepo;
             _mapper = mapper;
+            _fileStorageService = fileStorageService;
         }
 
         // Compatibility overloads for id-based operations
@@ -80,6 +85,8 @@ namespace Application.Services
             if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
                 throw new Exception("National ID already exists.");
 
+            var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+
             var entity = new LabTechnician
             {
                 FirstName = dto.FirstName,
@@ -104,12 +111,13 @@ namespace Application.Services
                 City = dto.City,
                 Country = dto.Country,
                 PostalCode = dto.PostalCode,
+                PhotoUrl = photoUrl,
 
                 Username = dto.Username,
                 AllowLogin = dto.AllowLogin,
                 AccountActive = dto.AccountActive,
                 ReceiveNotifications = dto.ReceiveNotifications,
-                PhotoUrl = dto.PhotoUrl
+                
             };
 
             await _uow.LabTechnicians.AddAsync(entity);
@@ -122,8 +130,11 @@ namespace Application.Services
             var person = await _personRepo.FindBySSN(ssn)
                 ?? throw new NotFoundException("LabTechnician", ssn);
 
-            if (person is not Domain.Entities.LabTechnician entity)
-                throw new NotFoundException("LabTechnician", ssn);
+            var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+
+            var national = await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId);
+            if (national != null && national.Id != id)
+                throw new Exception("National ID already exists.");
 
             // Update allowed profile fields
             entity.FirstName = dto.FirstName;
@@ -152,7 +163,7 @@ namespace Application.Services
             entity.AllowLogin = dto.AllowLogin;
             entity.AccountActive = dto.AccountActive;
             entity.ReceiveNotifications = dto.ReceiveNotifications;
-            entity.PhotoUrl = dto.PhotoUrl;
+            entity.PhotoUrl = photoUrl;
 
             await _uow.LabTechnicians.UpdateAsync(entity);
 

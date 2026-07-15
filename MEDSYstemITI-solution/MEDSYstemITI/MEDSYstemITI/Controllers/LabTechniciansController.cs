@@ -40,7 +40,7 @@ namespace MEDSYstemITI.Controllers
         [HttpPost]
         //[HasPermission(Permissions.CreateLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> Create(
-            [FromBody] LabTechnicianCreateDto dto)
+            [FromForm] LabTechnicianCreateDto dto)
         {
             var result = await _labTechnicianService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetBySSN), new { ssn = dto.NationalId }, result);
