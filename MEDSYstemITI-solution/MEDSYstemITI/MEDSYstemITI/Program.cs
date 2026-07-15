@@ -1,4 +1,5 @@
 using Application.DependencyInjection;
+using Diagnosis.Application.Services.EmailService;
 using Domain.IRepository;
 using Infrastructure.DataSeed;
 using Infrastructure.DependenciesInjection;
@@ -35,6 +36,10 @@ namespace MEDSYstemITI
             builder.Services.AddApplicationServices();
             builder.Services.AddSignalR();
             builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+            var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+            builder.Services.AddSingleton(emailConfig);
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
