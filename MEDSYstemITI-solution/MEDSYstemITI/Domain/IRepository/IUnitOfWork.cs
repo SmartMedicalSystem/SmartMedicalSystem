@@ -31,6 +31,9 @@ namespace Domain.IRepository
         ISessionRepo Sessions { get; }
         ITestElementRepo TestElements { get; }
 
+        IPersonGenericRepo PersonGeneric { get; }
+
+        
         /// <summary>
         /// Generic accessor for entities that don't have a dedicated specialized
         /// repository. Returns a shared GenericRepository&lt;T&gt; instance bound to

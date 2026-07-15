@@ -9,9 +9,9 @@ public class EncryptionService
     {
         _dataProtector = dataProtectionProvidor.CreateProtector("Secure SSN");
     }
-    public async Task<string> Encrypt(int ssn)
+    public async Task<string> Encrypt(string ssn)
     {
-        return  _dataProtector.Protect(ssn.ToString());
+        return  _dataProtector.Protect(ssn);
 
     }
 }

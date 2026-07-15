@@ -162,4 +162,11 @@ public class AuthService : IAuthService
             await _memberRepo.GetRoleAsync(changedUser),
             "Password changed successfully");
     }
+
+    public Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request)
+    {
+        throw new NotImplementedException();
+    }
+
+
 }

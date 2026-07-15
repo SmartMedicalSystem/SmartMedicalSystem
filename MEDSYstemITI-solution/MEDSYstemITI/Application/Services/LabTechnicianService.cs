@@ -21,96 +21,30 @@ namespace Application.Services
 
         public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
         {
-            if (await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId) is not null)
-                throw new Exception("Employee ID already exists.");
-
-            if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
-                throw new Exception("National ID already exists.");
-
-            var entity = new LabTechnician
-            {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Gender = dto.Gender,
-                DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue),
-                Nationality = dto.Nationality,
-                NationalId = dto.NationalId,
-
-                EmployeeId = dto.EmployeeId,
-                Laboratory = dto.Laboratory,
-                JobTitle = dto.JobTitle,
-                EmploymentStatus = dto.EmploymentStatus,
-                WorkShift = dto.WorkShift,
-                JoiningDate = dto.JoiningDate,
-                YearsOfExperience = dto.YearsOfExperience,
-
-                PhoneNumber = dto.PhoneNumber,
-                AlternativePhone = dto.AlternativePhone,
-                Email = dto.Email,
-                Address = dto.Address,
-                City = dto.City,
-                Country = dto.Country,
-                PostalCode = dto.PostalCode,
-
-                Username = dto.Username,
-                AllowLogin = dto.AllowLogin,
-                AccountActive = dto.AccountActive,
-                ReceiveNotifications = dto.ReceiveNotifications,
-                PhotoUrl = dto.PhotoUrl
-            };
-
-            await _uow.LabTechnicians.AddAsync(entity);
-
+            var entity = new Domain.Entities.LabTechnician(dto.Name, dto.Contact, dto.NationalId);
+            await _uow.PersonGeneric.AddPerson(dto.NationalId.ToString(), entity);
+            await _uow.SaveChangesAsync();
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> UpdateAsync(int id, LabTechnicianUpdateDto dto)
+        public async Task<LabTechnicianReadDto> UpdateAsync(string ssn, LabTechnicianUpdateDto dto)
         {
-            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
-                ?? throw new NotFoundException("LabTechnician", id);
+            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+                ?? throw new NotFoundException("LabTechnician", ssn);
 
-            var national = await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId);
-            if (national != null && national.Id != id)
-                throw new Exception("National ID already exists.");
+            if (person is not Domain.Entities.LabTechnician entity)
+                throw new NotFoundException("LabTechnician", ssn);
 
-            entity.FirstName = dto.FirstName;
-            entity.LastName = dto.LastName;
-            entity.Gender = dto.Gender;
-            entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
-            entity.Nationality = dto.Nationality;
-            entity.NationalId = dto.NationalId;
-
-            entity.Laboratory = dto.Laboratory;
-            entity.JobTitle = dto.JobTitle;
-            entity.EmploymentStatus = dto.EmploymentStatus;
-            entity.WorkShift = dto.WorkShift;
-            entity.JoiningDate = dto.JoiningDate;
-            entity.YearsOfExperience = dto.YearsOfExperience;
-
-            entity.PhoneNumber = dto.PhoneNumber;
-            entity.AlternativePhone = dto.AlternativePhone;
-            entity.Email = dto.Email;
-            entity.Address = dto.Address;
-            entity.City = dto.City;
-            entity.Country = dto.Country;
-            entity.PostalCode = dto.PostalCode;
-
-            entity.Username = dto.Username;
-            entity.AllowLogin = dto.AllowLogin;
-            entity.AccountActive = dto.AccountActive;
-            entity.ReceiveNotifications = dto.ReceiveNotifications;
-            entity.PhotoUrl = dto.PhotoUrl;
-
+            entity.UpdateProfile(dto.Name, dto.Contact);
             await _uow.LabTechnicians.UpdateAsync(entity);
 
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> GetByIdAsync(int id)
+        public async Task<LabTechnicianReadDto> GetBySSNAsync(string ssn)
         {
-            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
-                ?? throw new NotFoundException("LabTechnician", id);
-
+            var entity = await _uow.PersonGeneric.FindBySSN(ssn) 
+                ?? throw new NotFoundException("LabTechnician", ssn);
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
@@ -130,14 +64,16 @@ namespace Application.Services
                 filter);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string ssn)
         {
-            var exists = await _uow.LabTechnicians.ExistsAsync(id);
+            var person = await _uow.PersonGeneric.FindBySSN(ssn)
+                ?? throw new NotFoundException("LabTechnician", ssn);
 
-            if (!exists)
-                throw new NotFoundException("LabTechnician", id);
-
-            await _uow.LabTechnicians.SoftDeleteAsync(id);
+            await _uow.LabTechnicians.SoftDeleteAsync(person.Id);
         }
+
+
+
+      
     }
 }

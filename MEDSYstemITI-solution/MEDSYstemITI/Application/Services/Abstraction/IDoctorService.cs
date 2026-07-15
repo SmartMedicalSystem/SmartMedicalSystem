@@ -7,11 +7,11 @@ namespace Application.Services.Abstraction
     public interface IDoctorService
     {
         Task<DoctorReadDto> CreateAsync(DoctorCreateDto dto);
-        Task<DoctorReadDto> UpdateAsync(int id, DoctorUpdateDto dto);
-        Task<DoctorReadDto> GetByIdAsync(int id);
+        Task<DoctorReadDto> UpdateAsync(string ssn, DoctorUpdateDto dto);
+        Task<DoctorReadDto> GetBySSNAsync(string ssn);
         Task<PaginatedResult<DoctorReadDto>> GetByDepartmentAsync(int departmentId, PaginationParams pagination);
         
         Task<PaginatedResult<DoctorReadDto>> GetAllAsync(PaginationParams pagination);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(string ssn);
     }
 }

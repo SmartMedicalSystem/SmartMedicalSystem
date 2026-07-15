@@ -1,6 +1,9 @@
 using Domain.Entities;
+using Domain.Entities.Baseperson;
 using Domain.IRepository;
 using Infrastructure.Context;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,12 +33,16 @@ namespace Infrastructure.Repository
         private IRequestLabsRepo? _requestLabs;
         private ISessionRepo? _sessions;
         private ITestElementRepo? _testElements;
+        private IPersonGenericRepo? _personGeneric;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
+
 
         private readonly Dictionary<Type, object> _genericRepositories = new();
 
-        public UnitOfWork(ApplicationDbContext context)
+        public UnitOfWork(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider)
         {
             _context = context;
+            _dataProtectionProvider = dataProtectionProvider;
         }
 
         public IDepartmentRepo Departments =>
@@ -73,6 +80,10 @@ namespace Infrastructure.Repository
 
         public ITestElementRepo TestElements =>
             _testElements ??= new TestElementRepository(_context);
+
+        public IPersonGenericRepo PersonGeneric =>
+            _personGeneric ??= new PersonGenericRepo<BasePerson>(_context, new EncryptionService(_dataProtectionProvider));
+            
 
         /// <summary>
         /// Generic accessor for entities that don't have a dedicated specialized repository.
