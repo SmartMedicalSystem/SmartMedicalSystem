@@ -14,13 +14,13 @@ namespace Infrastructure.Repository
     /// </summary>
     /// 
 
-    public class MemberRepo : IMemberRepo
+    public class MemberRepository : IMemberRepo
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ApplicationDbContext _dbContext;
 
-        public MemberRepo(
+        public MemberRepository(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             ApplicationDbContext dbContext)

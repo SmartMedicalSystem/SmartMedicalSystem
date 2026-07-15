@@ -2,7 +2,9 @@ using Infrastructure.DependenciesInjection;
 using Application.DependencyInjection;
 using Infrastructure.DataSeed;
 using MEDSYstemITI.Middleware;
-using MEDSYstemITI.Hubs;
+//using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
 
 namespace MEDSYstemITI
 {
@@ -33,17 +35,17 @@ namespace MEDSYstemITI
             builder.Services.AddApplicationServices();
             builder.Services.AddSignalR();
 
+            builder.Services.AddSwaggerGen();
             var app = builder.Build();
 
             // Configure HTTP pipeline
             if (app.Environment.IsDevelopment())
             {
+                //app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MEDSYstemITI API V1");
-                    c.RoutePrefix = "swagger"; 
-                });
+                app.UseSwaggerUI();
+                
+                app.MapOpenApi();
             }
 
             app.UseGlobalExceptionHandling();
