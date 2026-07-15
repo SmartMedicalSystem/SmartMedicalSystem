@@ -20,7 +20,7 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(150);
 
-            builder.Property(d => d.Contact)
+            builder.Property(d => d.PhoneNumber)
                 .IsRequired()
                 .HasMaxLength(50);
 

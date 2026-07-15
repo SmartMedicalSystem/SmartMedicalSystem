@@ -1,19 +1,20 @@
+using Application.DTOs.Doctor;
 using AutoMapper;
+using Domain.Entities;
 using System.Linq;
-
-using DomainEntities = Domain.Entities;
-
 using DeptDto = Application.DTOs.Department;
 using DoctorDto = Application.DTOs.Doctor;
-using PatientDto = Application.DTOs.Patient;
-using LabTestDto = Application.DTOs.LabTest;
-using TestElementDto = Application.DTOs.TestElement;
-using SessionDto = Application.DTOs.Session;
-using RequestLabsDto = Application.DTOs.RequestLabs;
+using DomainEntities = Domain.Entities;
 using LabTechnicianDto = Application.DTOs.LabTechnician;
+using LabTestDto = Application.DTOs.LabTest;
+using LabTestElementDto = Application.DTOs.LabTestElement;
+using NotificationDto = Application.DTOs.Notifiaction;
+using PatientDto = Application.DTOs.Patient;
 using PatientResultDto = Application.DTOs.PatientResult;
 using PatientResultElementDto = Application.DTOs.PatientResultElement;
-using LabTestElementDto = Application.DTOs.LabTestElement;
+using RequestLabsDto = Application.DTOs.RequestLabs;
+using SessionDto = Application.DTOs.Session;
+using TestElementDto = Application.DTOs.TestElement;
 
 namespace Application.Mapping
 {
@@ -37,29 +38,73 @@ namespace Application.Mapping
         public MappingProfile()
         {
             CreateMap<DomainEntities.Department, DeptDto.DepartmentReadDto>();
+            CreateMap<DeptDto.DepartmentCreateDto, DomainEntities.Department>();
+            CreateMap<DeptDto.DepartmentUpdateDto, DomainEntities.Department>();
 
             CreateMap<DomainEntities.Doctor, DoctorDto.DoctorReadDto>()
                 .ForMember(d => d.DepartmentName, opt => opt.MapFrom(s => s.Department != null ? s.Department.Name : null));
 
+            CreateMap<DoctorDto.DoctorCreateDto, DomainEntities.Doctor>();
+            CreateMap<DoctorDto.DoctorUpdateDto, DomainEntities.Doctor>();
+
             CreateMap<DomainEntities.Patient, PatientDto.PatientReadDto>();
+            CreateMap<PatientDto.PatientCreateDto, DomainEntities.Patient>();
+            CreateMap<PatientDto.PatientUpdateDto, DomainEntities.Patient>();
+
 
             CreateMap<DomainEntities.LabTest, LabTestDto.LabTestReadDto>();
+            CreateMap<LabTestDto.LabTestCreateDto, DomainEntities.LabTest>();
+            CreateMap<LabTestDto.LabTestUpdateDto, DomainEntities.LabTest>();
 
             CreateMap<DomainEntities.TestElement, TestElementDto.TestElementReadDto>();
+            CreateMap<TestElementDto.TestElementCreateDto, DomainEntities.TestElement>();
+            CreateMap<TestElementDto.TestElementUpdateDto, DomainEntities.TestElement>();
+
 
             CreateMap<DomainEntities.Session, SessionDto.SessionReadDto>();
+            CreateMap<SessionDto.SessionCreateDto, DomainEntities.Session>();
+            CreateMap<SessionDto.SessionUpdateDto, DomainEntities.Session>();
+
+
+
 
             CreateMap<DomainEntities.RequestLabs, RequestLabsDto.RequestLabsReadDto>()
                 .ForMember(d => d.LabTestIds, opt => opt.MapFrom(s => s.LabTests.Select(lt => lt.Id).ToList()));
 
-       
+            CreateMap<RequestLabsDto.RequestLabsCreateDto, DomainEntities.RequestLabs>();
+            CreateMap<RequestLabsDto.RequestLabsUpdateStatusDto, DomainEntities.RequestLabs>();
+
+
+
+
+
+            CreateMap<DomainEntities.Notification, NotificationDto.NotificationReadDto>();
+
+            CreateMap<NotificationDto.NotificationReadDto, DomainEntities.Notification>();
+
+
+
             CreateMap<DomainEntities.LabTechnician, LabTechnicianDto.LabTechnicianReadDto>();
+            CreateMap<LabTechnicianDto.LabTechnicianCreateDto, DomainEntities.LabTechnician>();
+
+            CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
+
+
 
             CreateMap<DomainEntities.PatientResult, PatientResultDto.PatientResultReadDto>();
+            CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
+
+            CreateMap<PatientResultDto.PatientResultUpdateDto, DomainEntities.PatientResult>();
+
+
 
             CreateMap<DomainEntities.PatientResultElement, PatientResultElementDto.PatientResultElementReadDto>();
 
+
             CreateMap<DomainEntities.LabTestElement, LabTestElementDto.LabTestElementReadDto>();
+            CreateMap<LabTestElementDto.LabTestElementCreateDto, DomainEntities.LabTestElement>();
+
+          
         }
     }
 }

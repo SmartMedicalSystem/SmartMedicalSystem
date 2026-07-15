@@ -6,15 +6,15 @@ namespace Application.Services.Abstraction.Auth;
 public interface ITokenService
 {
     Task<TokenResponseDto> CreateTokenAsync(
-        int userId,
         string userName,
         string email,
         IList<string> roles);
 
     Task<TokenResponseDto> CreateTokenAsync(
-        int userId,
         string userName,
         string email,
         string role,
         IEnumerable<string> permissions);
+
+    Task<TokenResponseDto> GenerateRefreshToken();
 }

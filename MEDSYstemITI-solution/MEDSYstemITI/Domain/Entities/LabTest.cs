@@ -5,9 +5,9 @@ namespace Domain.Entities
 {
     public class LabTest : BaseEntity
     {
-        public string TestName { get; private set; } = null!;
+        public string TestName { get;  set; } = null!;
 
-        public string Description { get; private set; } = null!;
+        public string Description { get;  set; } = null!;
         public ICollection<LabTestElement> LabTestElements { get; } = new List<LabTestElement>();
 
         private LabTest() { }

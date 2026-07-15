@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Domain.IRepository
 {
+
     public interface IMemberRepo
     {
         Task<ApplicationUser?> FindByUsernameOrEmailAsync(string usernameOrEmail);
@@ -32,9 +33,11 @@ namespace Domain.IRepository
         Task<IEnumerable<string>> GetPermissionsAsync(
             string roleName);
 
-        Task UpdateAsync(
-            ApplicationUser user);
+        Task UpdateAsync(ApplicationUser user);
 
-        string GenerateRefreshToken();
+        Task<ApplicationUser?> GetByRefreshTokenAsync(string refreshToken);
+
+        Task<ApplicationUser?> ChangePasswordAsync(ApplicationUser user, string OldPassword, string newPassword);
+
     }
 }

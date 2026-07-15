@@ -4,6 +4,7 @@ using Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Domain.Entities.Baseperson;
 
 namespace Infrastructure.Context
 {
@@ -13,6 +14,11 @@ namespace Infrastructure.Context
             : base(options)
         {
         }
+
+        public DbSet<RolePermission> RolePermissions { get; set; }
+
+        public DbSet<BasePerson> BasePersons { get; set; }
+
 
         public DbSet<Department> Departments => Set<Department>();
         public DbSet<Doctor> Doctors => Set<Doctor>();
@@ -29,7 +35,6 @@ namespace Infrastructure.Context
 
         public DbSet<Permission> Permissions { get; set; }
 
-        public DbSet<RolePermission> RolePermissions { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Must run first: sets up the Identity (AspNetUsers, AspNetRoles, ...) tables/keys.

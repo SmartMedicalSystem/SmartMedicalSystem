@@ -4,10 +4,10 @@ namespace Domain.Entities
 {
     public class LabTestElement
     {
-        public int LabTestId { get; private set; }
+        public int LabTestId { get;  set; }
         public LabTest LabTest { get; set; } = null!;
 
-        public int TestElementId { get; private set; }
+        public int TestElementId { get;  set; }
         public TestElement TestElement { get; set; } = null!;
 
         private LabTestElement() { }

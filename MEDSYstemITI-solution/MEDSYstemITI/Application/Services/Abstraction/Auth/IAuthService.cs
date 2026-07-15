@@ -7,6 +7,8 @@ namespace Application.Services.Abstraction.Auth
     {
         Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request);
         Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
-      
+        Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request);
+        Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);
+
     }
 }

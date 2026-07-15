@@ -19,7 +19,7 @@ namespace MEDSYstemITI.Controllers
         /// <summary>Registers a new account with the given role (Admin, Doctor, DepartmentManager, LabTechnician).</summary>
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterRequestDTO request)
+        public async Task<ActionResult<RefreshTokenRequestDto>> Register([FromBody] RegisterRequestDTO request)
         {
             var result = await _authService.RegisterAsync(request);
             return Ok(result);
@@ -28,10 +28,29 @@ namespace MEDSYstemITI.Controllers
         /// <summary>Logs in with either username or email + password.</summary>
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto request)
+        public async Task<ActionResult<RefreshTokenRequestDto>> Login([FromBody] LoginRequestDto request)
         {
             var result = await _authService.LoginAsync(request);
             return Ok(result);
+        }
+
+        [HttpPost("Refresh-Token")]
+        public async Task<ActionResult<RefreshTokenRequestDto>> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        {
+            var result = await _authService.RefreshTokenAsync(request);
+            return Ok(result);
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(
+     [FromBody] ChangePasswordRequestDto request)
+        {
+            var response = await _authService.ChangePasswordAsync(request);
+
+            if (!response.IsSuccess)
+                return BadRequest(response.Message);
+
+            return Ok(response);
         }
     }
 }
