@@ -16,7 +16,7 @@ namespace Infrastructure.Services.EmailService
         {
             _emailConfig = emailConfig;
         }
-        public async Task SendEmailAsync(Application.Services.Abstraction.Message message)
+        public async Task SendEmailAsync(Application.DTOs.Email.Message message)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace Infrastructure.Services.EmailService
             }
         }
 
-        private MimeMessage CreateEmailMessage(Application.Services.Abstraction.Message message)
+        private MimeMessage CreateEmailMessage(Application.DTOs.Email.Message message)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(MailboxAddress.Parse(_emailConfig.From));

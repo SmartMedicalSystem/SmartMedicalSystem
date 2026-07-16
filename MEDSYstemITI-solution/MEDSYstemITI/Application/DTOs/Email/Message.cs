@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Application.Services.Abstraction
+namespace Application.DTOs.Email
 {
     public class Message
     {

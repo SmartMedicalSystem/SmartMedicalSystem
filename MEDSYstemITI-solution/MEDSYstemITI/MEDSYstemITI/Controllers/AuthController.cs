@@ -54,7 +54,8 @@ namespace MEDSYstemITI.Controllers
             return Ok(response);
         }
 
-        [AllowAnonymous, HttpPost]
+        [AllowAnonymous]
+        [HttpPost("forget-password")]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequestDto request)
         {
             var response = await _authService.ForgetPasswordAsync(request);
@@ -62,6 +63,16 @@ namespace MEDSYstemITI.Controllers
             if (!response.IsSuccess)
                 return BadRequest(response.Message);
 
+
+            return Ok(response);
+        }
+
+        [HttpPost("new-password")]
+        public async Task<IActionResult> NewPassword([FromBody] NewPasswordRequestDto request)
+        {
+            var response = await _authService.NewPasswordAsync(request);
+            if (!response.IsSuccess)
+                return BadRequest(response.Message);
             return Ok(response);
         }
     }

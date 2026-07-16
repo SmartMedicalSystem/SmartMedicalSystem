@@ -3,6 +3,8 @@ using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using Domain.Identity;
 using Domain.IRepository;
+using System.Reflection.Metadata;
+using System.Net;
 
 namespace Application.Services;
 
@@ -10,11 +12,12 @@ public class AuthService : IAuthService
 {
     private readonly IMemberRepo _memberRepo;
     private readonly ITokenService _tokenService;
-
-    public AuthService(IMemberRepo memberRepo,ITokenService tokenService)
+    private readonly IEmailSender _emailSender;
+    public AuthService(IMemberRepo memberRepo,ITokenService tokenService, IEmailSender emailSender)
     {
         _memberRepo = memberRepo;
         _tokenService = tokenService;
+        _emailSender = emailSender;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request)
@@ -150,23 +153,96 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request)
     {
-        var user = await _memberRepo.FindByUsernameOrEmailAsync(request.CurrentPassword);
+        var user = await _memberRepo.FindByUsernameOrEmailAsync(request.Email);
 
         if (user is null)
             throw new Exception("User not found.");
 
-        var changedUser = await _memberRepo.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        var valid = await _memberRepo.IsValidPasswordAsync(request.CurrentPassword, user);
 
-        return await CreateAuthResponseAsync(
-            changedUser,
-            await _memberRepo.GetRoleAsync(changedUser),
-            "Password changed successfully");
+        if (valid is null)
+            throw new Exception("Current password is incorrect.");
+
+        var result = await _memberRepo.ChangePasswordAsync(user,request.CurrentPassword, request.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception(
+                string.Join(", ",
+                    result.Errors.Select(e => e.Description)));
+        }
+
+        return new AuthResponseDto
+        {
+            IsSuccess = true,
+            Message = "Password changed successfully."
+        };
     }
 
-    public Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request)
+    public async Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request)
     {
-        throw new NotImplementedException();
+        var token = await _memberRepo.GeneratePasswordResetTokenAsync(request.Email);
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return new AuthResponseDto
+            {
+                IsSuccess = true,
+                Message = "If the email exists, password reset instructions have been sent."
+            };
+        }
+
+        var encodedToken = WebUtility.UrlEncode(token);
+
+        var resetLink =
+            $"https://localhost:4200/reset-password?email={request.Email}&token={encodedToken}";
+
+        await _emailSender.SendEmailAsync( new Application.DTOs.Email.Message(new List<string> 
+        { request.Email },
+                "Reset Password",
+                $"""
+            You requested a password reset.
+
+            Click the following link:
+
+            {resetLink}
+
+            If you didn't request this, ignore this email.
+            """));
+
+        return new AuthResponseDto
+        {
+            IsSuccess = true,
+            Message = "If the email exists, password reset instructions have been sent."
+        };
     }
 
+    public async Task<AuthResponseDto> ResetPasswordAsync(NewPasswordRequestDto request)
+    {
+        var user = await _memberRepo.FindByUsernameOrEmailAsync(request.Email);
+
+        if (user is null)
+            throw new Exception("User not found.");
+
+        var decodedToken = WebUtility.UrlDecode(request.Token);
+
+        var result = await _memberRepo.ResetPasswordAsync(
+            request.Email,
+            decodedToken,
+            request.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception(
+                string.Join(", ",
+                    result.Errors.Select(e => e.Description)));
+        }
+
+        return new AuthResponseDto
+        {
+            IsSuccess = true,
+            Message = "Password has been reset successfully."
+        };
+    }
 
 }

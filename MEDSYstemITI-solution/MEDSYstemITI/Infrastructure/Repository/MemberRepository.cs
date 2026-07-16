@@ -119,17 +119,41 @@ namespace Infrastructure.Repository
                 .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
         }
 
-        public async Task<ApplicationUser?> ChangePasswordAsync(ApplicationUser user, string OldPassword, string newPassword)
+        public async Task<string?> GeneratePasswordResetTokenAsync(string email)
         {
-            var result = await _userManager.ChangePasswordAsync(user, OldPassword, newPassword);
+            var user = await _userManager.FindByEmailAsync(email);
 
-            if (!result.Succeeded)
+            if (user == null)
+                return null;
+           
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        }
+
+
+
+
+       public async Task<IdentityResult> ResetPasswordAsync(string email,string token,string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
             {
-                throw new Exception(
-                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                return IdentityResult.Failed(
+                    new IdentityError
+                    {
+                        Description = "User not found."
+                    });
             }
 
-            return user;
-            }
+            return await _userManager.ResetPasswordAsync(
+                user,
+                token,
+                newPassword);
+        }
+        public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
         }
     }
+}

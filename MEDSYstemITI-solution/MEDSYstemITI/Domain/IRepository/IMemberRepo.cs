@@ -27,8 +27,7 @@ namespace Domain.IRepository
             ApplicationUser user,
             string roleName);
 
-        Task<string?> GetRoleAsync(
-            ApplicationUser user);
+        Task<string?> GetRoleAsync(  ApplicationUser user);
 
         Task<IEnumerable<string>> GetPermissionsAsync(
             string roleName);
@@ -37,7 +36,11 @@ namespace Domain.IRepository
 
         Task<ApplicationUser?> GetByRefreshTokenAsync(string refreshToken);
 
-        Task<ApplicationUser?> ChangePasswordAsync(ApplicationUser user, string OldPassword, string newPassword);
+
+        Task<string?> GeneratePasswordResetTokenAsync(string email);
+        Task<IdentityResult> ResetPasswordAsync(string email, string token, string newPassword);
+
+        Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword);
 
     }
 }
