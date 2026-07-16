@@ -33,7 +33,14 @@ namespace MEDSYstemITI
             builder.Host.UseSerilog();
 
             // Add services
-            builder.Services.AddControllers();
+            // register filter so it can be resolved from DI (and receive ILogger via DI)
+            builder.Services.AddScoped<Infrastructure.Middleware.LoggingActionFilter>();
+
+            builder.Services.AddControllers(options =>
+            {
+                // global action filter to log every controller endpoint (resolve from DI)
+                options.Filters.AddService<Infrastructure.Middleware.LoggingActionFilter>();
+            });
 
             // Swagger
             builder.Services.AddEndpointsApiExplorer();
@@ -51,6 +58,8 @@ namespace MEDSYstemITI
 
             builder.Services.AddinfrastructreServices(builder.Configuration);
             builder.Services.AddApplicationServices();
+            // Enable service-level logging proxies for interface-registered services
+            builder.Services.EnableServiceLogging();
             builder.Services.AddSignalR();
             builder.Services.AddScoped<IFileStorageService, FileStorageService>();
             var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
