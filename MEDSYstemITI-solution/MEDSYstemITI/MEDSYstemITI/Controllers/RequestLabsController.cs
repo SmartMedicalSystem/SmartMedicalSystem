@@ -20,6 +20,27 @@ namespace MEDSYstemITI.Controllers
             _requestLabsService = requestLabsService;
         }
 
+        /// <summary>Backs the dashboard grid: Status/Priority/Test/Doctor filters + search + pagination.</summary>
+        [HttpGet]
+        [HasPermission(Permissions.ReadLabReport)]
+        public async Task<ActionResult<PaginatedResult<RequestLabsReadDto>>> GetFiltered(
+            [FromQuery] RequestLabsFilterDto filter,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var result = await _requestLabsService.GetFilteredAsync(filter, new PaginationParams(pageNumber, pageSize));
+            return Ok(result);
+        }
+
+        /// <summary>Backs the 3 stat cards (Total Requests / Pending / Completed Today).</summary>
+        [HttpGet("stats")]
+        [HasPermission(Permissions.ReadLabReport)]
+        public async Task<ActionResult<RequestLabsStatsDto>> GetStats()
+        {
+            var result = await _requestLabsService.GetStatsAsync();
+            return Ok(result);
+        }
+
         [HttpGet("by-session/{sessionId:int}")]
         [HasPermission(Permissions.ReadLabReport)]
         public async Task<ActionResult<PaginatedResult<RequestLabsReadDto>>> GetBySession(

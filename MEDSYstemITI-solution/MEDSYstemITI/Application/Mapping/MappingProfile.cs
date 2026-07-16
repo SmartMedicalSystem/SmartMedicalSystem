@@ -69,7 +69,14 @@ namespace Application.Mapping
 
 
             CreateMap<DomainEntities.RequestLabs, RequestLabsDto.RequestLabsReadDto>()
-                .ForMember(d => d.LabTestIds, opt => opt.MapFrom(s => s.LabTests.Select(lt => lt.Id).ToList()));
+    .ForMember(d => d.LabTestIds, opt => opt.MapFrom(s => s.LabTests.Select(lt => lt.Id).ToList()))
+    .ForMember(d => d.TestNames, opt => opt.MapFrom(s => s.LabTests.Select(lt => lt.TestName).ToList()))
+    .ForMember(d => d.PatientId, opt => opt.MapFrom(s => s.Session.PatientId))
+    .ForMember(d => d.PatientName, opt => opt.MapFrom(s => s.Session.Patient.FirstName + " " + s.Session.Patient.LastName))
+    .ForMember(d => d.SSN, opt => opt.MapFrom(s => s.Session.Patient.NationalId.ToString()))
+    .ForMember(d => d.DoctorId, opt => opt.MapFrom(s => s.Session.DoctorId))
+    .ForMember(d => d.DoctorName, opt => opt.MapFrom(s => s.Session.Doctor.Name))
+    .ForMember(d => d.DepartmentName, opt => opt.MapFrom(s => s.Session.Doctor.Department != null ? s.Session.Doctor.Department.Name : null));
 
             CreateMap<RequestLabsDto.RequestLabsCreateDto, DomainEntities.RequestLabs>();
             CreateMap<RequestLabsDto.RequestLabsUpdateStatusDto, DomainEntities.RequestLabs>();

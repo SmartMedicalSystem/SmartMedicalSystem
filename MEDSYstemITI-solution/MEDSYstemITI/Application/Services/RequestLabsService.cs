@@ -29,7 +29,7 @@ namespace Application.Services
             if (dto.LabTestIds is null || dto.LabTestIds.Count == 0)
                 throw new System.ArgumentException("At least one lab test must be requested.");
 
-            var entity = new Domain.Entities.RequestLabs(dto.SessionId, dto.RequestedAt);
+            var entity = new Domain.Entities.RequestLabs(dto.SessionId, dto.RequestedAt, dto.Priority);
 
             foreach (var labTestId in dto.LabTestIds.Distinct())
             {
@@ -39,7 +39,12 @@ namespace Application.Services
             }
 
             await _uow.RequestLabs.AddAsync(entity);
-            return _mapper.Map<RequestLabsReadDto>(entity);
+
+            // Re-fetch with Patient/Doctor/Department included so the mapper has everything it needs.
+            var created = await _uow.RequestLabs.GetWithLabTestsAsync(entity.Id)
+                ?? throw new NotFoundException("RequestLabs", entity.Id);
+
+            return _mapper.Map<RequestLabsReadDto>(created);
         }
 
         public async Task<RequestLabsReadDto> UpdateStatusAsync(int id, RequestLabsUpdateStatusDto dto)
@@ -49,7 +54,11 @@ namespace Application.Services
 
             entity.UpdateStatus(dto.Status);
             await _uow.RequestLabs.UpdateAsync(entity);
-            return _mapper.Map<RequestLabsReadDto>(entity);
+
+            var updated = await _uow.RequestLabs.GetWithLabTestsAsync(id)
+                ?? throw new NotFoundException("RequestLabs", id);
+
+            return _mapper.Map<RequestLabsReadDto>(updated);
         }
 
         public async Task<RequestLabsReadDto> GetByIdAsync(int id)
@@ -65,6 +74,36 @@ namespace Application.Services
             return PaginatedResult<RequestLabsReadDto>.Create(
                 _mapper.Map<IEnumerable<RequestLabsReadDto>>(page.Items),
                 page.TotalCount, pagination);
+        }
+
+        public async Task<PaginatedResult<RequestLabsReadDto>> GetFilteredAsync(RequestLabsFilterDto filter, PaginationParams pagination)
+        {
+            var filterParams = new RequestLabsFilterParams
+            {
+                Status = filter.Status,
+                Priority = filter.Priority,
+                LabTestId = filter.LabTestId,
+                DoctorId = filter.DoctorId,
+                SearchTerm = filter.SearchTerm
+            };
+
+            var page = await _uow.RequestLabs.GetFilteredAsync(filterParams, pagination);
+
+            return PaginatedResult<RequestLabsReadDto>.Create(
+                _mapper.Map<IEnumerable<RequestLabsReadDto>>(page.Items),
+                page.TotalCount, pagination);
+        }
+
+        public async Task<RequestLabsStatsDto> GetStatsAsync()
+        {
+            var stats = await _uow.RequestLabs.GetStatsAsync();
+
+            return new RequestLabsStatsDto
+            {
+                TotalRequests = stats.TotalRequests,
+                PendingCount = stats.PendingCount,
+                CompletedTodayCount = stats.CompletedTodayCount
+            };
         }
     }
 }
