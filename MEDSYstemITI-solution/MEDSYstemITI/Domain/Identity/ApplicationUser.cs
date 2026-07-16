@@ -12,13 +12,24 @@ namespace Domain.Identity
     // matching person record; remove them if that's not how you want it.
     public class ApplicationUser : IdentityUser<int>
     {
-        public string RefreshToken { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
 
         // Optional navigation to the domain person record that represents this account
         public BasePerson? Person { get; set; }
 
-        public ICollection<ApplicationRole> applicationRoles { get; set; }
-            = new List<ApplicationRole>();
+        public ICollection<ApplicationUserRole> UserRoles { get; set; }= new List<ApplicationUserRole>();
+
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public DateTime? LastLoginAt { get; set; }
+
+        public bool AllowLogin { get; set; }
+
+        public bool AccountActive { get; set; }
+
+        public bool ReceiveNotifications { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace Application.Services.Abstraction.Auth
         Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request);
 
         Task<AuthResponseDto> ResetPasswordAsync(NewPasswordRequestDto request);
+        Task<AuthResponseDto> NewPasswordAsync(NewPasswordRequestDto request);
 
     }
 }

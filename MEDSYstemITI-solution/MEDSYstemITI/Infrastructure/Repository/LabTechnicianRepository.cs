@@ -42,7 +42,7 @@ namespace Infrastructure.Repository
             return await _context.LabTechnicians
                 .FirstOrDefaultAsync(x =>
                     !x.IsDeleted &&
-                    x.NationalId == nationalId);
+                    x.EncryptedNationalId == nationalId);
         }
 
         public async Task<PaginatedResult<LabTechnician>> SearchAsync(

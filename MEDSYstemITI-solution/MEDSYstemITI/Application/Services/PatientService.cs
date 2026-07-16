@@ -47,17 +47,15 @@ namespace Application.Services
 
         public async Task<PatientReadDto> CreateAsync(PatientCreateDto dto)
         {
-            var nationalId = int.TryParse(dto.NationalId, out var nid) ? nid : throw new System.ArgumentException("Invalid NationalId", nameof(dto.NationalId));
+            var nationalId = dto.NationalId; // keep as string
             var entity = new Domain.Entities.Patient(dto.FirstName, dto.LastName, dto.DateOfBirth)
             {
-                NationalId = nid,
                 Gender = dto.Gender,
                 PhoneNumber = dto.MobileNumber.ToString(),
                 Address = dto.Address,
-                BloodType = dto.BloodType,
-                MobileNumber = dto.MobileNumber
+                BloodType = dto.BloodType
             };
-            await _personRepo.AddPerson(dto.NationalId, entity);
+            await _personRepo.AddPerson(nationalId, entity);
             return _mapper.Map<PatientReadDto>(entity);
         }
 

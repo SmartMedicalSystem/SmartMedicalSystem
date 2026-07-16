@@ -93,13 +93,12 @@ public static class DoctorSeeder
         var mobileDigits = contact.TrimStart('0');
         var d = new Doctor(name, specialization, contact, gender, departmentId)
         {
-         
-            Email        = email,
-            MobileNumber = mobileDigits,
-            Address      = address,
-            DateOfBirth  = dob,
-            NationalId   = (10000000 + new Random().Next(1, 1000000)).ToString(),   // synthetic unique National ID
-            CreatedAt    = DateTime.UtcNow
+            Email = email,
+            PhoneNumber = contact,
+            Address = address,
+            DateOfBirth = dob,
+            EncryptedNationalId = (10000000 + new Random().Next(1, 1000000)).ToString(),   // synthetic unique National ID (plain for seed)
+            CreatedAt = DateTime.UtcNow
         };
         return d;
     }

@@ -154,7 +154,8 @@ namespace Application.Services
             entity.Gender = dto.Gender;
             entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
             entity.Nationality = dto.Nationality;
-            entity.NationalId = dto.NationalId;
+            // Update encrypted national id via person repo so it's stored consistently
+            await _personRepo.UpdateSSNAsync(entity, dto.NationalId);
 
             entity.Laboratory = dto.Laboratory;
             entity.JobTitle = dto.JobTitle;

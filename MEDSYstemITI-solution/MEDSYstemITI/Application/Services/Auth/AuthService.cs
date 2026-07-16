@@ -20,6 +20,11 @@ public class AuthService : IAuthService
         _emailSender = emailSender;
     }
 
+    public Task<AuthResponseDto> NewPasswordAsync(NewPasswordRequestDto request)
+    {
+        return ResetPasswordAsync(request);
+    }
+
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request)
     {
         if (await _memberRepo.IsValidUsernameAsync(request.Username) != null)

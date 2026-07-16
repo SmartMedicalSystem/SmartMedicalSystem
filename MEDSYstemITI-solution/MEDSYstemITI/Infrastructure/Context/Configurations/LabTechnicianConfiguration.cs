@@ -26,8 +26,8 @@ namespace Infrastructures.Data.Configurations
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.Property(t => t.NationalId)
-                .HasMaxLength(20)
+            builder.Property(t => t.EncryptedNationalId)
+                .HasMaxLength(200)
                 .IsRequired();
 
             // Employment

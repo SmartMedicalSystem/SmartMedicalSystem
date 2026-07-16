@@ -17,6 +17,11 @@ namespace Domain.Entities
             LastName = parts.Length > 1 ? parts[1] : string.Empty;
             PhoneNumber = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
         }
+
+   
+        // Compatibility fields used by services
+        public string Username { get; set; } = string.Empty;
+
         // Personal Information
         // Employment / lab-specific fields
         public string Laboratory { get; set; } = string.Empty;
@@ -28,8 +33,5 @@ namespace Domain.Entities
 
         // Staff/account fields specific to technicians
         public string EmployeeId { get; set; } = string.Empty;
-        public string Username { get; set; } = string.Empty;
-        // National ID for the technician (string to allow leading zeros / mixed formats)
-        public string NationalId { get; set; } = string.Empty;
     }
 }

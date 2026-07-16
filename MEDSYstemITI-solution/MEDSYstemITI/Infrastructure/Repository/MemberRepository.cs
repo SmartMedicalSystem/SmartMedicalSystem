@@ -97,7 +97,7 @@ namespace Infrastructure.Repository
             return await _dbContext.RolePermissions
                 .AsNoTracking()
                 .Where(rp => rp.RoleId == role.Id)
-                .Select(rp => rp.permission.Name)
+                .Select(rp => rp.Permission.Name)
                 .ToListAsync();
         }
 

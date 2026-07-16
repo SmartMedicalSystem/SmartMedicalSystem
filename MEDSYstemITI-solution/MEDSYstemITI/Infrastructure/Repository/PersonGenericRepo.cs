@@ -23,23 +23,23 @@ namespace Infrastructure.Repository
         }
         public async Task<BasePerson?> FindBySSN(string ssn)
         {
-            var encryptedSSN = await _encryptionService.Encrypt(ssn);
+            var encrypted = await _encryptionService.Encrypt(ssn);
             var entity = await _context.Set<T>()
-                .FirstOrDefaultAsync(e => e.EncryptedSSN == encryptedSSN && !e.IsDeleted);
+                .FirstOrDefaultAsync(e => e.EncryptedNationalId == encrypted && !e.IsDeleted);
             return entity as BasePerson;
         }
 
         public async Task AddPerson(string ssn , BasePerson person ) 
         {
-            var encryptedSSN = await _encryptionService.Encrypt(ssn);
-            person.EncryptedSSN = encryptedSSN;
+            var encrypted = await _encryptionService.Encrypt(ssn);
+            person.EncryptedNationalId = encrypted;
             await _context.Set<T>().AddAsync((T)person);
         }
 
         public async Task UpdateSSNAsync(BasePerson person, string ssn)
         {
-            var encryptedSSN = await _encryptionService.Encrypt(ssn);
-            person.EncryptedSSN = encryptedSSN;
+            var encrypted = await _encryptionService.Encrypt(ssn);
+            person.EncryptedNationalId = encrypted;
             _context.Set<T>().Update((T)person);
             await _context.SaveChangesAsync();
         }

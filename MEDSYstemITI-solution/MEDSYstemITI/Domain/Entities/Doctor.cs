@@ -7,12 +7,7 @@ namespace Domain.Entities
     public class Doctor : BasePerson
     {
         // National identifier (string allows leading zeros or mixed formats)
-        public string NationalId { get; set; } = string.Empty;
         public string Specialization { get; private set; } = string.Empty;
-
-        // Keep a Name and MobileNumber property for compatibility with existing configs/queries
-        public string Name { get; private set; } = string.Empty;
-        public string MobileNumber { get; set; } = string.Empty;
 
         public int DepartmentId { get; private set; }   // FK -> Department (required staff membership)
 
@@ -21,38 +16,58 @@ namespace Domain.Entities
         // EF Core materialization constructor
         protected Doctor() { }
 
-        public Doctor(string name, string specialization, string contact, Gender gender, int departmentId)
-        {
-            var cleanName = Guard.NotNullOrWhiteSpace(name, nameof(name), 200);
-            var parts = cleanName.Split(' ', 2);
-            FirstName = parts[0];
-            LastName = parts.Length > 1 ? parts[1] : string.Empty;
-            Name = cleanName;
+      
 
+        // Constructor that accepts first & last name explicitly
+        public Doctor(
+            string firstName,
+            string lastName,
+            string specialization,
+            string phoneNumber,
+            Gender gender,
+            int departmentId)
+            : base(firstName, lastName, DateTime.Today) // use a non-default DOB for materialization; real DOB may be set later
+        {
             Specialization = Guard.NotNullOrWhiteSpace(specialization, nameof(specialization), 100);
-            PhoneNumber = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
-            MobileNumber = PhoneNumber;
+            PhoneNumber = Guard.NotNullOrWhiteSpace(phoneNumber, nameof(phoneNumber), 50);
             Gender = gender;
             DepartmentId = Guard.Positive(departmentId, nameof(departmentId));
         }
 
-        // Extended profile update to include contact details and address
+        // Overload matching service DTOs (includes contact and int mobile number)
         public void UpdateProfile(string name, string specialization, string contact, Gender gender, string email, int mobileNumber, string address)
         {
             var cleanName = Guard.NotNullOrWhiteSpace(name, nameof(name), 200);
             var parts = cleanName.Split(' ', 2);
             FirstName = parts[0];
             LastName = parts.Length > 1 ? parts[1] : string.Empty;
-            Name = cleanName;
 
             Specialization = Guard.NotNullOrWhiteSpace(specialization, nameof(specialization), 100);
-            PhoneNumber = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
-            Gender = gender;
+            // prefer explicit contact if provided, otherwise use mobileNumber
+            if (!string.IsNullOrWhiteSpace(contact))
+                PhoneNumber = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
+            else
+                PhoneNumber = Guard.NotNullOrWhiteSpace(mobileNumber.ToString(), nameof(mobileNumber), 50);
 
+            Gender = gender;
             Email = Guard.NotNullOrWhiteSpace(email, nameof(email), 150);
-            PhoneNumber = mobileNumber.ToString();
             Address = Guard.NotNullOrWhiteSpace(address, nameof(address), 250);
         }
+
+        // Compatibility constructor used by services/seeds that provide a single full name string
+        public Doctor(string fullName, string specialization, string phoneNumber, Gender gender, int departmentId)
+            : base(
+                  Guard.NotNullOrWhiteSpace(fullName, nameof(fullName), 200).Split(' ', 2).First(),
+                  Guard.NotNullOrWhiteSpace(fullName, nameof(fullName), 200).Split(' ', 2).ElementAtOrDefault(1) ?? string.Empty,
+                  DateTime.Today)
+        {
+            Specialization = Guard.NotNullOrWhiteSpace(specialization, nameof(specialization), 100);
+            PhoneNumber = Guard.NotNullOrWhiteSpace(phoneNumber, nameof(phoneNumber), 50);
+            Gender = gender;
+            DepartmentId = Guard.Positive(departmentId, nameof(departmentId));
+        }
+
+        // Extended profile update to include contact details and address (mobile handled via BasePerson)
 
         /// <summary>Updates the mutable profile fields of the doctor, re-validating each one.</summary>
         public void UpdateProfile(string name, string specialization, Gender gender,
@@ -62,11 +77,9 @@ namespace Domain.Entities
             var parts = cleanName.Split(' ', 2);
             FirstName = parts[0];
             LastName = parts.Length > 1 ? parts[1] : string.Empty;
-            Name = cleanName;
 
             Specialization = Guard.NotNullOrWhiteSpace(specialization, nameof(specialization), 100);
             PhoneNumber = Guard.NotNullOrWhiteSpace(mobileNumber, nameof(mobileNumber), 50);
-            MobileNumber = PhoneNumber;
             Gender = gender;
             Email = Guard.NotNullOrWhiteSpace(email, nameof(email), 100);
             Address = Guard.NotNullOrWhiteSpace(address, nameof(address), 250);

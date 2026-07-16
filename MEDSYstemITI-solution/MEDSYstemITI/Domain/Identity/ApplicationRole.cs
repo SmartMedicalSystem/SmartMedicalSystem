@@ -5,8 +5,7 @@ namespace Domain.Identity
 {
     public class ApplicationRole : IdentityRole<int>
     {
-        public ApplicationUser User { get; set; } = null!;
-
+        public ICollection<ApplicationUserRole> UserRoles { get; set; }  = new List<ApplicationUserRole>();
 
         public ICollection<RolePermission> RolePermissions { get; set; }
             = new List<RolePermission>();
