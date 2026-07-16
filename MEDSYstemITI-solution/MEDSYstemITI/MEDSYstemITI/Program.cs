@@ -1,6 +1,7 @@
 using Application.DependencyInjection;
 using Serilog;
 using Serilog.Events;
+using System.Linq;
 using Domain.IRepository;
 using Infrastructure.DataSeed;
 using MEDSYstemITI.Middleware;
@@ -68,6 +69,27 @@ namespace MEDSYstemITI
             builder.Services.AddScoped<IEmailSender, EmailSender>();
 
             builder.Services.AddSwaggerGen();
+
+            // Diagnostic: detect invalid open-generic IOptions<> registrations which cause
+            // "Open generic service type 'IOptions`1[TOptions]' requires registering an open generic implementation type." at Build().
+            var invalidOptionsRegistrations = builder.Services
+                .Where(d => d.ServiceType.IsGenericTypeDefinition
+                            && d.ServiceType.GetGenericTypeDefinition() == typeof(Microsoft.Extensions.Options.IOptions<>)
+                            && ((d.ImplementationType != null && !d.ImplementationType.IsGenericTypeDefinition)
+                                || d.ImplementationInstance != null
+                                || d.ImplementationFactory != null))
+                .ToList();
+
+            if (invalidOptionsRegistrations.Any())
+            {
+                Console.WriteLine("Invalid IOptions<> registrations found:");
+                foreach (var d in invalidOptionsRegistrations)
+                {
+                    Console.WriteLine($"ServiceType: {d.ServiceType}, ImplType: {d.ImplementationType}, HasInstance: {d.ImplementationInstance != null}, HasFactory: {d.ImplementationFactory != null}");
+                }
+                throw new ArgumentException("Open generic IOptions<> registered with non-open-generic implementation. See console output.");
+            }
+
             var app = builder.Build();
 
             // Configure HTTP pipeline

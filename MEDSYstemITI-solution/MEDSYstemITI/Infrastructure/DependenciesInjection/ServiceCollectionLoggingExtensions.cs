@@ -18,8 +18,20 @@ namespace Infrastructure.DependenciesInjection
             foreach (var descriptor in descriptors)
             {
                 // Only wrap service registrations that are interface -> concrete
-                if (descriptor.ServiceType.IsInterface && descriptor.ImplementationType != null)
-                {
+                // and not open-generic registrations. Wrapping open-generic
+                // registrations (e.g. IOptions<>) with an implementation factory
+                // causes the DI container to throw because open-generic service
+                // types require open-generic implementation types.
+                if (!descriptor.ServiceType.IsInterface || descriptor.ImplementationType == null)
+                    continue;
+
+                if (descriptor.ServiceType.IsGenericTypeDefinition)
+                    continue;
+
+                if (descriptor.ImplementationType.IsGenericTypeDefinition)
+                    continue;
+
+                // now safe to wrap
                     var serviceType = descriptor.ServiceType;
                     var implType = descriptor.ImplementationType;
 
@@ -51,7 +63,6 @@ namespace Infrastructure.DependenciesInjection
 
                         return proxy;
                     }, descriptor.Lifetime));
-                }
             }
 
             return services;
