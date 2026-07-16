@@ -28,7 +28,7 @@ namespace Application.Services
         // ============================================================
         public async Task<DepartmentReadDto> CreateAsync(DepartmentCreateDto dto)
         {
-            // Business rule: department names must be unique.
+            // Check unique name
             var isUnique = await _uow.Departments.IsDepartmentNameUniqueAsync(dto.Name);
             if (!isUnique)
                 throw new ArgumentException($"A department named '{dto.Name}' already exists.");
@@ -40,21 +40,23 @@ namespace Application.Services
                 dto.Status
             );
 
-            // Assign Head Doctor if provided
+            // ✅ Save department first to get Id
+            await _uow.Departments.AddAsync(entity);
+            await _uow.SaveChangesAsync();
+
+            // ✅ Now assign Head Doctor
             if (dto.HeadDoctorId.HasValue)
             {
                 var doctor = await _uow.Doctors.GetByIdAsync(dto.HeadDoctorId.Value);
                 if (doctor == null)
                     throw new NotFoundException("Doctor", dto.HeadDoctorId.Value);
 
-                if (doctor.DepartmentId != entity.Id)
-                    throw new ArgumentException("Head doctor must be a staff member of the same department.");
-
+                // ✅ Now doctor can be assigned to this department
+                doctor.ReassignDepartment(entity.Id);  // ← لازم يكون عندك Method في Doctor
                 entity.AssignHeadDoctor(dto.HeadDoctorId.Value, dto.HeadDoctor);
-            }
 
-            await _uow.Departments.AddAsync(entity);
-            await _uow.SaveChangesAsync();
+                await _uow.SaveChangesAsync();  // Save again
+            }
 
             return _mapper.Map<DepartmentReadDto>(entity);
         }

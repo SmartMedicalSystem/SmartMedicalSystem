@@ -46,7 +46,6 @@ namespace Domain.Entities
             string name,
             string headDoctor,
             int? floorNumber = null,
-            string? phoneExt = null,
             string? status = null)
         {
             Name = Guard.NotNullOrWhiteSpace(name, nameof(name), 100);
