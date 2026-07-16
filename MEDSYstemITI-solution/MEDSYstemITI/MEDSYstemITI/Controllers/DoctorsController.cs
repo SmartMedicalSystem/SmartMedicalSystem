@@ -3,8 +3,10 @@ using Application.Services.Abstraction;
 using Application.Services.Auth;
 using Domain.Enums;
 using Domain.Models;
+using Infrastructure.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MEDSYstemITI.Controllers
 {
@@ -14,14 +16,16 @@ namespace MEDSYstemITI.Controllers
     public class DoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
-
+      
         public DoctorsController(IDoctorService doctorService)
         {
             _doctorService = doctorService;
         }
+        
+
 
         [HttpGet("by-department/{departmentId:int}")]
-        [HasPermission(Permissions.ReadDoctor)]
+     //   [HasPermission(Permissions.ReadDoctor)]
         public async Task<ActionResult<PaginatedResult<DoctorReadDto>>> GetByDepartment(
             int departmentId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -30,7 +34,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet]
-        [HasPermission(Permissions.ReadDoctor)]
+     //   [HasPermission(Permissions.ReadDoctor)]
         public async Task<ActionResult<PaginatedResult<DoctorReadDto>>> GetAll(
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {

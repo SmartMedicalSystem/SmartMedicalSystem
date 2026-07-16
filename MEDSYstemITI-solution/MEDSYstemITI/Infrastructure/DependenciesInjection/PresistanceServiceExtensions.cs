@@ -49,7 +49,7 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<IRequestLabsRepo, RequestLabsRepository>();
             services.AddScoped<ISessionRepo, SessionRepository>();
             services.AddScoped<ITestElementRepo, TestElementRepository>();
-            services.AddScoped<IMemberRepo, MemberRepository>();
+            services.AddScoped<IMemberRepo, MemberRepo>();
 
             // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

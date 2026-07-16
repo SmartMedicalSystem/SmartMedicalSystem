@@ -70,5 +70,6 @@ namespace Application.Services
                 _mapper.Map<IEnumerable<DoctorReadDto>>(page.Items),
                 page.TotalCount, pagination);
         }
+        
     }
 }

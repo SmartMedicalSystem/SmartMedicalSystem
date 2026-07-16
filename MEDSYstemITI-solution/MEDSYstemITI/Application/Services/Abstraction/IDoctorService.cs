@@ -13,5 +13,7 @@ namespace Application.Services.Abstraction
         
         Task<PaginatedResult<DoctorReadDto>> GetAllAsync(PaginationParams pagination);
         Task DeleteAsync(int id);
+
+       
     }
 }
