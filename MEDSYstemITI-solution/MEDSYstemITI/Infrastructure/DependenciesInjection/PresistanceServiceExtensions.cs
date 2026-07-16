@@ -16,6 +16,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Infrastructure.Context.Configurations.Jwt;
 using System.Text;
+using Infrastructure.Services;
+using Infrastructure.Middleware;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.DependenciesInjection
 {
@@ -97,6 +101,33 @@ namespace Infrastructure.DependenciesInjection
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                     ClockSkew = TimeSpan.Zero
                 };
+                // Audit authentication events
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        try
+                        {
+                            var audit = context.HttpContext.RequestServices.GetService<IAuditService>();
+                            var userId = context.Principal?.FindFirst("sub")?.Value ?? context.Principal?.Identity?.Name;
+                            audit?.LogAuthenticationEvent(userId, "TokenValidated", "JWT token validated");
+                        }
+                        catch { }
+
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        try
+                        {
+                            var audit = context.HttpContext.RequestServices.GetService<IAuditService>();
+                            audit?.LogAuthenticationEvent(null, "AuthenticationFailed", context.Exception?.Message ?? "");
+                        }
+                        catch { }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             // Permission-based authorization: a custom policy provider builds a policy
@@ -105,6 +136,17 @@ namespace Infrastructure.DependenciesInjection
             // by PermissionAuthorizationHandler which checks the caller's JWT claims.
             services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+            // Logging, auditing and monitoring services
+            services.AddLogging();
+            services.AddHealthChecks();
+
+            // Audit service records authentication/authorization/rate-limit events
+            services.AddScoped<IAuditService, AuditService>();
+
+            // Rate limiting service and memory cache used by middleware
+            services.AddMemoryCache();
+            services.AddSingleton<IRateLimitService, InMemoryRateLimitService>();
             services.AddAuthorization();
 
             return services;

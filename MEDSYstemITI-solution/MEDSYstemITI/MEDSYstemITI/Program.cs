@@ -1,4 +1,6 @@
 using Application.DependencyInjection;
+using Serilog;
+using Serilog.Events;
 using Domain.IRepository;
 using Infrastructure.DataSeed;
 using MEDSYstemITI.Middleware;
@@ -9,7 +11,6 @@ using Infrastructure.Services;
 using Infrastructure.Services.EmailService;
 using Application.Services.Abstraction;
 using MEDSYstemITI.Hubs;
-using MEDSYstemITI.Middleware;
 
 
 namespace MEDSYstemITI
@@ -19,6 +20,17 @@ namespace MEDSYstemITI
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Configure Serilog early
+            var seqServerUrl = builder.Configuration["Serilog:SeqServerUrl"] ?? builder.Configuration["Seq:ServerUrl"];
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .WriteTo.Seq(seqServerUrl ?? "http://localhost:5341")
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
 
             // Add services
             builder.Services.AddControllers();
