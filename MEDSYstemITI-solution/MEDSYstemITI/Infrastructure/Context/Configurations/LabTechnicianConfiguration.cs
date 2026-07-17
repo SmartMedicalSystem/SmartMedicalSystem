@@ -32,13 +32,7 @@ namespace Infrastructures.Data.Configurations
 
             // Employment
 
-            builder.Property(t => t.EmployeeId)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            builder.HasIndex(t => t.EmployeeId)
-                .IsUnique();
-
+        
             builder.Property(t => t.Laboratory)
                 .HasMaxLength(100)
                 .IsRequired();

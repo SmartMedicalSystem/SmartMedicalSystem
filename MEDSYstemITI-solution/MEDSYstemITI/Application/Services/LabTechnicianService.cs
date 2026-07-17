@@ -83,8 +83,7 @@ namespace Application.Services
 
         public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
         {
-            if (await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId) is not null)
-                throw new Exception("Employee ID already exists.");
+        
 
             if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
                 throw new Exception("National ID already exists.");
@@ -99,7 +98,6 @@ namespace Application.Services
                 DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue),
                 Nationality = dto.Nationality,
 
-                EmployeeId = dto.EmployeeId,
                 Laboratory = dto.Laboratory,
                 JobTitle = dto.JobTitle,
                 EmploymentStatus = dto.EmploymentStatus,

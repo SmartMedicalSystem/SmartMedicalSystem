@@ -29,14 +29,7 @@ namespace Infrastructure.Repository
                 .ToListAsync();
         }
 
-        public async Task<LabTechnician?> GetByEmployeeIdAsync(string employeeId)
-        {
-            return await _context.LabTechnicians
-                .FirstOrDefaultAsync(x =>
-                    !x.IsDeleted &&
-                    x.EmployeeId == employeeId);
-        }
-
+ 
         public async Task<LabTechnician?> GetByNationalIdAsync(string nationalId)
         {
             return await _context.LabTechnicians
@@ -63,7 +56,6 @@ namespace Infrastructure.Repository
                 query = query.Where(x =>
                     x.FirstName.ToLower().Contains(search) ||
                     x.LastName.ToLower().Contains(search) ||
-                    x.EmployeeId.ToLower().Contains(search) ||
                     x.PhoneNumber.ToLower().Contains(search) ||
                     x.Email.ToLower().Contains(search));
             }
@@ -98,6 +90,11 @@ namespace Infrastructure.Repository
                 .ToListAsync();
 
             return PaginatedResult<LabTechnician>.Create(items, totalCount, pagination);
+        }
+
+        public Task<LabTechnician?> GetByEmployeeIdAsync(string employeeId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

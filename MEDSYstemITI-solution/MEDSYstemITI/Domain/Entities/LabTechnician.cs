@@ -31,7 +31,5 @@ namespace Domain.Entities
         public DateOnly JoiningDate { get; set; }
         public int YearsOfExperience { get; set; }
 
-        // Staff/account fields specific to technicians
-        public string EmployeeId { get; set; } = string.Empty;
     }
 }
