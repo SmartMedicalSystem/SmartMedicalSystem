@@ -10,7 +10,7 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("Patients");
 
-            builder.HasKey(p => p.Id);
+            // Key is configured on the root BasePerson type (see BasePersonConfiguration)
 
             // FirstName, LastName and Age now have public getters (private
             // setters) on Patient after the domain-validation pass, so they
@@ -28,7 +28,9 @@ namespace Infrastructure.Data.Configurations
             builder.Property(p => p.DateOfBirth)
                 .IsRequired();
 
-            builder.HasQueryFilter(p => !p.IsDeleted);
+            // NOTE: Global query filter for IsDeleted is defined on the
+            // BasePerson root entity. Do not add HasQueryFilter on derived
+            // types (Patient) as that causes EF Core to throw.
         }
     }
 }

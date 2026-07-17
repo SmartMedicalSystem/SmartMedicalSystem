@@ -10,7 +10,7 @@ namespace Infrastructures.Data.Configurations
         {
             builder.ToTable("LabTechnicians");
 
-            builder.HasKey(t => t.Id);
+            // Key is configured on the root BasePerson type (see BasePersonConfiguration)
 
             // Personal Information
 
@@ -86,7 +86,10 @@ namespace Infrastructures.Data.Configurations
 
             // Soft Delete
 
-            builder.HasQueryFilter(t => !t.IsDeleted);
+            // NOTE: The HasQueryFilter for IsDeleted is applied on the root
+            // BasePerson entity. Removing duplicate filters on derived types
+            // prevents EF Core InvalidOperationException when mapping the
+            // inheritance hierarchy.
         }
     }
 }

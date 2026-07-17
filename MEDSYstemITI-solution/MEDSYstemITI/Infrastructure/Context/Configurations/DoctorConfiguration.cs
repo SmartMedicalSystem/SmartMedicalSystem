@@ -10,7 +10,7 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("Doctors");
 
-            builder.HasKey(d => d.Id);
+            // Key is configured on the root BasePerson type (see BasePersonConfiguration)
 
             builder.Property(d => d.Name)
                 .IsRequired()
@@ -33,7 +33,10 @@ namespace Infrastructure.Data.Configurations
             // once, from DepartmentConfiguration (HasMany/WithOne), to avoid
             // configuring the same relationship from both sides.
 
-            builder.HasQueryFilter(d => !d.IsDeleted);
+            // NOTE: Do not set a query filter on derived types. A global
+            // query filter for IsDeleted is configured on the root of the
+            // inheritance hierarchy (BasePersonConfiguration). Applying
+            // the same HasQueryFilter here causes EF Core InvalidOperationException.
         }
     }
 }

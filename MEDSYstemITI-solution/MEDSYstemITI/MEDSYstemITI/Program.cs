@@ -89,16 +89,18 @@ namespace MEDSYstemITI
                 }
                 throw new ArgumentException("Open generic IOptions<> registered with non-open-generic implementation. See console output.");
             }
+            Console.WriteLine("Before Build");
 
             var app = builder.Build();
 
+            Console.WriteLine("After Build");
             // Configure HTTP pipeline
             if (app.Environment.IsDevelopment())
             {
                 //app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                
+
                 app.MapOpenApi();
             }
 
@@ -116,10 +118,10 @@ namespace MEDSYstemITI
 
             app.MapControllers();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                await DbInitializer.SeedAsync(scope.ServiceProvider);
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    await DbInitializer.SeedAsync(scope.ServiceProvider);
+            //}
 
             app.Run();
         }

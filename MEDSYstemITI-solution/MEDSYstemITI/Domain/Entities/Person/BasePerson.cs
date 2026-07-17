@@ -32,6 +32,7 @@ namespace Domain.Entities.Baseperson
 
                 return age;
             }
+            private set;
         }
 
 
