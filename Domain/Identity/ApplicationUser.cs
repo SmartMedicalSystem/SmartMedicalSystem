@@ -12,6 +12,7 @@ namespace Domain.Identity
     // matching person record; remove them if that's not how you want it.
     public class ApplicationUser : IdentityUser<int>
     {
+
         public string FullName { get; set; } = string.Empty;
         public string RefreshToken { get; set; } = string.Empty;
 

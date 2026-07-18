@@ -20,6 +20,7 @@ using Infrastructure.Services;
 using Infrastructure.Middleware;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
+using Application.Services.Abstraction;
 
 namespace Infrastructure.DependenciesInjection
 {

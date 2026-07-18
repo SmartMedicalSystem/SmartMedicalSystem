@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260717142508_testchanges17-7")]
-    partial class testchanges177
+    [Migration("20260718095703_Test")]
+    partial class Test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -523,7 +523,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -559,7 +560,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("RefreshToken")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
@@ -803,7 +805,8 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Identity.ApplicationUser", "ApplicationUser")
                         .WithOne("Person")
-                        .HasForeignKey("Domain.Entities.Baseperson.BasePerson", "ApplicationUserId");
+                        .HasForeignKey("Domain.Entities.Baseperson.BasePerson", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("ApplicationUser");
                 });

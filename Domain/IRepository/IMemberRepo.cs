@@ -1,4 +1,5 @@
-﻿using Domain.Identity;
+﻿using Domain.Entities.Baseperson;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,9 @@ namespace Domain.IRepository
             string password,
             ApplicationUser user);
 
-        Task<IdentityResult> RegisterAsync(
-            ApplicationUser applicationUser,
-            string password);
+        Task<IdentityResult> RegisterAsync( ApplicationUser applicationUser,string password);
+
+        Task<ApplicationUser?> GetByIdAsync(string userId , BasePerson person);
 
         Task AddRoleAsync(
             ApplicationUser user,
@@ -38,7 +39,7 @@ namespace Domain.IRepository
 
 
         Task<string?> GeneratePasswordResetTokenAsync(string email);
-        Task<IdentityResult> ResetPasswordAsync(string email, string token, string newPassword);
+        Task<IdentityResult> ResetPasswordAsync(ApplicationUser user, string newPassword);
 
         Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword);
 

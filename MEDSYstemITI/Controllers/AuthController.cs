@@ -33,15 +33,16 @@ namespace MEDSYstemITI.Controllers
             var result = await _authService.LoginAsync(request);
             return Ok(result);
         }
-        [Authorize]
+
+
         [HttpPost("Refresh-Token")]
-        public async Task<ActionResult<RefreshTokenRequestDto>> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        public async Task<ActionResult<AuthResponseDto>> RefreshToken([FromBody] RefreshTokenRequestDto request)
         {
             var result = await _authService.RefreshTokenAsync(request);
             return Ok(result);
         }
 
-        [Authorize]
+        //[Authorize]
 
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword( [FromBody] ChangePasswordRequestDto request)
@@ -70,9 +71,9 @@ namespace MEDSYstemITI.Controllers
         [HttpPost("new-password")]
         public async Task<IActionResult> NewPassword([FromBody] NewPasswordRequestDto request)
         {
-            var response = await _authService.NewPasswordAsync(request);
-            if (!response.IsSuccess)
-                return BadRequest(response.Message);
+            var response = await _authService.ResetPasswordAsync(request);
+            if (!response.isSuccess)
+                return BadRequest(response.message);
             return Ok(response);
         }
     }

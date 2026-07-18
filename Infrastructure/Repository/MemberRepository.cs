@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using Domain.Entities;
+using Domain.Entities.Baseperson;
 using Domain.Identity;
 using Domain.IRepository;
 using Infrastructure.Context;
@@ -55,8 +57,7 @@ namespace Infrastructure.Repository
                 : null;
         }
 
-        public async Task<IdentityResult> RegisterAsync(
-            ApplicationUser applicationUser,
+        public async Task<IdentityResult> RegisterAsync( ApplicationUser applicationUser,
             string password)
         {
             return await _userManager.CreateAsync(applicationUser, password);
@@ -132,28 +133,28 @@ namespace Infrastructure.Repository
 
 
 
-
-       public async Task<IdentityResult> ResetPasswordAsync(string email,string token,string newPassword)
+        public async Task<IdentityResult> ResetPasswordAsync(
+           ApplicationUser user,
+           string newPassword)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (user == null)
-            {
-                return IdentityResult.Failed(
-                    new IdentityError
-                    {
-                        Description = "User not found."
-                    });
-            }
+            var resetToken =
+                await _userManager.GeneratePasswordResetTokenAsync(user);
 
             return await _userManager.ResetPasswordAsync(
                 user,
-                token,
+                resetToken,
                 newPassword);
         }
+
+
         public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
         {
             return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
+
+        public async Task<ApplicationUser?> GetByIdAsync(string userId , BasePerson person)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id== person.Id);
         }
     }
 }

@@ -24,10 +24,7 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
-    public Task<AuthResponseDto> NewPasswordAsync(NewPasswordRequestDto request)
-    {
-        return ResetPasswordAsync(request);
-    }
+   
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request)
     {
@@ -35,14 +32,14 @@ public class AuthService : IAuthService
         if (await _memberRepo.IsValidUsernameAsync(request.Username) != null)
         {
             _logger.LogWarning("Registration failed: username exists {Username}", request.Username);
-        }
             throw new Exception("Username already exists.");
+        }
 
         if (await _memberRepo.IsValidEmailAsync(request.Email) != null)
         {
             _logger.LogWarning("Registration failed: email exists {Email}", request.Email);
-        }
             throw new Exception("Email already exists.");
+        }
 
         var user = new ApplicationUser
         {
@@ -108,7 +105,10 @@ public class AuthService : IAuthService
         return await CreateAuthResponseAsync(user, role, "Login successful");
     }
 
-    private async Task<AuthResponseDto> CreateAuthResponseAsync(ApplicationUser user, string role, string message)
+    private async Task<AuthResponseDto> CreateAuthResponseAsync(
+    ApplicationUser user,
+    string role,
+    string message)
     {
         if (string.IsNullOrWhiteSpace(user.UserName))
             throw new Exception("Username is missing.");
@@ -116,19 +116,33 @@ public class AuthService : IAuthService
         if (string.IsNullOrWhiteSpace(user.Email))
             throw new Exception("Email is missing.");
 
-        var permissions = await _memberRepo.GetPermissionsAsync(role);
+        var permissions =
+            await _memberRepo.GetPermissionsAsync(role);
 
+        var token =
+            await _tokenService.CreateTokenAsync(
+                user.UserName,
+                user.Email,
+                role,
+                permissions);
 
-        var token = await _tokenService.CreateTokenAsync(user.UserName, user.Email, role, permissions);
+        var refreshTokenResponse =
+            await _tokenService.GenerateRefreshToken();
 
         var refreshToken =
-            _tokenService.GenerateRefreshToken().ToString();
+            refreshTokenResponse.AccessToken;
 
         user.RefreshToken = refreshToken;
 
+        user.RefreshTokenExpiryTime =
+            refreshTokenResponse.ExpirationDate;
+
         await _memberRepo.UpdateAsync(user);
 
-        _logger.LogInformation("Generated tokens for user {User}. Expires at {Expiry}", user.UserName, token.ExpirationDate);
+        _logger.LogInformation(
+            "Generated tokens for user {User}. Expires at {Expiry}",
+            user.UserName,
+            token.ExpirationDate);
 
         return new AuthResponseDto
         {
@@ -243,33 +257,45 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<AuthResponseDto> ResetPasswordAsync(NewPasswordRequestDto request)
+    public async Task<ResetPasswordResponseDto> ResetPasswordAsync(
+    NewPasswordRequestDto request)
     {
-        _logger.LogInformation("Reset password attempt for {Email}", request.Email);
-        var user = await _memberRepo.FindByUsernameOrEmailAsync(request.Email);
+        _logger.LogInformation(
+            "Reset password attempt for {Email}",
+            request.Email);
+
+        var user =
+            await _memberRepo.FindByUsernameOrEmailAsync(request.Email);
 
         if (user is null)
             throw new Exception("User not found.");
 
-        var decodedToken = WebUtility.UrlDecode(request.Token);
-
-        var result = await _memberRepo.ResetPasswordAsync(
-            request.Email,
-            decodedToken,
-            request.NewPassword);
+        var result =
+            await _memberRepo.ResetPasswordAsync(
+                user,
+                request.NewPassword);
 
         if (!result.Succeeded)
         {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            _logger.LogWarning("Reset password failed for {Email}: {Errors}", request.Email, errors);
+            var errors =
+                string.Join(
+                    ", ",
+                    result.Errors.Select(e => e.Description));
+
+            _logger.LogWarning(
+                "Reset password failed for {Email}: {Errors}",
+                request.Email,
+                errors);
+
             throw new Exception(errors);
         }
 
-        return new AuthResponseDto
+        return new ResetPasswordResponseDto
         {
-            IsSuccess = true,
-            Message = "Password has been reset successfully."
+            isSuccess = true,
+            message = "Password has been reset successfully."
         };
     }
+
 
 }
