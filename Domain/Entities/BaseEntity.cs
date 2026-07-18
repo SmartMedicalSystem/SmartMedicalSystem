@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities
+using System;
+
+namespace Domain.Entities
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
         public int Id { get; set; }
 

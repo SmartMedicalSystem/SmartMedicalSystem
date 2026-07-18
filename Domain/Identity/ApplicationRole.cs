@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Domain.Entities.Baseperson;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Identity
 {
-    public  class ApplicationRole : IdentityRole<int>
+    public class ApplicationRole : IdentityRole<int>
     {
+        public ICollection<ApplicationUserRole> UserRoles { get; set; }  = new List<ApplicationUserRole>();
+
+        public ICollection<RolePermission> RolePermissions { get; set; }
+            = new List<RolePermission>();
     }
 }
