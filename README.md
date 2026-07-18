@@ -1,1 +1,0 @@
-# SmartMedicalSystem

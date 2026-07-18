@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Application/">
+    <Project Path="Application/Application.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Domain/Domain.csproj" />
+  </Folder>
+  <Folder Name="/infrastructure/">
+    <Project Path="Infrastructure/Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/presentationAPI/">
+    <Project Path="MEDSYstemITI/MEDSYstemITI.csproj" />
+  </Folder>
+</Solution>
