@@ -54,7 +54,7 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<IRequestLabsRepo, RequestLabsRepository>();
             services.AddScoped<ISessionRepo, SessionRepository>();
             services.AddScoped<ITestElementRepo, TestElementRepository>();
-            services.AddScoped<IMemberRepo, MemberRepository>();
+            services.AddScoped<IMemberRepo, MemberRepo>();
 
             // Person generic repository (handles encrypted SSN lookups)
             // Encryption service for SSN handling

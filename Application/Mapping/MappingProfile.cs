@@ -1,3 +1,4 @@
+using Application.DTOs.Department;
 using Application.DTOs.Doctor;
 using AutoMapper;
 using Domain.Entities;
@@ -37,9 +38,14 @@ namespace Application.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<DomainEntities.Department, DeptDto.DepartmentReadDto>();
-            CreateMap<DeptDto.DepartmentCreateDto, DomainEntities.Department>();
-            CreateMap<DeptDto.DepartmentUpdateDto, DomainEntities.Department>();
+            CreateMap<Department, DepartmentReadDto>()
+             .ForMember(dest => dest.Doctors, opt => opt.MapFrom(src => src.Doctors));
+
+            // Doctor mappings
+            CreateMap<Doctor, DoctorAtDepartmentDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Specialization, opt => opt.MapFrom(src => src.Specialization));
 
             CreateMap<DomainEntities.Doctor, DoctorDto.DoctorReadDto>()
                 .ForMember(d => d.DepartmentName, opt => opt.MapFrom(s => s.Department != null ? s.Department.Name : null));

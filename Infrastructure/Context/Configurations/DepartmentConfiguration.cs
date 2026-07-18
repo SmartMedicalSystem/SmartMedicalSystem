@@ -12,35 +12,53 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasKey(d => d.Id);
 
+            // Properties
             builder.Property(d => d.Name)
                 .IsRequired()
                 .HasMaxLength(150);
 
-            builder.Property(d => d.DepartmentMangager)
+            builder.Property(d => d.HeadDoctor)
                 .IsRequired()
                 .HasMaxLength(150);
 
-            // Head doctor: optional 1:1, no inverse navigation on Doctor.
-            // Restrict delete: removing a doctor should not silently delete
-            // the department; the head must be reassigned/cleared first.
-            builder.HasOne(d => d.Doctor)
+            builder.Property(d => d.FloorNumber)
+                .IsRequired(false);
+
+           
+
+            //builder.ToTable("Departments", t =>
+            //    t.HasCheckConstraint("CK_Departments_FloorNumber_Range", "[FloorNumber] IS NULL OR ([FloorNumber] >= 0 AND [FloorNumber] <= 50)"));
+
+            builder.Property(d => d.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Active");
+
+            // Head Doctor relationship
+            builder.HasOne(d => d.HeadDoctorEntity)
                 .WithMany()
-                .HasForeignKey(d => d.DoctorId)
+                .HasForeignKey(d => d.HeadDoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Enforces at most one department per head doctor.
-            // SQL Server unique indexes allow any number of NULLs, so
-            // departments with no head yet are not affected.
-            builder.HasIndex(d => d.DoctorId)
-                .IsUnique();
+            builder.HasIndex(d => d.HeadDoctorId)
+                .IsUnique()
+                .HasDatabaseName("IX_Departments_HeadDoctorId_Unique");
 
-            // Staff doctors belonging to this department (1:many)
+            // Staff doctors
             builder.HasMany(d => d.Doctors)
                 .WithOne(doc => doc.Department)
                 .HasForeignKey(doc => doc.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Soft delete filter
             builder.HasQueryFilter(d => !d.IsDeleted);
+
+            // Performance indexes
+            builder.HasIndex(d => d.Name)
+                .HasDatabaseName("IX_Departments_Name");
+
+            builder.HasIndex(d => d.Status)
+                .HasDatabaseName("IX_Departments_Status");
         }
     }
 }

@@ -147,5 +147,7 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<Doctor>.Create(items, totalCount, pagination);
         }
+
+       
     }
 }
