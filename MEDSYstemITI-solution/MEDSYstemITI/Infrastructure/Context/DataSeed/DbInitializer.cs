@@ -41,8 +41,45 @@ public static class DbInitializer
         var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        // ── Apply any pending migrations ─────────────────────────────────────────
-        await context.Database.MigrateAsync();
+        // ── Serialize migration+seeding across concurrent app instances ──────────
+        // If two instances of this app start at (almost) the same time — a second
+        // debug session, `dotnet watch` restarting while the old process is still
+        // shutting down, multiple replicas in production, etc. — they would
+        // otherwise both call MigrateAsync()/SaveChanges() against the same tables
+        // at once. SQL Server then has to grant conflicting schema/row locks to two
+        // transactions that each want what the other is holding, which is a
+        // textbook deadlock (Msg 1205) and can abort the migration entirely.
+        // sp_getapplock makes every instance queue up and take turns instead.
+        var connection = context.Database.GetDbConnection();
+        await connection.OpenAsync();
+        await using (var lockCmd = connection.CreateCommand())
+        {
+            lockCmd.CommandText =
+                "EXEC sp_getapplock @Resource = 'MEDSYstemITI_MigrateAndSeed', @LockMode = 'Exclusive', @LockOwner = 'Session', @LockTimeout = 60000;";
+            await lockCmd.ExecuteNonQueryAsync();
+
+            try
+            {
+                // ── Apply any pending migrations ─────────────────────────────────
+                await context.Database.MigrateAsync();
+
+                await RunSeedPipelineAsync(context, roleManager, userManager);
+            }
+            finally
+            {
+                await using var unlockCmd = connection.CreateCommand();
+                unlockCmd.CommandText =
+                    "EXEC sp_releaseapplock @Resource = 'MEDSYstemITI_MigrateAndSeed', @LockOwner = 'Session';";
+                await unlockCmd.ExecuteNonQueryAsync();
+            }
+        }
+    }
+
+    private static async Task RunSeedPipelineAsync(
+        ApplicationDbContext context,
+        RoleManager<ApplicationRole> roleManager,
+        UserManager<ApplicationUser> userManager)
+    {
 
         // ── 1-3: Identity / permission infrastructure ────────────────────────────
         await RoleSeeder.SeedAsync(roleManager);

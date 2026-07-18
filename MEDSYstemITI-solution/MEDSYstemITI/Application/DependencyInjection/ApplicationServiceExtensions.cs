@@ -3,6 +3,8 @@ using Application.Services;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using Application.Services.Auth;
+using Domain.IRepository;
+using MEDSYstemITI.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.DependencyInjection
@@ -26,11 +28,13 @@ namespace Application.DependencyInjection
             services.AddScoped<ILabTestElementService, LabTestElementService>();
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IRequestLabsService, RequestLabsService>();
-            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<INotificationService , NotificationService>();
+            services.AddScoped<INotificationAppService, NotificationAppService>();
             services.AddScoped<ILabTechnicianService, LabTechnicianService>();
             services.AddScoped<IPatientResultService, PatientResultService>();
             services.AddScoped<IPatientResultElementService, PatientResultElementService>();
             services.AddScoped<IAuthService, AuthService>();
+            
 
             return services;
         }

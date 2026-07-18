@@ -1,4 +1,5 @@
 using Application.DTOs.Doctor;
+using Application.DTOs.LabTechnician;
 using AutoMapper;
 using Domain.Entities;
 using System.Linq;
@@ -8,7 +9,7 @@ using DomainEntities = Domain.Entities;
 using LabTechnicianDto = Application.DTOs.LabTechnician;
 using LabTestDto = Application.DTOs.LabTest;
 using LabTestElementDto = Application.DTOs.LabTestElement;
-using NotificationDto = Application.DTOs.Notification;
+using NotificationDto = Application.DTOs.Notifiaction;
 using PatientDto = Application.DTOs.Patient;
 using PatientResultDto = Application.DTOs.PatientResult;
 using PatientResultElementDto = Application.DTOs.PatientResultElement;
@@ -80,7 +81,7 @@ namespace Application.Mapping
 
             CreateMap<DomainEntities.Notification, NotificationDto.NotificationReadDto>();
 
-            CreateMap<NotificationDto.NotificationCreateDto, DomainEntities.Notification>();
+            CreateMap<NotificationDto.NotificationReadDto, DomainEntities.Notification>();
 
 
 
@@ -88,6 +89,17 @@ namespace Application.Mapping
             CreateMap<LabTechnicianDto.LabTechnicianCreateDto, DomainEntities.LabTechnician>();
 
             CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
+            CreateMap<LabTechnician, LabTechnicianReadDto>()
+            .ForMember(
+             dest => dest.NationalId,
+             opt => opt.MapFrom(src => src.EncryptedNationalId)
+             );
+
+            CreateMap<LabTechnicianCreateDto, LabTechnician>()
+                .ForMember(
+                    dest => dest.EncryptedNationalId,
+                    opt => opt.MapFrom(src => src.NationalId)
+                );
 
 
 

@@ -7,9 +7,10 @@ namespace Application.Services.Abstraction
     public interface ILabTechnicianService
     {
         Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto);
-        Task<LabTechnicianReadDto> UpdateAsync(int id, LabTechnicianUpdateDto dto);
-        Task<LabTechnicianReadDto> GetByIdAsync(int id);
-        Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(PaginationParams pagination);
-        Task DeleteAsync(int id);
+        Task<LabTechnicianReadDto> UpdateAsync(string ssn, LabTechnicianUpdateDto dto);
+        Task<LabTechnicianReadDto> GetBySSNAsync(string ssn);
+        Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(LabTechnicianFilterDto filter);
+        Task DeleteAsync(string ssn);
+
     }
 }

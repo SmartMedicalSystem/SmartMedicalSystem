@@ -9,6 +9,10 @@ namespace Application.Services.Abstraction.Auth
         Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
         Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request);
         Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);
+        Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request);
+
+        Task<AuthResponseDto> ResetPasswordAsync(NewPasswordRequestDto request);
+        Task<AuthResponseDto> NewPasswordAsync(NewPasswordRequestDto request);
 
     }
 }

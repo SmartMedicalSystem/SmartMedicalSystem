@@ -38,11 +38,11 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{ssn}")]
         [HasPermission(Permissions.ReadDoctor)]
-        public async Task<ActionResult<DoctorReadDto>> GetById(int id)
+        public async Task<ActionResult<DoctorReadDto>> GetBySSN(string ssn)
         {
-            var result = await _doctorService.GetByIdAsync(id);
+            var result = await _doctorService.GetBySSNAsync(ssn);
             return Ok(result);
         }
 
@@ -51,22 +51,22 @@ namespace MEDSYstemITI.Controllers
         public async Task<ActionResult<DoctorReadDto>> Create([FromBody] DoctorCreateDto dto)
         {
             var result = await _doctorService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetBySSN), new { ssn = dto.NationalId }, result);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{ssn}")]
         [HasPermission(Permissions.UpdateDoctor)]
-        public async Task<ActionResult<DoctorReadDto>> Update(int id, [FromBody] DoctorUpdateDto dto)
+        public async Task<ActionResult<DoctorReadDto>> Update(string ssn, [FromBody] DoctorUpdateDto dto)
         {
-            var result = await _doctorService.UpdateAsync(id, dto);
+            var result = await _doctorService.UpdateAsync(ssn, dto);
             return Ok(result);
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{ssn}")]
         [HasPermission(Permissions.DeleteDoctor)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string ssn)
         {
-            await _doctorService.DeleteAsync(id);
+            await _doctorService.DeleteAsync(ssn);
             return NoContent();
         }
     }

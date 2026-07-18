@@ -4,6 +4,7 @@ using Application.Services.Abstraction;
 using AutoMapper;
 using Domain.IRepository;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,25 +13,17 @@ namespace Application.Services
     public class DoctorService : IDoctorService
     {
         private readonly IUnitOfWork _uow;
+        private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
 
-        public DoctorService(IUnitOfWork uow, IMapper mapper)
+        public DoctorService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
         {
             _uow = uow;
+            _personRepo = personRepo;
             _mapper = mapper;
         }
 
-        public async Task<DoctorReadDto> CreateAsync(DoctorCreateDto dto)
-        {
-            // Business rule: the department must exist before staffing a doctor to it.
-            var department = await _uow.Departments.GetByIdAsync(dto.DepartmentId)
-                ?? throw new NotFoundException("Department", dto.DepartmentId);
-
-            var entity = new Domain.Entities.Doctor(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.DepartmentId);
-            await _uow.Doctors.AddAsync(entity);
-            return _mapper.Map<DoctorReadDto>(entity);
-        }
-
+        // Compatibility overloads that accept entity id instead of SSN
         public async Task<DoctorReadDto> UpdateAsync(int id, DoctorUpdateDto dto)
         {
             var entity = await _uow.Doctors.GetByIdAsync(id)
@@ -41,10 +34,54 @@ namespace Application.Services
             return _mapper.Map<DoctorReadDto>(entity);
         }
 
+        // (int-based members implemented above)
+
         public async Task<DoctorReadDto> GetByIdAsync(int id)
         {
             var entity = await _uow.Doctors.GetByIdAsync(id)
                 ?? throw new NotFoundException("Doctor", id);
+            return _mapper.Map<DoctorReadDto>(entity);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _uow.Doctors.SoftDeleteAsync(id);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<DoctorReadDto> CreateAsync(DoctorCreateDto dto)
+        {
+            // Business rule: the department must exist before staffing a doctor to it.
+            var department = await _uow.Departments.GetByIdAsync(dto.DepartmentId)
+                ?? throw new NotFoundException("Department", dto.DepartmentId);
+
+            var entity = new Domain.Entities.Doctor(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.DepartmentId);
+            await _personRepo.AddPerson(dto.NationalId.ToString(), entity);
+            await _uow.SaveChangesAsync();
+            return _mapper.Map<DoctorReadDto>(entity);
+        }
+
+        
+        public async Task<DoctorReadDto> UpdateAsync(string ssn, DoctorUpdateDto dto)
+        {
+            var person = await _personRepo.FindBySSN(ssn)
+                ?? throw new NotFoundException("Doctor", ssn);
+
+            if (person is not Domain.Entities.Doctor entity)
+                throw new NotFoundException("Doctor", ssn);
+
+            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.Email, dto.MobileNumber, dto.Address);
+
+            // Persist changes and update encrypted SSN if NationalId changed
+            await _personRepo.UpdateSSNAsync(entity, dto.NationalId.ToString());
+
+            return _mapper.Map<DoctorReadDto>(entity);
+        }
+
+        public async Task<DoctorReadDto> GetBySSNAsync(string ssn)
+        {
+            var entity = await _personRepo.FindBySSN(ssn) as Domain.Entities.Doctor
+                ?? throw new NotFoundException("Doctor", ssn    );
             return _mapper.Map<DoctorReadDto>(entity);
         }
 
@@ -56,11 +93,12 @@ namespace Application.Services
                 page.TotalCount, pagination);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string ssn)
         {
-            var exists = await _uow.Doctors.ExistsAsync(id);
-            if (!exists) throw new NotFoundException("Doctor", id);
-            await _uow.Doctors.SoftDeleteAsync(id);
+            var person = await _personRepo.FindBySSN(ssn)
+                ?? throw new NotFoundException("Doctor", ssn);
+
+            await _uow.Doctors.SoftDeleteAsync(person.Id);
         }
 
         public async Task<PaginatedResult<DoctorReadDto>> GetAllAsync(PaginationParams pagination)

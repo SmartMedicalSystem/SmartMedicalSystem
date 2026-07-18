@@ -20,20 +20,20 @@ public static class NotificationSeeder
             return;
 
         // Resolve users that are known to exist after the other seeders run
-        var adminUser  = await userManager.FindByEmailAsync("admin@medsystem.local");
-        var drAhmed    = await userManager.FindByEmailAsync("ahmed.hassan@medsystem.local");
-        var drSara     = await userManager.FindByEmailAsync("sara.mohamed@medsystem.local");
-        var drHeba     = await userManager.FindByEmailAsync("heba.salah@medsystem.local");
+        var adminUser = await userManager.FindByEmailAsync("admin@medsystem.local");
+        var drAhmed = await userManager.FindByEmailAsync("ahmed.hassan@medsystem.local");
+        var drSara = await userManager.FindByEmailAsync("sara.mohamed@medsystem.local");
+        var drHeba = await userManager.FindByEmailAsync("heba.salah@medsystem.local");
 
         if (adminUser is null || drAhmed is null)
             return; // Skip if users haven't been seeded yet
 
         var notifications = new List<Notification>();
-   
+
 
         void Add(int userId, string message, DateTime sentAt, bool isRead = false)
         {
-            var n = new Notification(userId, message, sentAt) {  CreatedAt = sentAt };
+            var n = new Notification(userId, message, sentAt) { CreatedAt = sentAt };
             if (isRead) n.MarkAsRead();
             notifications.Add(n);
         }

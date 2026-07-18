@@ -139,13 +139,21 @@ namespace Infrastructure.Repository
             if (notification == null)
                 throw new InvalidOperationException($"Notification with ID {id} not found.");
 
-            notification.IsRead = true;
+            notification.MarkAsRead();
             notification.UpdatedAt = DateTime.UtcNow;
 
             _context.Notifications.Update(notification);
             await _context.SaveChangesAsync();
 
             return notification;
+        }
+        public async Task<int> GetUnreadCountAsync(int userId)
+        {
+            return await _context.Notifications
+                .CountAsync(x =>
+                    x.UserId == userId &&
+                    !x.IsRead &&
+                    !x.IsDeleted);
         }
     }
 }

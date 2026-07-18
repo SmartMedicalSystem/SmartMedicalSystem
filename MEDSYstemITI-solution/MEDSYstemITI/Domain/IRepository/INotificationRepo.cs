@@ -17,5 +17,6 @@ namespace Domain.IRepository
 
         // Entity-specific update
         Task<Notification> MarkAsReadAsync(int id);
+        Task<int> GetUnreadCountAsync(int userId);
     }
 }

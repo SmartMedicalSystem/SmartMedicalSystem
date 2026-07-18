@@ -1,71 +1,98 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
-    /// <summary>
-    /// Repository for managing LabTechnician entities.
-    /// Provides CRUD operations and specialized queries for lab technicians.
-    /// </summary>
     public class LabTechnicianRepository : GenericRepository<LabTechnician>, ILabTechnicianRepo
     {
-        public LabTechnicianRepository(ApplicationDbContext context) : base(context)
+        public LabTechnicianRepository(ApplicationDbContext context)
+            : base(context)
         {
         }
 
-        /// <summary>
-        /// Retrieves a lab technician by ID, excluding soft-deleted records.
-        /// </summary>
         public override async Task<LabTechnician?> GetByIdAsync(int id)
         {
             return await _context.LabTechnicians
-                .Where(lt => lt.Id == id && !lt.IsDeleted)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
-        /// <summary>
-        /// Retrieves all active (non-deleted) lab technicians from the database.
-        /// </summary>
         public override async Task<IEnumerable<LabTechnician>> GetAllAsync()
         {
             return await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted)
-                .OrderBy(lt => lt.Name)
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Searches for a lab technician by name (case-insensitive).
-        /// </summary>
-        public async Task<LabTechnician?> GetByNameAsync(string name)
+        //public async Task<LabTechnician?> GetByEmployeeIdAsync(string employeeId)
+        //{
+        //    return await _context.LabTechnicians
+        //        .FirstOrDefaultAsync(x =>
+        //            !x.IsDeleted &&
+        //            x.EmployeeId == employeeId);
+        //}
+
+        public async Task<LabTechnician?> GetByNationalIdAsync(string nationalId)
         {
             return await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted && lt.Name!.ToLower().Contains(name.ToLower()))
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x =>
+                    !x.IsDeleted &&
+                    x.EncryptedNationalId == nationalId);
         }
 
-        /// <summary>
-        /// Retrieves a paginated list of all active lab technicians.
-        /// Uses Skip and Take for pagination based on PageNumber and PageSize.
-        /// Example: Page 2, Size 10 = Skip(10).Take(10)
-        /// </summary>
-        public override async Task<PaginatedResult<LabTechnician>> GetAllPaginatedAsync(PaginationParams pagination)
+        public async Task<PaginatedResult<LabTechnician>> SearchAsync(
+        string? search,
+        string? laboratory,
+        EmploymentStatus? employmentStatus,
+        WorkShift? workShift,
+        DateOnly? joiningDate,
+        PaginationParams pagination)
         {
-            // Get total count of active records
-            var totalCount = await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted)
-                .CountAsync();
+            var query = _context.LabTechnicians
+                .Where(x => !x.IsDeleted);
 
-            // Get paginated records using Skip/Take
-            var items = await _context.LabTechnicians
-                .Where(lt => !lt.IsDeleted)
-                .OrderBy(lt => lt.Name)
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim().ToLower();
+
+                query = query.Where(x =>
+                    x.FirstName.ToLower().Contains(search) ||
+                    x.LastName.ToLower().Contains(search) ||
+                    //x.EmployeeId.ToLower().Contains(search) ||
+                    x.PhoneNumber.ToLower().Contains(search) ||
+                    x.Email.ToLower().Contains(search));
+            }
+
+            if (!string.IsNullOrWhiteSpace(laboratory))
+            {
+                query = query.Where(x => x.Laboratory.Contains(laboratory));
+            }
+
+            if (employmentStatus.HasValue)
+            {
+                query = query.Where(x => x.EmploymentStatus == employmentStatus.Value);
+            }
+
+            if (workShift.HasValue)
+            {
+                query = query.Where(x => x.WorkShift == workShift.Value);
+            }
+
+            if (joiningDate.HasValue)
+            {
+                query = query.Where(x => x.JoiningDate == joiningDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();

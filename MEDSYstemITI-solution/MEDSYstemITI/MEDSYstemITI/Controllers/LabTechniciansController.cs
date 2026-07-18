@@ -10,7 +10,7 @@ namespace MEDSYstemITI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     public class LabTechniciansController : ControllerBase
     {
         private readonly ILabTechnicianService _labTechnicianService;
@@ -21,43 +21,44 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet]
-        [HasPermission(Permissions.ReadLabTechnician)]
+        //[HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
-            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] LabTechnicianFilterDto filter)
         {
-            var result = await _labTechnicianService.GetAllAsync(new PaginationParams(pageNumber, pageSize));
+            var result = await _labTechnicianService.GetAllAsync(filter);
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
-        [HasPermission(Permissions.ReadLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> GetById(int id)
+        [HttpGet("{ssn}")]
+        //[HasPermission(Permissions.ReadLabTechnician)]
+        public async Task<ActionResult<LabTechnicianReadDto>> GetBySSN(string ssn)
         {
-            var result = await _labTechnicianService.GetByIdAsync(id);
+            var result = await _labTechnicianService.GetBySSNAsync(ssn);
             return Ok(result);
         }
 
         [HttpPost]
-        [HasPermission(Permissions.CreateLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> Create([FromBody] LabTechnicianCreateDto dto)
+        //[HasPermission(Permissions.CreateLabTechnician)]
+        public async Task<ActionResult<LabTechnicianReadDto>> Create(
+            [FromForm] LabTechnicianCreateDto dto)
         {
             var result = await _labTechnicianService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetBySSN), new { ssn = dto.NationalId }, result);
         }
 
-        [HttpPut("{id:int}")]
-        [HasPermission(Permissions.UpdateLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> Update(int id, [FromBody] LabTechnicianUpdateDto dto)
+        [HttpPut("{ssn}")]
+        //[HasPermission(Permissions.UpdateLabTechnician)]
+        public async Task<ActionResult<LabTechnicianReadDto>> Update(string ssn, [FromForm] LabTechnicianUpdateDto dto)
         {
-            var result = await _labTechnicianService.UpdateAsync(id, dto);
+            var result = await _labTechnicianService.UpdateAsync(ssn, dto);
             return Ok(result);
         }
 
-        [HttpDelete("{id:int}")]
-        [HasPermission(Permissions.DeleteLabTechnician)]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{ssn}")]
+        //[HasPermission(Permissions.DeleteLabTechnician)]
+        public async Task<IActionResult> Delete(string ssn)
         {
-            await _labTechnicianService.DeleteAsync(id);
+            await _labTechnicianService.DeleteAsync(ssn);
             return NoContent();
         }
     }
