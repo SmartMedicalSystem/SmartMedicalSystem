@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -6,7 +7,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Infrastructure.Services
 {
     /// <summary>
-    /// DispatchProxy that logs method entry/exit, arguments, duration and exceptions for interface-based services.
+    /// DispatchProxy that logs method entry/exit, arguments, duration and exceptions.
+    /// Supports synchronous methods, Task and Task&lt;T&gt;.
     /// </summary>
     public class LoggingDispatchProxy<T> : DispatchProxy where T : class
     {
@@ -22,80 +24,162 @@ namespace Infrastructure.Services
 
         protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
         {
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            if (_decorated is null) throw new InvalidOperationException("Proxy not configured");
+            if (targetMethod == null)
+                throw new ArgumentNullException(nameof(targetMethod));
 
-            var methodName = targetMethod.Name;
+            if (_decorated == null)
+                throw new InvalidOperationException("Proxy not configured.");
+
+            string methodName = targetMethod.Name;
+
+            _logger.LogInformation(
+                "Entering {Service}.{Method} with args {@Args}",
+                typeof(T).Name,
+                methodName,
+                args);
+
+            var stopwatch = Stopwatch.StartNew();
+
             try
             {
-                _logger?.LogInformation("Entering {Service}.{Method} with args {@Args}", typeof(T).Name, methodName, args);
+                object? result = targetMethod.Invoke(_decorated, args);
 
-                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                Type returnType = targetMethod.ReturnType;
 
-                var result = targetMethod.Invoke(_decorated, args);
+                // ---------------- Task ----------------
 
-                // If method returns Task or Task<T>, we need to await it to log duration and exceptions
-                if (result is Task task)
+                if (returnType == typeof(Task))
                 {
-                    var resultType = result.GetType();
-                    if (resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(Task<>))
-                    {
-                        // call generic interceptor that returns Task<TResult> via reflection
-                        var innerType = resultType.GetGenericArguments()[0];
-                        var methodInfo = typeof(LoggingDispatchProxy<T>).GetMethod(nameof(InterceptAsyncGeneric), BindingFlags.NonPublic | BindingFlags.Instance);
-                        var genericMethod = methodInfo!.MakeGenericMethod(innerType);
-                        return genericMethod.Invoke(this, new object[] { result, stopwatch, methodName })!;
-                    }
-
-                    return InterceptAsync(task, stopwatch, methodName);
+                    return InterceptAsync(
+                        (Task)result!,
+                        stopwatch,
+                        methodName);
                 }
 
+                // ---------------- Task<T> ----------------
+
+                if (returnType.IsGenericType &&
+                    returnType.GetGenericTypeDefinition() == typeof(Task<>))
+                {
+                    Type resultType = returnType.GetGenericArguments()[0];
+
+                    MethodInfo method =
+                        typeof(LoggingDispatchProxy<T>)
+                            .GetMethod(
+                                nameof(InterceptAsyncGeneric),
+                                BindingFlags.NonPublic | BindingFlags.Instance)!
+                            .MakeGenericMethod(resultType);
+
+                    return method.Invoke(
+                        this,
+                        new object[]
+                        {
+                            result!,
+                            stopwatch,
+                            methodName
+                        });
+                }
+
+                // ---------------- Sync ----------------
+
                 stopwatch.Stop();
-                _logger.LogInformation("Exiting {Service}.{Method} took {Elapsed}ms returned {@Result}", typeof(T).Name, methodName, stopwatch.Elapsed.TotalMilliseconds, result);
+
+                _logger.LogInformation(
+                    "Exiting {Service}.{Method} took {Elapsed} ms returned {@Result}",
+                    typeof(T).Name,
+                    methodName,
+                    stopwatch.ElapsedMilliseconds,
+                    result);
+
                 return result;
             }
-            catch (TargetInvocationException tie) when (tie.InnerException != null)
+            catch (TargetInvocationException ex) when (ex.InnerException != null)
             {
-                _logger?.LogError(tie.InnerException, "Exception in {Service}.{Method}", typeof(T).Name, methodName);
-                throw tie.InnerException;
+                stopwatch.Stop();
+
+                _logger.LogError(
+                    ex.InnerException,
+                    "Exception in {Service}.{Method}",
+                    typeof(T).Name,
+                    methodName);
+
+                throw ex.InnerException;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Exception in {Service}.{Method}", typeof(T).Name, methodName);
+                stopwatch.Stop();
+
+                _logger.LogError(
+                    ex,
+                    "Exception in {Service}.{Method}",
+                    typeof(T).Name,
+                    methodName);
+
                 throw;
             }
         }
 
-        private async Task InterceptAsync(Task task, Stopwatch stopwatch, string methodName)
+        private async Task InterceptAsync(
+            Task task,
+            Stopwatch stopwatch,
+            string methodName)
         {
             try
             {
                 await task.ConfigureAwait(false);
+
                 stopwatch.Stop();
-                _logger.LogInformation("Exiting {Service}.{Method} took {Elapsed}ms (async)", typeof(T).Name, methodName, stopwatch.Elapsed.TotalMilliseconds);
-                return;
+
+                _logger.LogInformation(
+                    "Exiting {Service}.{Method} took {Elapsed} ms",
+                    typeof(T).Name,
+                    methodName,
+                    stopwatch.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                _logger.LogError(ex, "Exception in {Service}.{Method} (async)", typeof(T).Name, methodName);
+
+                _logger.LogError(
+                    ex,
+                    "Exception in {Service}.{Method}",
+                    typeof(T).Name,
+                    methodName);
+
                 throw;
             }
         }
 
-        private async Task<TResult> InterceptAsyncGeneric<TResult>(Task<TResult> task, Stopwatch stopwatch, string methodName)
+        private async Task<TResult> InterceptAsyncGeneric<TResult>(
+            Task<TResult> task,
+            Stopwatch stopwatch,
+            string methodName)
         {
             try
             {
-                var result = await task.ConfigureAwait(false);
+                TResult result = await task.ConfigureAwait(false);
+
                 stopwatch.Stop();
-                _logger.LogInformation("Exiting {Service}.{Method} took {Elapsed}ms returned {@Result} (async)", typeof(T).Name, methodName, stopwatch.Elapsed.TotalMilliseconds, result);
+
+                _logger.LogInformation(
+                    "Exiting {Service}.{Method} took {Elapsed} ms returned {@Result}",
+                    typeof(T).Name,
+                    methodName,
+                    stopwatch.ElapsedMilliseconds,
+                    result);
+
                 return result;
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                _logger.LogError(ex, "Exception in {Service}.{Method} (async)", typeof(T).Name, methodName);
+
+                _logger.LogError(
+                    ex,
+                    "Exception in {Service}.{Method}",
+                    typeof(T).Name,
+                    methodName);
+
                 throw;
             }
         }

@@ -21,8 +21,16 @@ namespace Infrastructure.Context.Configurations
                 builder.HasOne(x => x.Role)
                     .WithMany(x => x.UserRoles)
                     .HasForeignKey(x => x.RoleId);
-          
 
+            builder.HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+
+            builder.HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
         }
     }
 }

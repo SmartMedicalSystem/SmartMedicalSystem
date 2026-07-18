@@ -25,6 +25,9 @@ namespace Infrastructure.DependenciesInjection
                 if (!descriptor.ServiceType.IsInterface || descriptor.ImplementationType == null)
                     continue;
 
+                if (descriptor.ImplementationType == null)
+                    continue;
+
                 if (descriptor.ServiceType.IsGenericTypeDefinition)
                     continue;
 
@@ -32,11 +35,11 @@ namespace Infrastructure.DependenciesInjection
                     continue;
 
                 // now safe to wrap
-                    var serviceType = descriptor.ServiceType;
+                var serviceType = descriptor.ServiceType;
                     var implType = descriptor.ImplementationType;
 
                     // Replace the registration with a factory that builds the implementation and wraps it with proxy
-                    services.Remove(descriptor);
+                services.Remove(descriptor);
 
                     services.Add(new ServiceDescriptor(serviceType, provider =>
                     {
@@ -55,7 +58,7 @@ namespace Infrastructure.DependenciesInjection
                         if (configureMethod != null)
                         {
                             // logger may be null if not registered; create a generic logger fallback
-                            var loggerType = typeof(ILogger<>).MakeGenericType(serviceType);
+                        var loggerType = typeof(ILogger<>).MakeGenericType(serviceType);
                             var loggerInstance = provider.GetService(loggerType);
 
                             configureMethod.Invoke(proxy, new[] { impl, loggerInstance });

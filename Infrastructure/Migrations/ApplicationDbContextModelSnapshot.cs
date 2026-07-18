@@ -157,6 +157,17 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("WorkShift")
+                        .HasColumnType("int");
+
+                    b.Property<int>("YearsOfExperience")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DoctorId")
