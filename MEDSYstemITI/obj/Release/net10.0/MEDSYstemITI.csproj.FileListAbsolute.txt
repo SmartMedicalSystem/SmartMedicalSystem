@@ -395,3 +395,4 @@ C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSy
 C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\SmartMedicalSystem\MEDSYstemITI\obj\Release\net10.0\MEDSYstemITI.pdb
 C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\SmartMedicalSystem\MEDSYstemITI\obj\Release\net10.0\MEDSYstemITI.genruntimeconfig.cache
 C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\SmartMedicalSystem\MEDSYstemITI\obj\Release\net10.0\ref\MEDSYstemITI.dll
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\MEDSYstemITI\obj\Release\net10.0\MEDSYstemITI.sourcelink.json

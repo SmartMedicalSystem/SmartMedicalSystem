@@ -27,3 +27,19 @@ C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSy
 C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.pdb
 C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.genruntimeconfig.cache
 C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\SmartMedicalSystem\Domain\obj\Debug\net10.0\ref\Domain.dll
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\bin\Debug\net10.0\Domain.deps.json
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\bin\Debug\net10.0\Domain.runtimeconfig.json
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\bin\Debug\net10.0\Domain.dll
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\bin\Debug\net10.0\Domain.pdb
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.csproj.AssemblyReference.cache
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.AssemblyInfoInputs.cache
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.AssemblyInfo.cs
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.csproj.CoreCompileInputs.cache
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.sourcelink.json
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.dll
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\refint\Domain.dll
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.pdb
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.genruntimeconfig.cache
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\SmartMedicalSystem\Domain\obj\Debug\net10.0\ref\Domain.dll
+C:\Users\fcb64\Dropbox\PC\Desktop\iti\Sessions\Graduation Project\SmartMedicalSystem\Domain\obj\Debug\net10.0\Domain.sourcelink.json

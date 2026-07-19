@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2D8M/YSIOAY=",
+  "dgSpecHash": "r3nSbmq1FhI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\fcb64\\Dropbox\\PC\\Desktop\\iti\\Sessions\\Graduation Project\\SmartMedicalSystem\\SmartMedicalSystem\\Domain\\Domain.csproj",
+  "projectFilePath": "C:\\Users\\fcb64\\Dropbox\\PC\\Desktop\\iti\\Sessions\\Graduation Project\\SmartMedicalSystem\\Domain\\Domain.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fcb64\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\fcb64\\.nuget\\packages\\microsoft.aspnetcore.connections.abstractions\\10.0.10\\microsoft.aspnetcore.connections.abstractions.10.0.10.nupkg.sha512",
