@@ -120,7 +120,10 @@
 //    }
 //}
 
+using System;
+using System.Linq;
 using Application.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
 using Application.Services.Abstraction;
 using Domain.IRepository;
 using Infrastructure.DataSeed;
@@ -141,7 +144,34 @@ namespace MEDSYstemITI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        var traceId = context.HttpContext.TraceIdentifier ?? Guid.NewGuid().ToString();
+
+                        var errors = context.ModelState
+                            .Where(kvp => kvp.Value.Errors.Count > 0)
+                            .SelectMany(kvp => kvp.Value.Errors.Select(e => new Application.Common.Models.ErrorDetail
+                            {
+                                Field = kvp.Key,
+                                Message = e.ErrorMessage
+                            }))
+                            .ToList();
+
+                        var response = new Application.Common.Models.ErrorResponse
+                        {
+                            StatusCode = 400,
+                            Message = "Validation failed.",
+                            ErrorCode = "VALIDATION_ERROR",
+                            TraceId = traceId,
+                            Errors = errors
+                        };
+
+                        return new BadRequestObjectResult(response);
+                    };
+                });
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();

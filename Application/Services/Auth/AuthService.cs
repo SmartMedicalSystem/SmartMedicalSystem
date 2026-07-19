@@ -6,6 +6,7 @@ using Domain.Identity;
 using Domain.IRepository;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using Application.Common;
 
 namespace Application.Services;
 
@@ -42,7 +43,7 @@ public class AuthService : IAuthService
                 "Registration failed: role is missing for {Username}",
                 request.Username);
 
-            throw new Exception("Role is required.");
+            throw new ValidationException("Role is required.") { };
         }
 
         if (!Enum.TryParse<Roles>(
@@ -54,7 +55,7 @@ public class AuthService : IAuthService
                 "Registration failed: invalid role {Role}",
                 request.Role);
 
-            throw new Exception("Invalid role.");
+            throw new ValidationException("Invalid role.") { };
         }
 
         if (await _memberRepo.IsValidUsernameAsync(
@@ -64,8 +65,7 @@ public class AuthService : IAuthService
                 "Registration failed: username exists {Username}",
                 request.Username);
 
-            throw new Exception(
-                "Username already exists.");
+            throw new ConflictException("Username already exists.", "USERNAME_ALREADY_EXISTS");
         }
 
         if (await _memberRepo.IsValidEmailAsync(
@@ -75,8 +75,7 @@ public class AuthService : IAuthService
                 "Registration failed: email exists {Email}",
                 request.Email);
 
-            throw new Exception(
-                "Email already exists.");
+            throw new ConflictException("Email already exists.", "EMAIL_ALREADY_EXISTS");
         }
 
         var user = new ApplicationUser
@@ -102,7 +101,7 @@ public class AuthService : IAuthService
                 request.Username,
                 errors);
 
-            throw new Exception(errors);
+            throw new ValidationException("Password validation failed.") { };
         }
 
         var roleAdded = await _memberRepo.AddRoleAsync(
@@ -116,8 +115,7 @@ public class AuthService : IAuthService
                 user.UserName,
                 requestedRole);
 
-            throw new Exception(
-                "User was created but role assignment failed.");
+            throw new InternalServerException("User was created but role assignment failed.");
         }
 
         _logger.LogInformation(
@@ -148,8 +146,8 @@ public class AuthService : IAuthService
                 "Login failed: user not found {UserOrEmail}",
                 request.UserNameOrEmail);
 
-            throw new Exception(
-                "Invalid username or email.");
+            // Do not reveal whether username or email exists
+            throw new UnauthorizedException("Invalid username or password.", "INVALID_CREDENTIALS");
         }
 
         var validUser =
@@ -163,8 +161,8 @@ public class AuthService : IAuthService
                 "Login failed: invalid password for {User}",
                 request.UserNameOrEmail);
 
-            throw new Exception(
-                "Invalid password.");
+            // Generic invalid credentials message to prevent user enumeration
+            throw new UnauthorizedException("Invalid username or password.", "INVALID_CREDENTIALS");
         }
 
         var role =
@@ -176,8 +174,7 @@ public class AuthService : IAuthService
                 "Login failed: no role for user {User}",
                 user.UserName);
 
-            throw new Exception(
-                "User has no assigned role.");
+            throw new UnauthorizedException("User has no assigned role.", "ROLE_REQUIRED");
         }
 
         _logger.LogInformation(
@@ -197,12 +194,10 @@ public class AuthService : IAuthService
             string message)
     {
         if (string.IsNullOrWhiteSpace(user.UserName))
-            throw new Exception(
-                "Username is missing.");
+            throw new InternalServerException("Username is missing.");
 
         if (string.IsNullOrWhiteSpace(user.Email))
-            throw new Exception(
-                "Email is missing.");
+            throw new InternalServerException("Email is missing.");
 
         var permissions =
             await _memberRepo.GetPermissionsAsync(role);
@@ -259,15 +254,13 @@ public class AuthService : IAuthService
             _logger.LogWarning(
                 "Refresh token failed: invalid token");
 
-            throw new Exception(
-                "Invalid refresh token.");
+            throw new UnauthorizedException("Invalid refresh token.", "INVALID_REFRESH_TOKEN");
         }
 
         if (string.IsNullOrWhiteSpace(
                 user.RefreshToken))
         {
-            throw new Exception(
-                "Refresh token is missing.");
+            throw new UnauthorizedException("Refresh token is missing.", "INVALID_REFRESH_TOKEN");
         }
 
         if (user.RefreshTokenExpiryTime <=
@@ -277,8 +270,7 @@ public class AuthService : IAuthService
                 "Refresh token expired for user {User}",
                 user.UserName);
 
-            throw new Exception(
-                "Refresh token has expired.");
+            throw new UnauthorizedException("Refresh token has expired.", "REFRESH_TOKEN_EXPIRED");
         }
 
         var role =
@@ -317,8 +309,7 @@ public class AuthService : IAuthService
                 request.Email);
 
         if (user is null)
-            throw new Exception(
-                "User not found.");
+            throw new NotFoundException("User not found.", "USER_NOT_FOUND");
 
         var valid =
             await _memberRepo.IsValidPasswordAsync(
@@ -331,8 +322,7 @@ public class AuthService : IAuthService
                 "Change password failed: incorrect current password for {Email}",
                 request.Email);
 
-            throw new Exception(
-                "Current password is incorrect.");
+            throw new UnauthorizedException("Current password is incorrect.", "INVALID_CURRENT_PASSWORD");
         }
 
         var result =
@@ -354,7 +344,7 @@ public class AuthService : IAuthService
                 request.Email,
                 errors);
 
-            throw new Exception(errors);
+            throw new ValidationException("Password validation failed.") { };
         }
 
         return new AuthResponseDto
@@ -379,6 +369,7 @@ public class AuthService : IAuthService
 
         if (string.IsNullOrWhiteSpace(token))
         {
+            // Do not reveal whether the email exists
             return new AuthResponseDto
             {
                 IsSuccess = true,
@@ -433,8 +424,7 @@ public class AuthService : IAuthService
                 request.Email);
 
         if (user is null)
-            throw new Exception(
-                "User not found.");
+            throw new NotFoundException("User not found.", "USER_NOT_FOUND");
 
         var result =
             await _memberRepo.ResetPasswordAsync(
@@ -454,7 +444,7 @@ public class AuthService : IAuthService
                 request.Email,
                 errors);
 
-            throw new Exception(errors);
+            throw new ValidationException("Password validation failed.") { };
         }
 
         return new ResetPasswordResponseDto
