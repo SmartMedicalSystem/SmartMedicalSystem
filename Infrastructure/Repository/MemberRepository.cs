@@ -63,9 +63,7 @@ namespace Infrastructure.Repository
             return await _userManager.CreateAsync(applicationUser, password);
         }
 
-        public async Task AddRoleAsync(
-            ApplicationUser user,
-            string roleName)
+        public async Task<bool> AddRoleAsync( ApplicationUser user,string roleName)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
                 throw new Exception($"Role '{roleName}' does not exist.");
@@ -74,9 +72,10 @@ namespace Infrastructure.Repository
 
             if (!result.Succeeded)
             {
-                throw new Exception(
-                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                return false;
             }
+
+            return true;
         }
 
         public async Task<string?> GetRoleAsync(ApplicationUser user)

@@ -25,6 +25,8 @@ namespace Domain.Enums
         UpdateAiReport,
         DeleteAiReport,
 
+        CreateUser,
+
         // Doctors
         ReadDoctor,
         CreateDoctor,
