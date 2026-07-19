@@ -10,8 +10,6 @@ using MEDSYstemITI.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Events;
-using System;
-using System.Linq;
 
 namespace MEDSYstemITI
 {
@@ -20,14 +18,14 @@ namespace MEDSYstemITI
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-        // =========================================================
-        // Serilog Configuration
-        // =========================================================
+            // =========================================================
+            // Serilog Configuration
+            // =========================================================
 
-        var seqServerUrl =
-            builder.Configuration["Serilog:SeqServerUrl"]
-            ?? builder.Configuration["Seq:ServerUrl"]
-            ?? "http://localhost:5341";
+            var seqServerUrl =
+                builder.Configuration["Serilog:SeqServerUrl"]
+                ?? builder.Configuration["Seq:ServerUrl"]
+                ?? "http://localhost:5341";
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
@@ -61,7 +59,7 @@ namespace MEDSYstemITI
 
             builder.Host.UseSerilog();
 
-           // builder.Services.EnableServiceLogging();
+            // builder.Services.EnableServiceLogging();
 
             // =========================================================
             // Controllers
