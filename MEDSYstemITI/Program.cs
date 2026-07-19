@@ -1,129 +1,4 @@
-//using Application.DependencyInjection;
-//using Serilog;
-//using Serilog.Events;
-//using System.Linq;
-//using Domain.IRepository;
-//using Infrastructure.DataSeed;
-//using MEDSYstemITI.Middleware;
-////using Microsoft.OpenApi.Models;
-//using Swashbuckle.AspNetCore.SwaggerGen;
-//using Infrastructure.DependenciesInjection;
-//using Infrastructure.Services;
-//using Infrastructure.Services.EmailService;
-//using Application.Services.Abstraction;
-//using MEDSYstemITI.Hubs;
-
-
-//namespace MEDSYstemITI
-//{
-//    public class Program
-//    {
-//        public static async Task Main(string[] args)
-//        {
-//            var builder = WebApplication.CreateBuilder(args);
-
-//            // Configure Serilog early
-//            var seqServerUrl = builder.Configuration["Serilog:SeqServerUrl"] ?? builder.Configuration["Seq:ServerUrl"];
-//            Log.Logger = new LoggerConfiguration()
-//                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-//                .Enrich.FromLogContext()
-//                .WriteTo.Console()
-//                .WriteTo.Seq(seqServerUrl ?? "http://localhost:5341")
-//                .CreateLogger();
-
-//            builder.Host.UseSerilog();
-
-//            // Add services
-//            // register filter so it can be resolved from DI (and receive ILogger via DI)
-
-
-//            // Swagger
-//            builder.Services.AddEndpointsApiExplorer();
-//            builder.Services.AddSwaggerGen();
-
-//            builder.Services.AddCors(options =>
-//            {
-//                options.AddPolicy("DefaultCorsPolicy", policy =>
-//                {
-//                    policy.AllowAnyHeader()
-//                          .AllowAnyMethod()
-//                          .AllowAnyOrigin();
-//                });
-//            });
-
-//            builder.Services.AddinfrastructreServices(builder.Configuration);
-//            builder.Services.AddApplicationServices();
-//            // Enable service-level logging proxies for interface-registered services
-//            builder.Services.EnableServiceLogging();
-//            builder.Services.AddSignalR();
-//            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
-//            var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
-//                .Get<EmailConfiguration>();
-//            builder.Services.AddSingleton(emailConfig);
-//            builder.Services.AddScoped<IEmailSender, EmailSender>();
-
-//            builder.Services.AddSwaggerGen();
-
-//            // Diagnostic: detect invalid open-generic IOptions<> registrations which cause
-//            // "Open generic service type 'IOptions`1[TOptions]' requires registering an open generic implementation type." at Build().
-//            var invalidOptionsRegistrations = builder.Services
-//                .Where(d => d.ServiceType.IsGenericTypeDefinition
-//                            && d.ServiceType.GetGenericTypeDefinition() == typeof(Microsoft.Extensions.Options.IOptions<>)
-//                            && ((d.ImplementationType != null && !d.ImplementationType.IsGenericTypeDefinition)
-//                                || d.ImplementationInstance != null
-//                                || d.ImplementationFactory != null))
-//                .ToList();
-
-//            if (invalidOptionsRegistrations.Any())
-//            {
-//                Console.WriteLine("Invalid IOptions<> registrations found:");
-//                foreach (var d in invalidOptionsRegistrations)
-//                {
-//                    Console.WriteLine($"ServiceType: {d.ServiceType}, ImplType: {d.ImplementationType}, HasInstance: {d.ImplementationInstance != null}, HasFactory: {d.ImplementationFactory != null}");
-//                }
-//                throw new ArgumentException("Open generic IOptions<> registered with non-open-generic implementation. See console output.");
-//            }
-
-//            var app = builder.Build();
-
-//            // Configure HTTP pipeline
-//            if (app.Environment.IsDevelopment())
-//            {
-//                //app.UseDeveloperExceptionPage();
-//                app.UseSwagger();
-//                app.UseSwaggerUI();
-
-//                app.MapOpenApi();
-//            }
-
-//            app.UseGlobalExceptionHandling();
-
-//            app.UseHttpsRedirection();
-
-//            app.UseCors("DefaultCorsPolicy");
-
-//            app.UseStaticFiles();
-//            app.UseAuthentication();
-//            app.UseAuthorization();
-//            app.MapHub<NotificationHub>("/notificationHub");
-
-
-//            app.MapControllers();
-
-//            //using (var scope = app.Services.CreateScope())
-//            //{
-//            //    await DbInitializer.SeedAsync(scope.ServiceProvider);
-//            //}
-
-//            app.Run();
-//        }
-//    }
-//}
-
-using System;
-using System.Linq;
 using Application.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
 using Application.Services.Abstraction;
 using Domain.IRepository;
 using Infrastructure.DataSeed;
@@ -132,8 +7,11 @@ using Infrastructure.Services;
 using Infrastructure.Services.EmailService;
 using MEDSYstemITI.Hubs;
 using MEDSYstemITI.Middleware;
-//using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using Serilog.Events;
+using System;
+using System.Linq;
 
 namespace MEDSYstemITI
 {
@@ -142,90 +20,243 @@ namespace MEDSYstemITI
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+        // =========================================================
+        // Serilog Configuration
+        // =========================================================
 
-            // Add services to the container.
+        var seqServerUrl =
+            builder.Configuration["Serilog:SeqServerUrl"]
+            ?? builder.Configuration["Seq:ServerUrl"]
+            ?? "http://localhost:5341";
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+
+                // Reduce noisy framework logs
+                .MinimumLevel.Override(
+                    "Microsoft",
+                    LogEventLevel.Warning)
+
+                .MinimumLevel.Override(
+                    "Microsoft.AspNetCore",
+                    LogEventLevel.Warning)
+
+                .MinimumLevel.Override(
+                    "Microsoft.EntityFrameworkCore",
+                    LogEventLevel.Warning)
+
+                // Add useful context to every log
+                .Enrich.FromLogContext()
+                .Enrich.WithProperty(
+                    "Application",
+                    "MEDSystem")
+
+                // Console logs
+                .WriteTo.Console()
+
+                // Seq logs
+                .WriteTo.Seq(seqServerUrl)
+
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
+
+           // builder.Services.EnableServiceLogging();
+
+            // =========================================================
+            // Controllers
+            // =========================================================
+
             builder.Services.AddControllers()
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = context =>
                     {
-                        var traceId = context.HttpContext.TraceIdentifier ?? Guid.NewGuid().ToString();
+                        var traceId =
+                            context.HttpContext.TraceIdentifier
+                            ?? Guid.NewGuid().ToString();
 
                         var errors = context.ModelState
-                            .Where(kvp => kvp.Value.Errors.Count > 0)
-                            .SelectMany(kvp => kvp.Value.Errors.Select(e => new Application.Common.Models.ErrorDetail
-                            {
-                                Field = kvp.Key,
-                                Message = e.ErrorMessage
-                            }))
+                            .Where(kvp =>
+                                kvp.Value.Errors.Count > 0)
+                            .SelectMany(kvp =>
+                                kvp.Value.Errors.Select(e =>
+                                    new Application.Common.Models.ErrorDetail
+                                    {
+                                        Field = kvp.Key,
+                                        Message = e.ErrorMessage
+                                    }))
                             .ToList();
 
-                        var response = new Application.Common.Models.ErrorResponse
-                        {
-                            StatusCode = 400,
-                            Message = "Validation failed.",
-                            ErrorCode = "VALIDATION_ERROR",
-                            TraceId = traceId,
-                            Errors = errors
-                        };
+                        var response =
+                            new Application.Common.Models.ErrorResponse
+                            {
+                                StatusCode = 400,
+                                Message = "Validation failed.",
+                                ErrorCode = "VALIDATION_ERROR",
+                                TraceId = traceId,
+                                Errors = errors
+                            };
 
                         return new BadRequestObjectResult(response);
                     };
                 });
 
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            // =========================================================
+            // OpenAPI / Swagger
+            // =========================================================
+
             builder.Services.AddOpenApi();
+            builder.Services.AddSwaggerGen();
+
+            // =========================================================
+            // CORS
+            // =========================================================
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("DefaultCorsPolicy", policy =>
-                {
-                    policy.AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowAnyOrigin();
-                });
+                options.AddPolicy(
+                    "DefaultCorsPolicy",
+                    policy =>
+                    {
+                        policy
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowAnyOrigin();
+                    });
             });
 
-            builder.Services.AddinfrastructreServices(builder.Configuration);
+            // =========================================================
+            // Application & Infrastructure
+            // =========================================================
+
+            builder.Services.AddinfrastructreServices(
+                builder.Configuration);
+
             builder.Services.AddApplicationServices();
-            builder.Services.AddSwaggerGen();
+
+            // =========================================================
+            // SignalR
+            // =========================================================
 
             builder.Services.AddSignalR();
-            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
-            var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
-                .Get<EmailConfiguration>();
-            builder.Services.AddSingleton(emailConfig);
-            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            // =========================================================
+            // File Storage
+            // =========================================================
+
+            builder.Services.AddScoped<
+                IFileStorageService,
+                FileStorageService>();
+
+            // =========================================================
+            // Email
+            // =========================================================
+
+            var emailConfig =
+                builder.Configuration
+                    .GetSection("EmailConfiguration")
+                    .Get<EmailConfiguration>();
+
+            builder.Services.AddSingleton(emailConfig!);
+
+
+            builder.Services.AddScoped<
+                IEmailSender,
+                EmailSender>();
+
+            // =========================================================
+            // Build Application
+            // =========================================================
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // =========================================================
+            // HTTP Pipeline
+            // =========================================================
+
             if (app.Environment.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
 
                 app.MapOpenApi();
             }
 
+            app.UseStaticFiles();
+
+            // Exception handling should be early
             app.UseGlobalExceptionHandling();
+
             app.UseHttpsRedirection();
+
             app.UseCors("DefaultCorsPolicy");
+
             app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.MapControllers();
-            app.MapHub<NotificationHub>("/notificationHub");
 
-            //   // Applies pending migrations and seeds roles/permissions/admin user.
-            using (var scope = app.Services.CreateScope())
+            app.MapHub<NotificationHub>(
+                "/notificationHub");
+
+            // =========================================================
+            // Database Seeding
+            // =========================================================
+
+            using (var scope =
+                app.Services.CreateScope())
             {
-                await DbInitializer.SeedAsync(scope.ServiceProvider);
+                var logger =
+                    scope.ServiceProvider
+                        .GetRequiredService<
+                            ILogger<Program>>();
+
+                try
+                {
+                    logger.LogInformation(
+                        "Starting database seeding");
+
+                    await DbInitializer.SeedAsync(
+                        scope.ServiceProvider);
+
+                    logger.LogInformation(
+                        "Database seeding completed successfully");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogCritical(
+                        ex,
+                        "Database seeding failed");
+
+                    throw;
+                }
             }
 
-            app.Run();
+            // =========================================================
+            // Start Application
+            // =========================================================
+
+            try
+            {
+                Log.Information(
+                    "MEDSystem application is starting");
+
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(
+                    ex,
+                    "MEDSystem application terminated unexpectedly");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
     }
+
+
 }

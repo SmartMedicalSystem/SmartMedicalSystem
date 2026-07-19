@@ -18,7 +18,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         /// <summary>Registers a new account with the given role (Admin, Doctor, DepartmentManager, LabTechnician).</summary>
-        [HasPermission(Domain.Enums.Permissions.CreateUser)]
+       // [HasPermission(Domain.Enums.Permissions.CreateUser)]
         [HttpPost("register")]
         public async Task<ActionResult<RefreshTokenRequestDto>> Register([FromBody] RegisterRequestDTO request)
         {

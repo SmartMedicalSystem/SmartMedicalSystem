@@ -18,7 +18,7 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
 
-        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper , IFileStorageService fileStorageService)
+        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper, IFileStorageService fileStorageService)
         {
             _uow = uow;
             _personRepo = personRepo;
@@ -36,7 +36,7 @@ namespace Application.Services
             entity.FirstName = dto.FirstName;
             entity.LastName = dto.LastName;
             entity.Gender = dto.Gender;
-            entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
+            entity.DateOfBirth = dto.DateOfBirth;
             entity.Nationality = dto.Nationality;
 
             entity.Laboratory = dto.Laboratory;
@@ -84,7 +84,7 @@ namespace Application.Services
         public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
         {
             //if (await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId) is not null)
-                //throw new Exception("Employee ID already exists.");
+            //throw new Exception("Employee ID already exists.");
 
             if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
                 throw new Exception("National ID already exists.");
@@ -96,8 +96,9 @@ namespace Application.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Gender = dto.Gender,
-                DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue),
+                DateOfBirth = dto.DateOfBirth,
                 Nationality = dto.Nationality,
+                EncryptedNationalId = dto.NationalId,
 
                 //employeeidentitynumber = dto.employeeidentitynumber,
                 Laboratory = dto.Laboratory,
@@ -120,7 +121,7 @@ namespace Application.Services
                 AllowLogin = dto.AllowLogin,
                 AccountActive = dto.AccountActive,
                 ReceiveNotifications = dto.ReceiveNotifications,
-                
+
             };
 
             await _uow.LabTechnicians.AddAsync(entity);
@@ -128,35 +129,38 @@ namespace Application.Services
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> UpdateAsync(string ssn, LabTechnicianUpdateDto dto)
+        public async Task<LabTechnicianReadDto> UpdateAsync(
+               string nationalId,
+               LabTechnicianUpdateDto dto)
         {
-            var person = await _personRepo.FindBySSN(ssn)
-                ?? throw new NotFoundException("LabTechnician", ssn);
+            var entity = await _uow.LabTechnicians.GetByNationalIdAsync(nationalId)
+                ?? throw new NotFoundException("LabTechnician", nationalId);
 
-            // Locate the lab technician entity using the person id
-            var entity = await _uow.LabTechnicians.GetByIdAsync(person.Id)
-                ?? throw new NotFoundException("LabTechnician", person.Id);
-
-            // If provided, save new photo
+            // Update photo if a new one was provided
             if (dto.PhotoUrl != null)
             {
                 var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
                 entity.PhotoUrl = photoUrl ?? entity.PhotoUrl;
             }
 
-            var national = await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId);
+            // Check if the new National ID already exists
+            var national = await _uow.LabTechnicians
+                .GetByNationalIdAsync(dto.NationalId);
+
             if (national != null && national.Id != entity.Id)
                 throw new Exception("National ID already exists.");
 
-            // Update allowed profile fields
+            // Personal Information
             entity.FirstName = dto.FirstName;
             entity.LastName = dto.LastName;
             entity.Gender = dto.Gender;
-            entity.DateOfBirth = dto.DateOfBirth.ToDateTime(System.TimeOnly.MinValue);
+            entity.DateOfBirth = dto.DateOfBirth;
             entity.Nationality = dto.Nationality;
-            // Update encrypted national id via person repo so it's stored consistently
-            await _personRepo.UpdateSSNAsync(entity, dto.NationalId);
 
+            // National ID
+            entity.EncryptedNationalId = dto.NationalId;
+
+            // Employment Information
             entity.Laboratory = dto.Laboratory;
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;
@@ -164,6 +168,7 @@ namespace Application.Services
             entity.JoiningDate = dto.JoiningDate;
             entity.YearsOfExperience = dto.YearsOfExperience;
 
+            // Contact Information
             entity.PhoneNumber = dto.PhoneNumber;
             entity.AlternativePhone = dto.AlternativePhone;
             entity.Email = dto.Email;
@@ -172,6 +177,7 @@ namespace Application.Services
             entity.Country = dto.Country;
             entity.PostalCode = dto.PostalCode;
 
+            // Account Information
             entity.Username = dto.Username;
             entity.AllowLogin = dto.AllowLogin;
             entity.AccountActive = dto.AccountActive;
@@ -184,8 +190,9 @@ namespace Application.Services
 
         public async Task<LabTechnicianReadDto> GetBySSNAsync(string ssn)
         {
-            var entity = await _personRepo.FindBySSN(ssn)
+            var entity = await _uow.LabTechnicians.GetByNationalIdAsync(ssn)
                 ?? throw new NotFoundException("LabTechnician", ssn);
+
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 

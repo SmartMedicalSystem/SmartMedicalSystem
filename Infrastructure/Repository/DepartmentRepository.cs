@@ -144,5 +144,10 @@ namespace Infrastructure.Repository
                 .Where(d => !d.IsDeleted && d.Name.ToLower().Contains(name.ToLower()))
                 .FirstOrDefaultAsync();
         }
+
+        public Task<Department?> GetWithDoctorsAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -72,7 +72,7 @@ namespace MEDSYstemITI.Middleware
                     Message = argEx.Message,
                     ErrorCode = "BAD_REQUEST",
                     TraceId = traceId
-                };
+            };
 
                 _logger.LogWarning(exception, "Bad request. TraceId: {TraceId}, Path: {Path}, Method: {Method}", traceId, context.Request.Path, context.Request.Method);
             }
@@ -80,7 +80,7 @@ namespace MEDSYstemITI.Middleware
             {
                 httpStatus = (int)HttpStatusCode.InternalServerError;
                 response = new ErrorResponse
-                {
+            {
                     StatusCode = httpStatus,
                     Message = "An unexpected error occurred.",
                     ErrorCode = "INTERNAL_SERVER_ERROR",

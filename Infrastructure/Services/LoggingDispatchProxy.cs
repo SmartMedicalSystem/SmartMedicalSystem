@@ -1,52 +1,89 @@
 using System.Diagnostics;
 using System.Reflection;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Infrastructure.Services
 {
     /// <summary>
-    /// DispatchProxy that logs method entry/exit, arguments, duration and exceptions.
-    /// Supports synchronous methods, Task and Task&lt;T&gt;.
+    /// DispatchProxy that logs:
+    /// - Method entry
+    /// - Method exit
+    /// - Execution duration
+    /// - Exceptions
+    ///
+    /// Supports:
+    /// - Synchronous methods
+    /// - Task
+    /// - Task<T>
+    ///
+    /// Sensitive method arguments are intentionally not logged.
     /// </summary>
-    public class LoggingDispatchProxy<T> : DispatchProxy where T : class
+    public class LoggingDispatchProxy<T> : DispatchProxy
+        where T : class
     {
         private T? _decorated;
-        private ILogger<T> _logger = NullLogger<T>.Instance;
 
-        // Accept nullable logger and use a NullLogger fallback to avoid failures if logger isn't available
-        public void Configure(T decorated, ILogger<T>? logger)
+        private ILogger<T> _logger =
+            NullLogger<T>.Instance;
+
+
+        public void Configure(
+            T decorated,
+            ILogger<T>? logger)
         {
-            _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
-            _logger = logger ?? NullLogger<T>.Instance;
+            _decorated =
+                decorated
+                ?? throw new ArgumentNullException(
+                    nameof(decorated));
+
+            _logger =
+                logger
+                ?? NullLogger<T>.Instance;
         }
 
-        protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
+
+        protected override object? Invoke(
+            MethodInfo? targetMethod,
+            object?[]? args)
         {
             if (targetMethod == null)
-                throw new ArgumentNullException(nameof(targetMethod));
+            {
+                throw new ArgumentNullException(
+                    nameof(targetMethod));
+            }
 
             if (_decorated == null)
-                throw new InvalidOperationException("Proxy not configured.");
+            {
+                throw new InvalidOperationException(
+                    "Logging proxy has not been configured.");
+            }
 
-            string methodName = targetMethod.Name;
+            var methodName =
+                targetMethod.Name;
 
             _logger.LogInformation(
-                "Entering {Service}.{Method} with args {@Args}",
+                "Entering {Service}.{Method}",
                 typeof(T).Name,
-                methodName,
-                args);
+                methodName);
 
-            var stopwatch = Stopwatch.StartNew();
+            var stopwatch =
+                Stopwatch.StartNew();
 
             try
             {
-                object? result = targetMethod.Invoke(_decorated, args);
+                var result =
+                    targetMethod.Invoke(
+                        _decorated,
+                        args);
 
-                Type returnType = targetMethod.ReturnType;
+                var returnType =
+                    targetMethod.ReturnType;
 
-                // ---------------- Task ----------------
+
+                // =========================================
+                // Task
+                // =========================================
 
                 if (returnType == typeof(Task))
                 {
@@ -56,19 +93,27 @@ namespace Infrastructure.Services
                         methodName);
                 }
 
-                // ---------------- Task<T> ----------------
+
+                // =========================================
+                // Task<T>
+                // =========================================
 
                 if (returnType.IsGenericType &&
-                    returnType.GetGenericTypeDefinition() == typeof(Task<>))
+                    returnType.GetGenericTypeDefinition()
+                    == typeof(Task<>))
                 {
-                    Type resultType = returnType.GetGenericArguments()[0];
+                    var resultType =
+                        returnType.GetGenericArguments()[0];
 
-                    MethodInfo method =
+                    var method =
                         typeof(LoggingDispatchProxy<T>)
                             .GetMethod(
-                                nameof(InterceptAsyncGeneric),
-                                BindingFlags.NonPublic | BindingFlags.Instance)!
-                            .MakeGenericMethod(resultType);
+                                nameof(
+                                    InterceptAsyncGeneric),
+                                BindingFlags.NonPublic |
+                                BindingFlags.Instance)!
+                            .MakeGenericMethod(
+                                resultType);
 
                     return method.Invoke(
                         this,
@@ -80,20 +125,24 @@ namespace Infrastructure.Services
                         });
                 }
 
-                // ---------------- Sync ----------------
+
+                // =========================================
+                // Synchronous method
+                // =========================================
 
                 stopwatch.Stop();
 
                 _logger.LogInformation(
-                    "Exiting {Service}.{Method} took {Elapsed} ms returned {@Result}",
+                    "Exiting {Service}.{Method} " +
+                    "took {ElapsedMilliseconds} ms",
                     typeof(T).Name,
                     methodName,
-                    stopwatch.ElapsedMilliseconds,
-                    result);
+                    stopwatch.ElapsedMilliseconds);
 
                 return result;
             }
-            catch (TargetInvocationException ex) when (ex.InnerException != null)
+            catch (TargetInvocationException ex)
+                when (ex.InnerException != null)
             {
                 stopwatch.Stop();
 
@@ -103,7 +152,13 @@ namespace Infrastructure.Services
                     typeof(T).Name,
                     methodName);
 
-                throw ex.InnerException;
+                // Preserve original exception stack trace
+                System.Runtime.ExceptionServices
+                    .ExceptionDispatchInfo
+                    .Capture(ex.InnerException)
+                    .Throw();
+
+                throw;
             }
             catch (Exception ex)
             {
@@ -119,6 +174,11 @@ namespace Infrastructure.Services
             }
         }
 
+
+        // =========================================
+        // Task
+        // =========================================
+
         private async Task InterceptAsync(
             Task task,
             Stopwatch stopwatch,
@@ -131,7 +191,8 @@ namespace Infrastructure.Services
                 stopwatch.Stop();
 
                 _logger.LogInformation(
-                    "Exiting {Service}.{Method} took {Elapsed} ms",
+                    "Exiting {Service}.{Method} " +
+                    "took {ElapsedMilliseconds} ms",
                     typeof(T).Name,
                     methodName,
                     stopwatch.ElapsedMilliseconds);
@@ -150,23 +211,30 @@ namespace Infrastructure.Services
             }
         }
 
-        private async Task<TResult> InterceptAsyncGeneric<TResult>(
-            Task<TResult> task,
-            Stopwatch stopwatch,
-            string methodName)
+
+        // =========================================
+        // Task<T>
+        // =========================================
+
+        private async Task<TResult>
+            InterceptAsyncGeneric<TResult>(
+                Task<TResult> task,
+                Stopwatch stopwatch,
+                string methodName)
         {
             try
             {
-                TResult result = await task.ConfigureAwait(false);
+                var result =
+                    await task.ConfigureAwait(false);
 
                 stopwatch.Stop();
 
                 _logger.LogInformation(
-                    "Exiting {Service}.{Method} took {Elapsed} ms returned {@Result}",
+                    "Exiting {Service}.{Method} " +
+                    "took {ElapsedMilliseconds} ms",
                     typeof(T).Name,
                     methodName,
-                    stopwatch.ElapsedMilliseconds,
-                    result);
+                    stopwatch.ElapsedMilliseconds);
 
                 return result;
             }

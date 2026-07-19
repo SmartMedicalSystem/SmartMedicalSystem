@@ -12,6 +12,8 @@ namespace Infrastructure.Context.Configurations
 
             builder.Property(r => r.Name).HasMaxLength(256);
 
+         
+
             builder.HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
                 .HasForeignKey(ur => ur.RoleId)

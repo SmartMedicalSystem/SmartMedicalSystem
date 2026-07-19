@@ -54,5 +54,6 @@ namespace Domain.IRepository
         /// Retrieves a department by name (case-insensitive search).
         /// </summary>
         Task<Department?> GetByNameAsync(string name);
+        Task<Department?> GetWithDoctorsAsync(int id);
     }
 }

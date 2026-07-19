@@ -97,7 +97,7 @@ namespace Application.Services
                 entity.RemoveHeadDoctor();
             }
 
-           await _uow.Departments.UpdateAsync(entity);
+            await _uow.Departments.UpdateAsync(entity);
             await _uow.SaveChangesAsync();
 
             return _mapper.Map<DepartmentReadDto>(entity);
@@ -197,6 +197,7 @@ namespace Application.Services
             var department = await _uow.Departments.GetDepartmentWithDoctorsAsync(departmentId)
                 ?? throw new NotFoundException("Department", departmentId);
 
+            // Business rule: the assigned doctor must exist and belong to this department.
             var doctor = await _uow.Doctors.GetByIdAsync(doctorId)
                 ?? throw new NotFoundException("Doctor", doctorId);
 
@@ -204,7 +205,7 @@ namespace Application.Services
                 throw new ArgumentException("Head doctor must be a staff member of the same department.");
 
             department.AssignHeadDoctor(doctorId, doctor.Name);
-           await _uow.Departments.UpdateAsync(department);
+            await _uow.Departments.UpdateAsync(department);
             await _uow.SaveChangesAsync();
         }
 

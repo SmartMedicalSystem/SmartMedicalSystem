@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Auth;
+﻿using Application.Common;
+using Application.DTOs.Auth;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using Domain.Enums;
@@ -6,7 +7,7 @@ using Domain.Identity;
 using Domain.IRepository;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using Application.Common;
+using System.Linq;
 
 namespace Application.Services;
 
@@ -43,7 +44,9 @@ public class AuthService : IAuthService
                 "Registration failed: role is missing for {Username}",
                 request.Username);
 
-            throw new ValidationException("Role is required.") { };
+            throw new ValidationException(
+                "Role is required.",
+                new[] { new Application.Common.Models.ErrorDetail { Field = "role", Message = "ROLE_REQUIRED" } });
         }
 
         if (!Enum.TryParse<Roles>(
@@ -55,27 +58,31 @@ public class AuthService : IAuthService
                 "Registration failed: invalid role {Role}",
                 request.Role);
 
-            throw new ValidationException("Invalid role.") { };
+            throw new ValidationException(
+                "Invalid role.",
+                new[] { new Application.Common.Models.ErrorDetail { Field = "role", Message = "INVALID_ROLE" } });
         }
 
-        if (await _memberRepo.IsValidUsernameAsync(
-                request.Username) != null)
+        if (await _memberRepo.IsValidUsernameAsync(request.Username) != null)
         {
             _logger.LogWarning(
                 "Registration failed: username exists {Username}",
                 request.Username);
 
-            throw new ConflictException("Username already exists.", "USERNAME_ALREADY_EXISTS");
+            throw new ConflictException(
+                "Username already exists.",
+                "USERNAME_ALREADY_EXISTS");
         }
 
-        if (await _memberRepo.IsValidEmailAsync(
-                request.Email) != null)
+        if (await _memberRepo.IsValidEmailAsync(request.Email) != null)
         {
             _logger.LogWarning(
                 "Registration failed: email exists {Email}",
                 request.Email);
 
-            throw new ConflictException("Email already exists.", "EMAIL_ALREADY_EXISTS");
+            throw new ConflictException(
+                "Email already exists.",
+                "EMAIL_ALREADY_EXISTS");
         }
 
         var user = new ApplicationUser
@@ -92,16 +99,16 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            var errors = string.Join(
-                ", ",
-                result.Errors.Select(e => e.Description));
+            var errorDetails = result.Errors.Select(e => new Application.Common.Models.ErrorDetail { Message = e.Description });
 
             _logger.LogWarning(
                 "Registration failed for {Username}: {Errors}",
                 request.Username,
-                errors);
+                string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            throw new ValidationException("Password validation failed.") { };
+            throw new ValidationException(
+                "Password validation failed.",
+                errorDetails);
         }
 
         var roleAdded = await _memberRepo.AddRoleAsync(
@@ -115,7 +122,9 @@ public class AuthService : IAuthService
                 user.UserName,
                 requestedRole);
 
-            throw new InternalServerException("User was created but role assignment failed.");
+            throw new InternalServerException(
+                "User was created but role assignment failed.",
+                "ROLE_ASSIGNMENT_FAILED");
         }
 
         _logger.LogInformation(
@@ -146,8 +155,9 @@ public class AuthService : IAuthService
                 "Login failed: user not found {UserOrEmail}",
                 request.UserNameOrEmail);
 
-            // Do not reveal whether username or email exists
-            throw new UnauthorizedException("Invalid username or password.", "INVALID_CREDENTIALS");
+            throw new UnauthorizedException(
+                "Invalid username or password.",
+                "INVALID_CREDENTIALS");
         }
 
         var validUser =
@@ -161,8 +171,9 @@ public class AuthService : IAuthService
                 "Login failed: invalid password for {User}",
                 request.UserNameOrEmail);
 
-            // Generic invalid credentials message to prevent user enumeration
-            throw new UnauthorizedException("Invalid username or password.", "INVALID_CREDENTIALS");
+            throw new UnauthorizedException(
+                "Invalid username or password.",
+                "INVALID_CREDENTIALS");
         }
 
         var role =
@@ -174,7 +185,9 @@ public class AuthService : IAuthService
                 "Login failed: no role for user {User}",
                 user.UserName);
 
-            throw new UnauthorizedException("User has no assigned role.", "ROLE_REQUIRED");
+            throw new UnauthorizedException(
+                "User has no assigned role.",
+                "ROLE_REQUIRED");
         }
 
         _logger.LogInformation(
@@ -187,17 +200,24 @@ public class AuthService : IAuthService
             "Login successful");
     }
 
-    private async Task<AuthResponseDto>
-        CreateAuthResponseAsync(
-            ApplicationUser user,
-            string role,
-            string message)
+    private async Task<AuthResponseDto> CreateAuthResponseAsync(
+        ApplicationUser user,
+        string role,
+        string message)
     {
         if (string.IsNullOrWhiteSpace(user.UserName))
-            throw new InternalServerException("Username is missing.");
+        {
+            throw new InternalServerException(
+                "Username is missing.",
+                "USERNAME_MISSING");
+        }
 
         if (string.IsNullOrWhiteSpace(user.Email))
-            throw new InternalServerException("Email is missing.");
+        {
+            throw new InternalServerException(
+                "Email is missing.",
+                "EMAIL_MISSING");
+        }
 
         var permissions =
             await _memberRepo.GetPermissionsAsync(role);
@@ -212,11 +232,8 @@ public class AuthService : IAuthService
         var refreshTokenResponse =
             await _tokenService.GenerateRefreshToken();
 
-        var refreshToken =
-            refreshTokenResponse.AccessToken;
-
         user.RefreshToken =
-            refreshToken;
+            refreshTokenResponse.AccessToken;
 
         user.RefreshTokenExpiryTime =
             refreshTokenResponse.ExpirationDate;
@@ -234,13 +251,12 @@ public class AuthService : IAuthService
             Message = message,
             AccessToken = token.AccessToken,
             Expiration = token.ExpirationDate,
-            RefreshToken = refreshToken
+            RefreshToken = user.RefreshToken
         };
     }
 
-    public async Task<AuthResponseDto>
-        RefreshTokenAsync(
-            RefreshTokenRequestDto request)
+    public async Task<AuthResponseDto> RefreshTokenAsync(
+        RefreshTokenRequestDto request)
     {
         _logger.LogInformation(
             "Refresh token attempt");
@@ -254,23 +270,27 @@ public class AuthService : IAuthService
             _logger.LogWarning(
                 "Refresh token failed: invalid token");
 
-            throw new UnauthorizedException("Invalid refresh token.", "INVALID_REFRESH_TOKEN");
+            throw new UnauthorizedException(
+                "Invalid refresh token.",
+                "INVALID_REFRESH_TOKEN");
         }
 
-        if (string.IsNullOrWhiteSpace(
-                user.RefreshToken))
+        if (string.IsNullOrWhiteSpace(user.RefreshToken))
         {
-            throw new UnauthorizedException("Refresh token is missing.", "INVALID_REFRESH_TOKEN");
+            throw new UnauthorizedException(
+                "Refresh token is missing.",
+                "INVALID_REFRESH_TOKEN");
         }
 
-        if (user.RefreshTokenExpiryTime <=
-            DateTime.UtcNow)
+        if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
             _logger.LogWarning(
                 "Refresh token expired for user {User}",
                 user.UserName);
 
-            throw new UnauthorizedException("Refresh token has expired.", "REFRESH_TOKEN_EXPIRED");
+            throw new UnauthorizedException(
+                "Refresh token has expired.",
+                "REFRESH_TOKEN_EXPIRED");
         }
 
         var role =
@@ -278,12 +298,9 @@ public class AuthService : IAuthService
 
         if (string.IsNullOrWhiteSpace(role))
         {
-            return new AuthResponseDto
-            {
-                IsSuccess = false,
-                Message =
-                    "User has no assigned role."
-            };
+            throw new UnauthorizedException(
+                "User has no assigned role.",
+                "ROLE_REQUIRED");
         }
 
         _logger.LogInformation(
@@ -296,9 +313,8 @@ public class AuthService : IAuthService
             "Token refreshed successfully");
     }
 
-    public async Task<AuthResponseDto>
-        ChangePasswordAsync(
-            ChangePasswordRequestDto request)
+    public async Task<AuthResponseDto> ChangePasswordAsync(
+        ChangePasswordRequestDto request)
     {
         _logger.LogInformation(
             "Change password attempt for {Email}",
@@ -309,7 +325,11 @@ public class AuthService : IAuthService
                 request.Email);
 
         if (user is null)
-            throw new NotFoundException("User not found.", "USER_NOT_FOUND");
+        {
+            throw new NotFoundException(
+                "User not found.",
+                "USER_NOT_FOUND");
+        }
 
         var valid =
             await _memberRepo.IsValidPasswordAsync(
@@ -322,7 +342,9 @@ public class AuthService : IAuthService
                 "Change password failed: incorrect current password for {Email}",
                 request.Email);
 
-            throw new UnauthorizedException("Current password is incorrect.", "INVALID_CURRENT_PASSWORD");
+            throw new UnauthorizedException(
+                "Current password is incorrect.",
+                "INVALID_CURRENT_PASSWORD");
         }
 
         var result =
@@ -333,31 +355,26 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            var errors =
-                string.Join(
-                    ", ",
-                    result.Errors.Select(
-                        e => e.Description));
+            var errorDetails = result.Errors.Select(e => new Application.Common.Models.ErrorDetail { Message = e.Description });
 
             _logger.LogWarning(
-                "Change password failed for {Email}: {Errors}",
-                request.Email,
-                errors);
+                "Change password failed for {Email}",
+                request.Email);
 
-            throw new ValidationException("Password validation failed.") { };
+            throw new ValidationException(
+                "Password validation failed.",
+                errorDetails);
         }
 
         return new AuthResponseDto
         {
             IsSuccess = true,
-            Message =
-                "Password changed successfully."
+            Message = "Password changed successfully."
         };
     }
 
-    public async Task<AuthResponseDto>
-        ForgetPasswordAsync(
-            ForgetPasswordRequestDto request)
+    public async Task<AuthResponseDto> ForgetPasswordAsync(
+        ForgetPasswordRequestDto request)
     {
         _logger.LogInformation(
             "Forget password requested for {Email}",
@@ -369,7 +386,6 @@ public class AuthService : IAuthService
 
         if (string.IsNullOrWhiteSpace(token))
         {
-            // Do not reveal whether the email exists
             return new AuthResponseDto
             {
                 IsSuccess = true,
@@ -386,6 +402,9 @@ public class AuthService : IAuthService
             $"?email={request.Email}" +
             $"&token={encodedToken}";
 
+        var emailBody =
+            BuildPasswordResetEmail(resetLink);
+
         await _emailSender.SendEmailAsync(
             new Application.DTOs.Email.Message(
                 new List<string>
@@ -393,15 +412,7 @@ public class AuthService : IAuthService
                     request.Email
                 },
                 "Reset Password",
-                $"""
-                You requested a password reset.
-
-                Click the following link:
-
-                {resetLink}
-
-                If you didn't request this, ignore this email.
-                """));
+                emailBody));
 
         return new AuthResponseDto
         {
@@ -411,9 +422,8 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<ResetPasswordResponseDto>
-        ResetPasswordAsync(
-            NewPasswordRequestDto request)
+    public async Task<ResetPasswordResponseDto> ResetPasswordAsync(
+        NewPasswordRequestDto request)
     {
         _logger.LogInformation(
             "Reset password attempt for {Email}",
@@ -424,7 +434,11 @@ public class AuthService : IAuthService
                 request.Email);
 
         if (user is null)
-            throw new NotFoundException("User not found.", "USER_NOT_FOUND");
+        {
+            throw new NotFoundException(
+                "User not found.",
+                "USER_NOT_FOUND");
+        }
 
         var result =
             await _memberRepo.ResetPasswordAsync(
@@ -433,25 +447,169 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            var errors =
-                string.Join(
-                    ", ",
-                    result.Errors.Select(
-                        e => e.Description));
+            var errorDetails = result.Errors.Select(e => new Application.Common.Models.ErrorDetail { Message = e.Description });
 
             _logger.LogWarning(
-                "Reset password failed for {Email}: {Errors}",
-                request.Email,
-                errors);
+                "Reset password failed for {Email}",
+                request.Email);
 
-            throw new ValidationException("Password validation failed.") { };
+            throw new ValidationException(
+                "Password validation failed.",
+                errorDetails);
         }
 
         return new ResetPasswordResponseDto
         {
             isSuccess = true,
-            message =
-                "Password has been reset successfully."
+            message = "Password has been reset successfully."
         };
+    }
+
+    private static string BuildPasswordResetEmail(
+        string resetLink)
+    {
+        return $"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Reset Password</title>
+        </head>
+
+        <body style="
+            margin:0;
+            padding:0;
+            background:#f1f5f9;
+            font-family:Arial, sans-serif;
+        ">
+
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center" style="padding:40px 15px;">
+
+                        <table width="600" cellpadding="0" cellspacing="0"
+                               style="
+                                   max-width:600px;
+                                   width:100%;
+                                   background:white;
+                                   border-radius:12px;
+                                   overflow:hidden;
+                               ">
+
+                            <tr>
+                                <td style="padding:35px;">
+
+                                    <h2 style="
+                                        text-align:center;
+                                        font-size:23px;
+                                        color:#0f172a;
+                                        margin:0 0 20px;
+                                    ">
+                                        Reset Your Password
+                                    </h2>
+
+                                    <p style="
+                                        font-size:14px;
+                                        line-height:1.7;
+                                        margin:0;
+                                    ">
+                                        Hello,
+                                        <br><br>
+
+                                        We received a request to reset your password.
+
+                                        Your account security is important to us.
+
+                                        Click the button below to create a new password.
+                                    </p>
+
+                                    <table width="100%">
+                                        <tr>
+                                            <td align="center" style="padding:25px 0;">
+
+                                                <a href="{resetLink}"
+                                                   style="
+                                                       background:#2563eb;
+                                                       color:white;
+                                                       text-decoration:none;
+                                                       padding:13px 32px;
+                                                       border-radius:40px;
+                                                       font-size:15px;
+                                                       font-weight:bold;
+                                                       display:inline-block;
+                                                   ">
+                                                    Reset Password
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table width="100%" style="
+                                        background:#f8fafc;
+                                        border-radius:10px;
+                                    ">
+                                        <tr>
+                                            <td style="padding:15px;">
+
+                                                <p style="
+                                                    font-size:12px;
+                                                    color:#64748b;
+                                                    margin:0 0 8px;
+                                                ">
+                                                    If the button doesn't work:
+                                                </p>
+
+                                                <a href="{resetLink}"
+                                                   style="
+                                                       font-size:12px;
+                                                       color:#2563eb;
+                                                       word-break:break-all;
+                                                   ">
+                                                    {resetLink}
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <p style="
+                                        font-size:12px;
+                                        color:#64748b;
+                                        margin-top:25px;
+                                    ">
+                                        If you didn't request this password reset,
+                                        please ignore this email.
+                                    </p>
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td align="center" style="
+                                    background:#f8fafc;
+                                    padding:18px;
+                                ">
+
+                                    <p style="
+                                        margin:0;
+                                        color:#94a3b8;
+                                        font-size:11px;
+                                    ">
+                                        © 2026 MEDSystem. All rights reserved.
+                                    </p>
+
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+
+        </body>
+        </html>
+        """;
     }
 }

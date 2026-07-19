@@ -26,10 +26,13 @@
   <ItemGroup>
 	<ProjectReference Include="..\Application\Application.csproj" />
 	<ProjectReference Include="..\Domain\Domain.csproj" />
+    <Folder Include="StartupExtensions\" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="StartupExtensions\" />
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

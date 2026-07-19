@@ -12,7 +12,7 @@ namespace Application.DTOs.LabTechnician
 
         public Gender Gender { get; set; }
 
-        public DateOnly DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
         public string Nationality { get; set; } 
 

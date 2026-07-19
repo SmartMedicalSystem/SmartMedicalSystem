@@ -1,3 +1,4 @@
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -7,65 +8,116 @@ namespace Infrastructure.DependenciesInjection
     public static class ServiceCollectionLoggingExtensions
     {
         /// <summary>
-        /// Wraps interface-based service registrations with a DispatchProxy that logs method entry/exit/exceptions.
-        /// Call this after the normal service registrations are added.
+        /// Wraps application interface-based services with LoggingDispatchProxy.
+        /// 
+        /// This method should be called after registering
+        /// Infrastructure and Application services.
         /// </summary>
-        public static IServiceCollection EnableServiceLogging(this IServiceCollection services)
+        public static IServiceCollection EnableServiceLogging(
+            this IServiceCollection services)
         {
-            // Capture descriptors to avoid modifying collection while enumerating
+            // Create a copy because we will modify the original collection
             var descriptors = services.ToList();
 
             foreach (var descriptor in descriptors)
             {
-                // Only wrap service registrations that are interface -> concrete
-                // and not open-generic registrations. Wrapping open-generic
-                // registrations (e.g. IOptions<>) with an implementation factory
-                // causes the DI container to throw because open-generic service
-                // types require open-generic implementation types.
-                if (!descriptor.ServiceType.IsInterface || descriptor.ImplementationType == null)
+                // Only interface registrations
+                if (!descriptor.ServiceType.IsInterface)
+                {
                     continue;
+                }
 
+                // Only registrations with concrete implementation types
                 if (descriptor.ImplementationType == null)
+                {
                     continue;
+                }
 
+                // Skip open generic registrations
                 if (descriptor.ServiceType.IsGenericTypeDefinition)
+                {
                     continue;
+                }
 
                 if (descriptor.ImplementationType.IsGenericTypeDefinition)
+                {
                     continue;
+                }
 
-                // now safe to wrap
-                var serviceType = descriptor.ServiceType;
-                    var implType = descriptor.ImplementationType;
+                // Only wrap services belonging to the Application layer
+                if (descriptor.ServiceType.Namespace == null ||
+                    !descriptor.ServiceType.Namespace
+                        .StartsWith("Application"))
+                {
+                    continue;
+                }
 
-                    // Replace the registration with a factory that builds the implementation and wraps it with proxy
+                var serviceType =
+                    descriptor.ServiceType;
+
+                var implementationType =
+                    descriptor.ImplementationType;
+
+                var lifetime =
+                    descriptor.Lifetime;
+
+                // Remove original registration
                 services.Remove(descriptor);
 
-                    services.Add(new ServiceDescriptor(serviceType, provider =>
-                    {
-                        // create the actual implementation
-                        var impl = ActivatorUtilities.CreateInstance(provider, implType);
-
-                        // create logger for the service interface
-                        var logger = provider.GetService(typeof(ILogger<>).MakeGenericType(serviceType)) as ILogger;
-
-                        // create proxy
-                        var proxyType = typeof(Infrastructure.Services.LoggingDispatchProxy<>).MakeGenericType(serviceType);
-                        var proxy = DispatchProxy.Create(serviceType, proxyType);
-
-                        // configure proxy: call Configure(T decorated, ILogger<T> logger)
-                        var configureMethod = proxyType.GetMethod("Configure");
-                        if (configureMethod != null)
+                // Add proxied registration
+                services.Add(
+                    new ServiceDescriptor(
+                        serviceType,
+                        provider =>
                         {
-                            // logger may be null if not registered; create a generic logger fallback
-                        var loggerType = typeof(ILogger<>).MakeGenericType(serviceType);
-                            var loggerInstance = provider.GetService(loggerType);
+                            // Create actual implementation
+                            var implementation =
+                                ActivatorUtilities.CreateInstance(
+                                    provider,
+                                    implementationType);
 
-                            configureMethod.Invoke(proxy, new[] { impl, loggerInstance });
-                        }
+                            // Create LoggingDispatchProxy<T>
+                            var proxyType =
+                                typeof(LoggingDispatchProxy<>)
+                                    .MakeGenericType(serviceType);
 
-                        return proxy;
-                    }, descriptor.Lifetime));
+                            var proxy =
+                                DispatchProxy.Create(
+                                    serviceType,
+                                    proxyType);
+
+                            // Resolve ILogger<ImplementationType>
+                            var loggerType =
+                                typeof(ILogger<>)
+                                    .MakeGenericType(
+                                        implementationType);
+
+                            var logger =
+                                provider.GetService(
+                                    loggerType);
+
+                            // Configure proxy
+                            var configureMethod =
+                                proxyType.GetMethod(
+                                    "Configure");
+
+                            if (configureMethod == null)
+                            {
+                                throw new InvalidOperationException(
+                                    $"Configure method was not found on {proxyType.Name}.");
+                            }
+
+                            configureMethod.Invoke(
+                                proxy,
+                                new object?[]
+                                {
+                                    implementation,
+                                    logger
+                                });
+
+                            return proxy;
+                        },
+                        lifetime));
             }
 
             return services;

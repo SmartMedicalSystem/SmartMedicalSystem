@@ -7,22 +7,22 @@ namespace Application.DTOs.LabTechnician
     {
         // Personal Information
 
-        public string FirstName { get; set; } 
+        public string FirstName { get; set; }
 
-        public string LastName { get; set; } 
+        public string LastName { get; set; }
         public Gender Gender { get; set; }
 
-        public DateOnly DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
-        public string Nationality { get; set; } 
+        public string Nationality { get; set; }
 
         public string NationalId { get; set; }
         // Employment
 
         public string EmployeeId { get; set; } 
 
-        public string Laboratory { get; set; } 
-        public string JobTitle { get; set; } 
+        public string Laboratory { get; set; }
+        public string JobTitle { get; set; }
 
         public EmploymentStatus EmploymentStatus { get; set; }
 
@@ -34,23 +34,23 @@ namespace Application.DTOs.LabTechnician
 
         // Contact Information
 
-        public string PhoneNumber { get; set; } 
+        public string PhoneNumber { get; set; }
 
         public string? AlternativePhone { get; set; }
 
         public string Email { get; set; }
         public string Address { get; set; }
 
-        public string City { get; set; } 
-        public string Country { get; set; } 
+        public string City { get; set; }
+        public string Country { get; set; }
 
         public string? PostalCode { get; set; }
 
         // Account Information
 
-        public string Username { get; set; } 
+        public string Username { get; set; }
 
-        public string Password { get; set; } 
+        public string Password { get; set; }
 
         public bool AllowLogin { get; set; }
 
