@@ -375,52 +375,343 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<AuthResponseDto> ForgetPasswordAsync(
-        ForgetPasswordRequestDto request)
+    public async Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request)
     {
-        _logger.LogInformation(
-            "Forget password requested for {Email}",
-            request.Email);
-
-        var token =
-            await _memberRepo.GeneratePasswordResetTokenAsync(
-                request.Email);
+        _logger.LogInformation("Forget password requested for {Email}", request.Email);
+        var token = await _memberRepo.GeneratePasswordResetTokenAsync(request.Email);
 
         if (string.IsNullOrWhiteSpace(token))
         {
             return new AuthResponseDto
             {
                 IsSuccess = true,
-                Message =
-                    "If the email exists, password reset instructions have been sent."
+                Message = "If the email exists, password reset instructions have been sent."
             };
         }
 
-        var encodedToken =
-            WebUtility.UrlEncode(token);
+        var encodedToken = WebUtility.UrlEncode(token);
 
         var resetLink =
-            $"https://localhost:4200/reset-password" +
-            $"?email={request.Email}" +
-            $"&token={encodedToken}";
+            $"http://localhost:4200/auth/new-password?email={request.Email}";
 
-        var emailBody =
-            BuildPasswordResetEmail(resetLink);
+        string logoImage = "https://smartmedicalsystem.runasp.net/uploads/doctor-logo.png";
 
         await _emailSender.SendEmailAsync(
             new Application.DTOs.Email.Message(
-                new List<string>
-                {
-                    request.Email
-                },
-                "Reset Password",
-                emailBody));
+                new List<string> { request.Email },
+                "Reset Your Password - MEDSystem",
+                $"""
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+</head>
+
+<body style="
+margin:0;
+padding:0;
+background:#eef6ff;
+font-family:'Segoe UI',Arial,sans-serif;
+">
+
+
+<table width="100%"
+cellpadding="0"
+cellspacing="0"
+style="padding:25px 10px;">
+
+
+<tr>
+<td align="center">
+
+
+<table width="520"
+cellpadding="0"
+cellspacing="0"
+style="
+background:#ffffff;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 8px 25px rgba(0,0,0,.10);
+">
+
+
+<!-- HEADER -->
+
+<tr>
+<td align="center"
+style="
+background:linear-gradient(135deg,#2563eb,#06b6d4);
+padding:30px 15px;
+">
+
+
+<img
+src="{logoImage}"
+width="85"
+alt="MEDSystem"
+style="
+background:white;
+padding:10px;
+border-radius:50%;
+display:block;
+">
+
+
+<h1
+style="
+color:white;
+font-size:26px;
+margin:15px 0 5px;
+">
+
+MEDSystem
+
+</h1>
+
+
+<p
+style="
+color:#dbeafe;
+font-size:13px;
+margin:0;
+">
+
+Smart Healthcare Management System
+
+</p>
+
+
+</td>
+</tr>
+
+
+
+<!-- CONTENT -->
+
+
+<tr>
+
+<td
+style="
+padding:30px 35px;
+color:#334155;
+">
+
+
+<h2
+style="
+text-align:center;
+font-size:23px;
+color:#0f172a;
+margin:0 0 20px;
+">
+
+Reset Your Password
+
+</h2>
+
+
+
+<p
+style="
+font-size:14px;
+line-height:1.7;
+margin:0;
+">
+
+Hello,
+
+<br><br>
+
+We received a request to reset your password.
+
+Your account security is important to us.
+
+Click the button below to create a new password.
+
+</p>
+
+
+
+
+<!-- BUTTON -->
+
+<table width="100%">
+
+<tr>
+
+<td align="center"
+style="padding:25px 0;">
+
+
+<a href="{resetLink}"
+
+style="
+background:#2563eb;
+color:white;
+text-decoration:none;
+padding:13px 32px;
+border-radius:40px;
+font-size:15px;
+font-weight:bold;
+display:inline-block;
+">
+
+Reset Password
+
+</a>
+
+
+</td>
+
+</tr>
+
+</table>
+
+
+
+
+<!-- LINK BOX -->
+
+<table width="100%"
+style="
+background:#f8fafc;
+border-radius:10px;
+">
+
+<tr>
+
+<td style="padding:15px;">
+
+
+<p
+style="
+font-size:12px;
+color:#64748b;
+margin:0 0 8px;
+">
+
+If the button doesn't work:
+
+</p>
+
+
+<a href="{resetLink}"
+
+style="
+font-size:12px;
+color:#2563eb;
+word-break:break-all;
+">
+
+{resetLink}
+
+</a>
+
+
+</td>
+
+</tr>
+
+</table>
+
+
+
+
+
+<!-- WARNING -->
+
+
+<table width="100%"
+style="
+margin-top:20px;
+background:#fff7ed;
+border-left:4px solid #f97316;
+border-radius:6px;
+">
+
+
+<tr>
+
+<td
+style="
+padding:12px;
+color:#9a3412;
+font-size:12px;
+">
+
+⚠️ If you didn't request this reset, ignore this email.
+
+</td>
+
+</tr>
+
+
+</table>
+
+
+
+</td>
+
+</tr>
+
+
+
+
+<!-- FOOTER -->
+
+
+<tr>
+
+<td
+align="center"
+style="
+background:#f8fafc;
+padding:18px;
+">
+
+
+<p
+style="
+margin:0;
+color:#94a3b8;
+font-size:11px;
+">
+
+© 2026 MEDSystem. All rights reserved.
+
+</p>
+
+
+</td>
+
+</tr>
+
+
+</table>
+
+
+</td>
+</tr>
+
+
+</table>
+
+
+</body>
+
+</html>
+
+"""
+            )
+        );
 
         return new AuthResponseDto
         {
             IsSuccess = true,
-            Message =
-                "If the email exists, password reset instructions have been sent."
+            Message = "If the email exists, password reset instructions have been sent."
         };
     }
 
