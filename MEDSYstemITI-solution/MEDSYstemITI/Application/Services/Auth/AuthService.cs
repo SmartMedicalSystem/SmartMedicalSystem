@@ -3,9 +3,14 @@ using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using Domain.Identity;
 using Domain.IRepository;
+<<<<<<< Updated upstream
 using System.Reflection.Metadata;
 using System.Net;
 using Microsoft.Extensions.Logging;
+=======
+using Microsoft.Extensions.Logging;
+using System.Net;
+>>>>>>> Stashed changes
 
 namespace Application.Services;
 
@@ -22,12 +27,17 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
         _emailSender = emailSender;
         _logger = logger;
+<<<<<<< Updated upstream
     }
 
     public Task<AuthResponseDto> NewPasswordAsync(NewPasswordRequestDto request)
     {
         return ResetPasswordAsync(request);
+=======
+>>>>>>> Stashed changes
     }
+
+
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request)
     {
@@ -35,14 +45,22 @@ public class AuthService : IAuthService
         if (await _memberRepo.IsValidUsernameAsync(request.Username) != null)
         {
             _logger.LogWarning("Registration failed: username exists {Username}", request.Username);
+<<<<<<< Updated upstream
         }
+=======
+>>>>>>> Stashed changes
             throw new Exception("Username already exists.");
+        }
 
         if (await _memberRepo.IsValidEmailAsync(request.Email) != null)
         {
             _logger.LogWarning("Registration failed: email exists {Email}", request.Email);
+<<<<<<< Updated upstream
         }
+=======
+>>>>>>> Stashed changes
             throw new Exception("Email already exists.");
+        }
 
         var user = new ApplicationUser
         {
@@ -108,7 +126,10 @@ public class AuthService : IAuthService
         return await CreateAuthResponseAsync(user, role, "Login successful");
     }
 
-    private async Task<AuthResponseDto> CreateAuthResponseAsync(ApplicationUser user, string role, string message)
+    private async Task<AuthResponseDto> CreateAuthResponseAsync(
+    ApplicationUser user,
+    string role,
+    string message)
     {
         if (string.IsNullOrWhiteSpace(user.UserName))
             throw new Exception("Username is missing.");
@@ -118,17 +139,39 @@ public class AuthService : IAuthService
 
         var permissions = await _memberRepo.GetPermissionsAsync(role);
 
+<<<<<<< Updated upstream
 
         var token = await _tokenService.CreateTokenAsync(user.UserName, user.Email, role, permissions);
+=======
+        var token =
+            await _tokenService.CreateTokenAsync(
+                user.UserName,
+                user.Email,
+                role,
+                permissions);
+>>>>>>> Stashed changes
+
+        var refreshTokenResponse =
+            await _tokenService.GenerateRefreshToken();
 
         var refreshToken =
-            _tokenService.GenerateRefreshToken().ToString();
+            refreshTokenResponse.AccessToken;
 
         user.RefreshToken = refreshToken;
 
+        user.RefreshTokenExpiryTime =
+            refreshTokenResponse.ExpirationDate;
+
         await _memberRepo.UpdateAsync(user);
 
+<<<<<<< Updated upstream
         _logger.LogInformation("Generated tokens for user {User}. Expires at {Expiry}", user.UserName, token.ExpirationDate);
+=======
+        _logger.LogInformation(
+            "Generated tokens for user {User}. Expires at {Expiry}",
+            user.UserName,
+            token.ExpirationDate);
+>>>>>>> Stashed changes
 
         return new AuthResponseDto
         {
@@ -188,7 +231,11 @@ public class AuthService : IAuthService
             throw new Exception("Current password is incorrect.");
         }
 
+<<<<<<< Updated upstream
         var result = await _memberRepo.ChangePasswordAsync(user,request.CurrentPassword, request.NewPassword);
+=======
+        var result = await _memberRepo.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+>>>>>>> Stashed changes
 
         if (!result.Succeeded)
         {
@@ -221,9 +268,15 @@ public class AuthService : IAuthService
         var encodedToken = WebUtility.UrlEncode(token);
 
         var resetLink =
+<<<<<<< Updated upstream
             $"https://localhost:4200/reset-password?email={request.Email}&token={encodedToken}";
 
         await _emailSender.SendEmailAsync( new Application.DTOs.Email.Message(new List<string> 
+=======
+            $"http://localhost:4200/auth/new-password?email={request.Email}";
+
+        await _emailSender.SendEmailAsync(new Application.DTOs.Email.Message(new List<string>
+>>>>>>> Stashed changes
         { request.Email },
                 "Reset Password",
                 $"""
@@ -243,14 +296,27 @@ public class AuthService : IAuthService
         };
     }
 
+<<<<<<< Updated upstream
     public async Task<AuthResponseDto> ResetPasswordAsync(NewPasswordRequestDto request)
     {
         _logger.LogInformation("Reset password attempt for {Email}", request.Email);
         var user = await _memberRepo.FindByUsernameOrEmailAsync(request.Email);
+=======
+    public async Task<ResetPasswordResponseDto> ResetPasswordAsync(
+    NewPasswordRequestDto request)
+    {
+        _logger.LogInformation(
+            "Reset password attempt for {Email}",
+            request.Email);
+
+        var user =
+            await _memberRepo.FindByUsernameOrEmailAsync(request.Email);
+>>>>>>> Stashed changes
 
         if (user is null)
             throw new Exception("User not found.");
 
+<<<<<<< Updated upstream
         var decodedToken = WebUtility.UrlDecode(request.Token);
 
         var result = await _memberRepo.ResetPasswordAsync(
@@ -272,4 +338,34 @@ public class AuthService : IAuthService
         };
     }
 
+=======
+        var result =
+            await _memberRepo.ResetPasswordAsync(
+                user,
+                request.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            var errors =
+                string.Join(
+                    ", ",
+                    result.Errors.Select(e => e.Description));
+
+            _logger.LogWarning(
+                "Reset password failed for {Email}: {Errors}",
+                request.Email,
+                errors);
+
+            throw new Exception(errors);
+        }
+
+        return new ResetPasswordResponseDto
+        {
+            isSuccess = true,
+            message = "Password has been reset successfully."
+        };
+    }
+
+
+>>>>>>> Stashed changes
 }

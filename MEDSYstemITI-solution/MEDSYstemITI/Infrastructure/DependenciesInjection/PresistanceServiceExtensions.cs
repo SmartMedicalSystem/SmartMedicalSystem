@@ -20,6 +20,10 @@ using Infrastructure.Services;
 using Infrastructure.Middleware;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
+<<<<<<< Updated upstream
+=======
+using Application.Services.Abstraction;
+>>>>>>> Stashed changes
 
 namespace Infrastructure.DependenciesInjection
 {

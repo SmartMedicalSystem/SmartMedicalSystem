@@ -5,10 +5,13 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.IRepository;
 using Domain.Models;
+<<<<<<< Updated upstream
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.Extensions.Hosting;
+=======
+>>>>>>> Stashed changes
 
 namespace Application.Services
 {
@@ -19,7 +22,11 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
 
+<<<<<<< Updated upstream
         public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper , IFileStorageService fileStorageService)
+=======
+        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper, IFileStorageService fileStorageService)
+>>>>>>> Stashed changes
         {
             _uow = uow;
             _personRepo = personRepo;
@@ -85,7 +92,11 @@ namespace Application.Services
         public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
         {
             //if (await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId) is not null)
+<<<<<<< Updated upstream
                 //throw new Exception("Employee ID already exists.");
+=======
+            //throw new Exception("Employee ID already exists.");
+>>>>>>> Stashed changes
 
             if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
                 throw new Exception("National ID already exists.");
@@ -233,6 +244,9 @@ namespace Application.Services
 
 
 
+<<<<<<< Updated upstream
       
+=======
+>>>>>>> Stashed changes
     }
 }

@@ -80,7 +80,11 @@ namespace Domain.Entities.Baseperson
             DateOfBirth = Guard.NotInFuture(Guard.NotDefault(dateOfBirth, nameof(dateOfBirth)), nameof(dateOfBirth));
         }
 
+<<<<<<< Updated upstream
       
+=======
+
+>>>>>>> Stashed changes
         public void UpdateProfile(string firstName, string lastName, DateTime dateOfBirth)
         {
             FirstName = Guard.NotNullOrWhiteSpace(firstName, nameof(firstName), 100);

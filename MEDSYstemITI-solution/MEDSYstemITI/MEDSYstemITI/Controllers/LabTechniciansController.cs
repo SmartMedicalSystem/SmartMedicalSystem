@@ -30,7 +30,11 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet("{ssn}")]
+<<<<<<< Updated upstream
         //[HasPermission(Permissions.ReadLabTechnician)]
+=======
+        [HasPermission(Permissions.ReadLabTechnician)]
+>>>>>>> Stashed changes
         public async Task<ActionResult<LabTechnicianReadDto>> GetBySSN(string ssn)
         {
             var result = await _labTechnicianService.GetBySSNAsync(ssn);
@@ -47,15 +51,24 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPut("{ssn}")]
+<<<<<<< Updated upstream
         //[HasPermission(Permissions.UpdateLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> Update(string ssn, [FromForm] LabTechnicianUpdateDto dto)
+=======
+        [HasPermission(Permissions.UpdateLabTechnician)]
+        public async Task<ActionResult<LabTechnicianReadDto>> Update(string ssn, [FromBody] LabTechnicianUpdateDto dto)
+>>>>>>> Stashed changes
         {
             var result = await _labTechnicianService.UpdateAsync(ssn, dto);
             return Ok(result);
         }
 
         [HttpDelete("{ssn}")]
+<<<<<<< Updated upstream
         //[HasPermission(Permissions.DeleteLabTechnician)]
+=======
+        [HasPermission(Permissions.DeleteLabTechnician)]
+>>>>>>> Stashed changes
         public async Task<IActionResult> Delete(string ssn)
         {
             await _labTechnicianService.DeleteAsync(ssn);

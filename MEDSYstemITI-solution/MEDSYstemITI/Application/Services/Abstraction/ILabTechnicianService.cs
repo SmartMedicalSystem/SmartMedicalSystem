@@ -1,6 +1,5 @@
 using Application.DTOs.LabTechnician;
 using Domain.Models;
-using System.Threading.Tasks;
 
 namespace Application.Services.Abstraction
 {

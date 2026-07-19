@@ -11,8 +11,12 @@ namespace Application.Services.Abstraction.Auth
         Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);
         Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request);
 
+<<<<<<< Updated upstream
         Task<AuthResponseDto> ResetPasswordAsync(NewPasswordRequestDto request);
         Task<AuthResponseDto> NewPasswordAsync(NewPasswordRequestDto request);
+=======
+        Task<ResetPasswordResponseDto> ResetPasswordAsync(NewPasswordRequestDto request);
+>>>>>>> Stashed changes
 
     }
 }

@@ -1,6 +1,5 @@
-using System.Security.Cryptography;
+using Domain.Entities.Baseperson;
 using Domain.Identity;
-using Domain.IRepository;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +11,9 @@ namespace Infrastructure.Repository
     /// for account operations and reads permissions straight from the
     /// RolePermissions/Permissions tables via the ApplicationDbContext.
     /// </summary>
-    /// 
+    ///
 
-    public class MemberRepository : IMemberRepo
+    public class MemberRepository : Domain.IRepository.IMemberRepo
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -48,15 +47,14 @@ namespace Infrastructure.Repository
 
         public async Task<ApplicationUser?> IsValidPasswordAsync(
             string password,
-            ApplicationUser user)
+             ApplicationUser user)
         {
             return await _userManager.CheckPasswordAsync(user, password)
                 ? user
                 : null;
         }
 
-        public async Task<IdentityResult> RegisterAsync(
-            ApplicationUser applicationUser,
+        public async Task<IdentityResult> RegisterAsync(ApplicationUser applicationUser,
             string password)
         {
             return await _userManager.CreateAsync(applicationUser, password);
@@ -125,6 +123,7 @@ namespace Infrastructure.Repository
 
             if (user == null)
                 return null;
+<<<<<<< Updated upstream
            
             return await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -154,6 +153,37 @@ namespace Infrastructure.Repository
         public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
         {
             return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+=======
+
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        }
+
+
+
+        public async Task<IdentityResult> ResetPasswordAsync(
+           ApplicationUser user,
+           string newPassword)
+        {
+            var resetToken =
+                await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return await _userManager.ResetPasswordAsync(
+                user,
+                resetToken,
+                newPassword);
+        }
+
+
+        public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
+
+        public async Task<ApplicationUser?> GetByIdAsync(string userId, BasePerson person)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == person.Id);
+>>>>>>> Stashed changes
         }
     }
 }

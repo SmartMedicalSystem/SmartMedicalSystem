@@ -25,6 +25,12 @@ namespace Infrastructure.DependenciesInjection
                 if (!descriptor.ServiceType.IsInterface || descriptor.ImplementationType == null)
                     continue;
 
+<<<<<<< Updated upstream
+=======
+                if (descriptor.ImplementationType == null)
+                    continue;
+
+>>>>>>> Stashed changes
                 if (descriptor.ServiceType.IsGenericTypeDefinition)
                     continue;
 
@@ -32,11 +38,19 @@ namespace Infrastructure.DependenciesInjection
                     continue;
 
                 // now safe to wrap
+<<<<<<< Updated upstream
                     var serviceType = descriptor.ServiceType;
                     var implType = descriptor.ImplementationType;
 
                     // Replace the registration with a factory that builds the implementation and wraps it with proxy
                     services.Remove(descriptor);
+=======
+                var serviceType = descriptor.ServiceType;
+                    var implType = descriptor.ImplementationType;
+
+                    // Replace the registration with a factory that builds the implementation and wraps it with proxy
+                services.Remove(descriptor);
+>>>>>>> Stashed changes
 
                     services.Add(new ServiceDescriptor(serviceType, provider =>
                     {
@@ -55,7 +69,11 @@ namespace Infrastructure.DependenciesInjection
                         if (configureMethod != null)
                         {
                             // logger may be null if not registered; create a generic logger fallback
+<<<<<<< Updated upstream
                             var loggerType = typeof(ILogger<>).MakeGenericType(serviceType);
+=======
+                        var loggerType = typeof(ILogger<>).MakeGenericType(serviceType);
+>>>>>>> Stashed changes
                             var loggerInstance = provider.GetService(loggerType);
 
                             configureMethod.Invoke(proxy, new[] { impl, loggerInstance });
@@ -68,4 +86,8 @@ namespace Infrastructure.DependenciesInjection
             return services;
         }
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

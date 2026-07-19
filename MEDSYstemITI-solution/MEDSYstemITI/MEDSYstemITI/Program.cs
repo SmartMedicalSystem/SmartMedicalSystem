@@ -8,7 +8,10 @@ using Infrastructure.Services.EmailService;
 using MEDSYstemITI.Hubs;
 using MEDSYstemITI.Middleware;
 //using Microsoft.OpenApi.Models;
+<<<<<<< Updated upstream
 using Swashbuckle.AspNetCore.SwaggerGen;
+=======
+>>>>>>> Stashed changes
 
 namespace MEDSYstemITI
 {
@@ -49,6 +52,7 @@ namespace MEDSYstemITI
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+<<<<<<< Updated upstream
             if (app.Environment.IsDevelopment())
             {
                 //app.UseDeveloperExceptionPage();
@@ -61,6 +65,18 @@ namespace MEDSYstemITI
             app.UseGlobalExceptionHandling();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+=======
+
+            //app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            app.MapOpenApi();
+
+            app.UseStaticFiles();
+            app.UseGlobalExceptionHandling();
+            app.UseHttpsRedirection();
+>>>>>>> Stashed changes
             app.UseCors("DefaultCorsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
@@ -68,11 +84,19 @@ namespace MEDSYstemITI
             app.MapControllers();
             app.MapHub<NotificationHub>("/notificationHub");
 
+<<<<<<< Updated upstream
             // Applies pending migrations and seeds roles/permissions/admin user.
             //using (var scope = app.Services.CreateScope())
             //{
             //    await DbInitializer.SeedAsync(scope.ServiceProvider);
             //}
+=======
+            //   // Applies pending migrations and seeds roles/permissions/admin user.
+            using (var scope = app.Services.CreateScope())
+            {
+                await DbInitializer.SeedAsync(scope.ServiceProvider);
+            }
+>>>>>>> Stashed changes
 
             app.Run();
         }
