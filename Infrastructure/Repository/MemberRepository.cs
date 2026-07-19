@@ -88,18 +88,21 @@ namespace Infrastructure.Repository
 
         public async Task<IEnumerable<string>> GetPermissionsAsync(string roleName)
         {
-            var role = await _roleManager.Roles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Name == roleName);
+            // Prefer role claims (AspNetRoleClaims). This is the new source of truth.
+            var role = await _roleManager.FindByNameAsync(roleName);
 
             if (role == null)
                 return Enumerable.Empty<string>();
 
-            return await _dbContext.RolePermissions
-                .AsNoTracking()
-                .Where(rp => rp.RoleId == role.Id)
-                .Select(rp => rp.Permission.Name)
-                .ToListAsync();
+            var roleClaims = await _roleManager.GetClaimsAsync(role);
+
+            var permissionsFromClaims = roleClaims
+                .Where(c => c.Type == Domain.Constants.CustomClaimTypes.Permission)
+                .Select(c => c.Value)
+                .Distinct()
+                .ToList();
+
+            return permissionsFromClaims;
         }
 
         public async Task UpdateAsync(ApplicationUser user)

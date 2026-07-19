@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Infrastructure.Context.Configurations.Jwt;
+using Domain.Constants;
 
 namespace Infrastructure.Services;
 
@@ -18,26 +19,24 @@ public class TokenService : ITokenService
         _jwtSettings = jwtOptions.Value;
     }
 
-    public Task<TokenResponseDto> CreateTokenAsync(
-        string userName,
-        string email,
-        string role,
-        IEnumerable<string> permissions)
+    public Task<TokenResponseDto> CreateTokenAsync( string userName, string email,string role, IEnumerable<string> permissions)
     {
+       
         var claims = new List<Claim>
-    {
-        new(ClaimTypes.Name, userName),
-        new(ClaimTypes.Email, email),
-        new(ClaimTypes.Role, role),
+        {
+            new(ClaimTypes.Name, userName),
+            new(ClaimTypes.Email, email),
+            new(ClaimTypes.Role, role),
 
-        new(JwtRegisteredClaimNames.Email, email),
-        new(JwtRegisteredClaimNames.UniqueName, userName),
-        new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
+          
+            new(JwtRegisteredClaimNames.Email, email),
+            new(JwtRegisteredClaimNames.UniqueName, userName),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
 
         claims.AddRange(
             permissions.Select(permission =>
-                new Claim("Permission", permission)));
+                new Claim(CustomClaimTypes.Permission, permission)));
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_jwtSettings.Key));
@@ -76,6 +75,7 @@ public class TokenService : ITokenService
                 new(JwtRegisteredClaimNames.Email, email),
                 new(JwtRegisteredClaimNames.UniqueName, userName),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                
             };
 
         foreach (var role in roles)

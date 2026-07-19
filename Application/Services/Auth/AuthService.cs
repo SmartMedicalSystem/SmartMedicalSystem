@@ -49,9 +49,7 @@ public class AuthService : IAuthService
             EmailConfirmed = true
         };
 
-        var result = await _memberRepo.RegisterAsync(
-            user,
-            request.Password);
+        var result = await _memberRepo.RegisterAsync(user, request.Password);
 
         if (!result.Succeeded)
         {

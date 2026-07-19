@@ -28,7 +28,7 @@ namespace Infrastructure.Services
             PermissionRequirement requirement)
         {
             var hasPermission = context.User.Claims.Any(c =>
-                c.Type == "Permission" &&
+                c.Type == Domain.Constants.CustomClaimTypes.Permission &&
                 string.Equals(c.Value, requirement.Permission.ToString(), StringComparison.OrdinalIgnoreCase));
 
             var userId = context.User?.FindFirst("sub")?.Value ?? context.User?.Identity?.Name;

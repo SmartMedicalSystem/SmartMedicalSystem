@@ -23,8 +23,6 @@ namespace Infrastructure.Context
         {
         }
 
-        public DbSet<RolePermission> RolePermissions { get; set; }
-
         public DbSet<BasePerson> BasePersons { get; set; }
 
 
@@ -41,7 +39,7 @@ namespace Infrastructure.Context
         public DbSet<TestElement> TestElements => Set<TestElement>();
         public DbSet<LabTestElement> LabTestElements => Set<LabTestElement>();
 
-        public DbSet<Permission> Permissions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
