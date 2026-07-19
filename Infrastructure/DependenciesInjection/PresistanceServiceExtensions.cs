@@ -21,6 +21,7 @@ using Infrastructure.Middleware;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 using Application.Services.Abstraction;
+using Application.Interfaces;
 
 namespace Infrastructure.DependenciesInjection
 {
@@ -146,7 +147,7 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<IAuditService, AuditService>();
 
             // Rate limiting service and memory cache used by middleware
-            services.AddMemoryCache();
+            IServiceCollection serviceCollection = services.AddMemoryCache();
             services.AddSingleton<IRateLimitService, InMemoryRateLimitService>();
             services.AddAuthorization();
 
