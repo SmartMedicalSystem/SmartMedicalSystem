@@ -199,20 +199,12 @@ public class TokenService : ITokenService
 
     public Task<TokenResponseDto> GenerateRefreshToken()
     {
-        var refreshToken =
-            Convert.ToBase64String(
-                Guid.NewGuid().ToByteArray());
-
-        return Task.FromResult(
-            new TokenResponseDto
-            {
-                AccessToken = refreshToken,
-
-                ExpirationDate =
-                    DateTime.UtcNow.AddDays(
-                        _jwtSettings.RefreshTokenExpireDays)
-            });
+        return Task.FromResult(new TokenResponseDto
+        {
+            AccessToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray()), 
+        ExpirationDate = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes)
+        }
+        ); 
     }
 
-  
 }
