@@ -224,6 +224,8 @@ public class AuthService : IAuthService
 
         var token =
             await _tokenService.CreateTokenAsync(
+                user.Id,
+                user.Person?.Id ?? 0,
                 user.UserName,
                 user.Email,
                 role,
