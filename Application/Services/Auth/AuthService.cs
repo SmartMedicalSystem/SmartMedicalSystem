@@ -7,7 +7,6 @@ using Domain.Identity;
 using Domain.IRepository;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using System.Linq;
 
 namespace Application.Services;
 

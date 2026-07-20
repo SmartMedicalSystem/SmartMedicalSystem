@@ -1,10 +1,8 @@
 using Application.Interfaces;
 using Application.Services.Abstraction;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Middleware
 {

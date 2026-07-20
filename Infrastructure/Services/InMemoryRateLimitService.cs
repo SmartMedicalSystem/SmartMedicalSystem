@@ -2,6 +2,8 @@ using Application.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
+using Infrastructure.Services;
+using Application.Interfaces;
 
 namespace Infrastructure.Services
 {
