@@ -59,7 +59,7 @@ namespace MEDSYstemITI
 
             builder.Host.UseSerilog();
 
-            // builder.Services.EnableServiceLogging();
+            builder.Services.EnableServiceLogging();
 
             // =========================================================
             // Controllers
@@ -173,12 +173,13 @@ namespace MEDSYstemITI
             // HTTP Pipeline
             // =========================================================
 
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
 
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-            app.MapOpenApi();
-
+                app.MapOpenApi();
+            }
 
             app.UseStaticFiles();
 
