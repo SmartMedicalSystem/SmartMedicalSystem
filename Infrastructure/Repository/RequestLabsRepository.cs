@@ -130,5 +130,59 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<RequestLabs>.Create(items, totalCount, pagination);
         }
+
+        public async Task<PaginatedResult<RequestLabs>> QueryPaginatedAsync(PaginationParams pagination, string? search = null, LabRequestStatus? status = null, LabRequestPriority? priority = null, int? labTestId = null, int? doctorId = null)
+        {
+            var query = _context.RequestLabs
+                .Include(rl => rl.Session).ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session).ThenInclude(s => s.Doctor)
+                .Include(rl => rl.LabTests)
+                .Where(rl => !rl.IsDeleted)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var s = search.Trim();
+                query = query.Where(rl => rl.Session.Patient.FirstName.Contains(s) || rl.Session.Patient.LastName.Contains(s) || rl.Session.Patient.EncryptedNationalId.Contains(s)
+                    || rl.Session.Doctor.FirstName.Contains(s) || rl.Session.Doctor.LastName.Contains(s));
+            }
+
+            if (status.HasValue)
+                query = query.Where(rl => rl.Status == status.Value);
+
+            if (priority.HasValue)
+                query = query.Where(rl => rl.Priority == priority.Value);
+
+            if (labTestId.HasValue)
+                query = query.Where(rl => rl.LabTests.Any(lt => lt.Id == labTestId.Value));
+
+            if (doctorId.HasValue)
+                query = query.Where(rl => rl.Session.DoctorId == doctorId.Value);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(rl => rl.RequestedAt)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return PaginatedResult<RequestLabs>.Create(items, totalCount, pagination);
+        }
+
+        public async Task<Domain.Models.RequestLabsStatistics> GetStatisticsAsync()
+        {
+            var today = DateTime.UtcNow.Date;
+            var total = await _context.RequestLabs.Where(rl => !rl.IsDeleted).CountAsync();
+            var pending = await _context.RequestLabs.Where(rl => !rl.IsDeleted && rl.Status == LabRequestStatus.Pending).CountAsync();
+            var completedToday = await _context.RequestLabs.Where(rl => !rl.IsDeleted && rl.Status == LabRequestStatus.Completed && rl.CompletedAt.HasValue && rl.CompletedAt.Value.Date == today).CountAsync();
+
+            return new Domain.Models.RequestLabsStatistics
+            {
+                TotalRequests = total,
+                PendingRequests = pending,
+                CompletedToday = completedToday
+            };
+        }
     }
 }

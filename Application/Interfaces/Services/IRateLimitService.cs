@@ -1,6 +1,6 @@
 using System;
 
-namespace Infrastructure.Services
+namespace Application.Interfaces
 {
     public interface IRateLimitService
     {
