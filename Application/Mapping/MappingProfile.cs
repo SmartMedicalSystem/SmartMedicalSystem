@@ -1,3 +1,4 @@
+using System;
 using Application.DTOs.LabTechnician;
 using AutoMapper;
 using Domain.Entities;
@@ -68,7 +69,18 @@ namespace Application.Mapping
 
 
             CreateMap<DomainEntities.RequestLabs, RequestLabsDto.RequestLabsReadDto>()
-                .ForMember(d => d.LabTestIds, opt => opt.MapFrom(s => s.LabTests.Select(lt => lt.Id).ToList()));
+                .ForMember(d => d.LabTests, opt => opt.MapFrom(s => s.LabTests))
+                .ForMember(d => d.Priority, opt => opt.MapFrom(s => s.Priority))
+                .ForMember(d => d.CompletedAt, opt => opt.MapFrom(s => s.CompletedAt))
+                .ForMember(d => d.PatientId, opt => opt.MapFrom(s => s.Session.Patient.Id))
+                .ForMember(d => d.PatientName, opt => opt.MapFrom(s => s.Session.Patient.FirstName + " " + s.Session.Patient.LastName))
+                .ForMember(d => d.PatientSSN, opt => opt.MapFrom(s => s.Session.Patient.EncryptedNationalId))
+                .ForMember(d => d.PatientAge, opt => opt.MapFrom(s =>
+                    s.Session.Patient.DateOfBirth == default ? 0 :
+                    (int)((DateTime.Now - s.Session.Patient.DateOfBirth).TotalDays / 365.25)))
+                .ForMember(d => d.DoctorId, opt => opt.MapFrom(s => s.Session.Doctor.Id))
+                .ForMember(d => d.DoctorName, opt => opt.MapFrom(s => s.Session.Doctor.FirstName + " " + s.Session.Doctor.LastName))
+                .ForMember(d => d.DoctorDepartment, opt => opt.MapFrom(s => s.Session.Doctor.Department != null ? s.Session.Doctor.Department.Name : null));
 
             CreateMap<RequestLabsDto.RequestLabsCreateDto, DomainEntities.RequestLabs>();
             CreateMap<RequestLabsDto.RequestLabsUpdateStatusDto, DomainEntities.RequestLabs>();

@@ -29,7 +29,7 @@ namespace Application.Services
             if (dto.LabTestIds is null || dto.LabTestIds.Count == 0)
                 throw new System.ArgumentException("At least one lab test must be requested.");
 
-            var entity = new Domain.Entities.RequestLabs(dto.SessionId, dto.RequestedAt);
+            var entity = new Domain.Entities.RequestLabs(dto.SessionId, dto.RequestedAt, dto.Priority);
 
             foreach (var labTestId in dto.LabTestIds.Distinct())
             {
@@ -65,6 +65,25 @@ namespace Application.Services
             return PaginatedResult<RequestLabsReadDto>.Create(
                 _mapper.Map<IEnumerable<RequestLabsReadDto>>(page.Items),
                 page.TotalCount, pagination);
+        }
+
+        public async Task<PaginatedResult<RequestLabsReadDto>> QueryAsync(PaginationParams pagination, string? search = null, Domain.Enums.LabRequestStatus? status = null, Domain.Enums.LabRequestPriority? priority = null, int? labTestId = null, int? doctorId = null)
+        {
+            var page = await _uow.RequestLabs.QueryPaginatedAsync(pagination, search, status, priority, labTestId, doctorId);
+            return PaginatedResult<RequestLabsReadDto>.Create(
+                _mapper.Map<IEnumerable<RequestLabsReadDto>>(page.Items),
+                page.TotalCount, pagination);
+        }
+
+        public async Task<RequestLabsStatisticsDto> GetStatisticsAsync()
+        {
+            var stats = await _uow.RequestLabs.GetStatisticsAsync();
+            return new RequestLabsStatisticsDto
+            {
+                TotalRequests = stats.TotalRequests,
+                PendingRequests = stats.PendingRequests,
+                CompletedToday = stats.CompletedToday
+            };
         }
     }
 }

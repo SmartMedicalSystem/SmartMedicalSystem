@@ -54,5 +54,31 @@ namespace MEDSYstemITI.Controllers
             var result = await _requestLabsService.UpdateStatusAsync(id, dto);
             return Ok(result);
         }
+
+        [HttpGet("laboratory")]
+        [HasPermission(Permissions.ReadLabReport)]
+        public async Task<ActionResult<PaginatedResult<RequestLabsReadDto>>> GetLaboratory(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] LabRequestStatus? status = null,
+            [FromQuery] LabRequestPriority? priority = null,
+            [FromQuery] int? labTestId = null,
+            [FromQuery] int? doctorId = null)
+        {
+            var result = await _requestLabsService.QueryAsync(
+                new PaginationParams(pageNumber, pageSize),
+                search, status, priority, labTestId, doctorId);
+
+            return Ok(result);
+        }
+
+        [HttpGet("laboratory/statistics")]
+        [HasPermission(Permissions.ReadLabReport)]
+        public async Task<ActionResult<RequestLabsStatisticsDto>> GetLaboratoryStatistics()
+        {
+            var result = await _requestLabsService.GetStatisticsAsync();
+            return Ok(result);
+        }
     }
 }
