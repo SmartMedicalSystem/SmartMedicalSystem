@@ -22,7 +22,9 @@ namespace Application.DTOs.RequestLabs
         public string DoctorName { get; set; } = string.Empty;
         public string? DoctorDepartment { get; set; }
 
+
         // Requested lab tests details
         public List<Application.DTOs.LabTest.LabTestReadDto> LabTests { get; set; } = new();
+        public List<int> LabTestIds { get; set; }
     }
 }

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Domain.Common;
 using Domain.Enums;
 
@@ -7,17 +5,17 @@ namespace Domain.Entities
 {
     public class RequestLabs : BaseEntity
     {
-        public int SessionId { get;  set; }
+        public int SessionId { get; set; }
 
-        public DateTime RequestedAt { get;  set; }
+        public DateTime RequestedAt { get; set; }
 
-        public LabRequestStatus Status { get;  set; }
+        public LabRequestStatus Status { get; set; }
 
         public LabRequestPriority Priority { get; set; }
 
         public DateTime? CompletedAt { get; set; }
 
-        public virtual Session Session { get;  set; } = null!;
+        public virtual Session Session { get; set; } = null!;
 
         public ICollection<LabTest> LabTests { get; set; } = new List<LabTest>();
 

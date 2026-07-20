@@ -104,7 +104,6 @@ namespace Application.Mapping
             CreateMap<DomainEntities.LabTestElement, LabTestElementDto.LabTestElementReadDto>();
             CreateMap<LabTestElementDto.LabTestElementCreateDto, DomainEntities.LabTestElement>();
 
-
         }
     }
 }

@@ -1,13 +1,8 @@
-﻿using Domain.Entities;
-using Domain.Entities.Baseperson;
-using Domain.Identity;
+﻿using Domain.Entities.Baseperson;
 using Domain.IRepository;
 using Infrastructure.Context;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
@@ -29,7 +24,7 @@ namespace Infrastructure.Repository
             return entity as BasePerson;
         }
 
-        public async Task AddPerson(string ssn , BasePerson person ) 
+        public async Task AddPerson(string ssn, BasePerson person)
         {
             var encrypted = await _encryptionService.Encrypt(ssn);
             person.EncryptedNationalId = encrypted;
@@ -45,5 +40,5 @@ namespace Infrastructure.Repository
         }
     }
 
-}  
+}
 

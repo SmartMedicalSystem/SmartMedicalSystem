@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Qjr6t0dinn8=",
+  "dgSpecHash": "xlYoANDLoAE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\fcb64\\Dropbox\\PC\\Desktop\\iti\\Sessions\\Graduation Project\\SmartMedicalSystem\\MEDSYstemITI\\MEDSYstemITI.csproj",
+  "projectFilePath": "C:\\Users\\fcb64\\Dropbox\\PC\\Desktop\\SmartMedicalSystem\\MEDSYstemITI\\MEDSYstemITI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fcb64\\.nuget\\packages\\automapper\\16.2.0\\automapper.16.2.0.nupkg.sha512",
     "C:\\Users\\fcb64\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
