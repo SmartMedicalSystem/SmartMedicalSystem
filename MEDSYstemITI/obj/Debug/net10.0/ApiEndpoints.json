@@ -101,7 +101,7 @@
   },
   {
     "ContainingType": "MEDSYstemITI.Controllers.AuthController",
-    "Method": "Register",
+    "Method": "CreateUser",
     "RelativePath": "api/Auth/register",
     "HttpMethod": "POST",
     "IsController": true,
@@ -109,7 +109,7 @@
     "Parameters": [
       {
         "Name": "request",
-        "Type": "Application.DTOs.Auth.RegisterRequestDTO",
+        "Type": "Application.DTOs.Auth.CreateUserRequestDto",
         "IsRequired": true
       }
     ],
@@ -862,9 +862,144 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "dto",
-        "Type": "Application.DTOs.LabTechnician.LabTechnicianCreateDto",
-        "IsRequired": true
+        "Name": "FirstName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Gender",
+        "Type": "Domain.Enums.Gender",
+        "IsRequired": false
+      },
+      {
+        "Name": "DateOfBirth",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "Nationality",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NationalId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "EmployeeId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LaboratoryId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "JobTitle",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "EmploymentStatus",
+        "Type": "Domain.Enums.EmploymentStatus",
+        "IsRequired": false
+      },
+      {
+        "Name": "WorkShift",
+        "Type": "Domain.Enums.WorkShift",
+        "IsRequired": false
+      },
+      {
+        "Name": "JoiningDate",
+        "Type": "System.DateOnly",
+        "IsRequired": false
+      },
+      {
+        "Name": "YearsOfExperience",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "AlternativePhone",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Address",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "City",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Country",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PostalCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Username",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "AllowLogin",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "AccountActive",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReceiveNotifications",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "SendWelcomeEmail",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "SendLoginCredentials",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhotoUrl",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": [

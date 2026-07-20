@@ -1,6 +1,6 @@
 ﻿using System;
 using Domain.Entities;
-using Domain.Entities.Baseperson;
+using Domain.Entities.Person;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Identity
@@ -18,6 +18,8 @@ namespace Domain.Identity
 
         // Optional navigation to the domain person record that represents this account
         public BasePerson? Person { get; set; }
+        public int PersonId { get; set; }
+
 
         public ICollection<ApplicationUserRole> UserRoles { get; set; }= new List<ApplicationUserRole>();
 

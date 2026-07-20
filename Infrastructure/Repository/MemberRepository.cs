@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using Domain.Entities;
-using Domain.Entities.Baseperson;
+using Domain.Entities.Person;
 using Domain.Identity;
 using Domain.IRepository;
 using Infrastructure.Context;

@@ -1,6 +1,6 @@
 using Domain.Common;
+using Domain.Entities.Person;
 using Domain.Enums;
-using Domain.Entities.Baseperson;
 
 namespace Domain.Entities
 {

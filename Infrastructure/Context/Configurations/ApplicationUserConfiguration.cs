@@ -1,4 +1,3 @@
-using Domain.Entities.Baseperson;
 using Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,11 +17,14 @@ namespace Infrastructure.Context.Configurations
             builder.Property(u => u.RefreshToken)
                 .HasMaxLength(500);
 
-            // Relationship to the domain person (optional)
-            builder.HasOne(u => u.Person)
-                .WithOne(p => p.ApplicationUser)
-                .HasForeignKey<BasePerson>(p => p.ApplicationUserId)
-                .OnDelete(DeleteBehavior.SetNull);
+
+
+
+            // Configure the relationship between ApplicationUser and BasePerson 
+            builder.HasOne(u => u.Person).WithOne(p => p.User)
+                .HasForeignKey<ApplicationUser>(u => u.PersonId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
+
 
             // User -> UserRoles relationship (Identity also configures this, but keep explicit mapping)
             builder.HasMany(u => u.UserRoles)

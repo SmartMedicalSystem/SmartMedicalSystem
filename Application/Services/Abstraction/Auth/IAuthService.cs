@@ -5,7 +5,7 @@ namespace Application.Services.Abstraction.Auth
 {
     public interface IAuthService
     {
-        Task<AuthResponseDto> RegisterAsync(RegisterRequestDTO request);
+        Task<AuthResponseDto> CreateUserAsync(CreateUserRequestDto request);
         Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
         Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request);
         Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);

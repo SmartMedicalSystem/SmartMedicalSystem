@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MEDSYstemITI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+066e27bd7212a86ad4d89ff9aa1f7ae261636117")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7dcaf70800229811c1e44f49aade5dca52a96c16")]
 [assembly: System.Reflection.AssemblyProductAttribute("MEDSYstemITI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MEDSYstemITI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Baseperson;
+﻿using Domain.Entities.Person;
 using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using System;

@@ -4,7 +4,7 @@ using Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Domain.Entities.Baseperson;
+using Domain.Entities.Person;
 
 namespace Infrastructure.Context
 {
@@ -42,7 +42,8 @@ namespace Infrastructure.Context
 
 
         public DbSet<Laboratory> Laboratories => Set<Laboratory>();
-     
+        public DbSet<AdminPerson> AdminPersons =>Set<AdminPerson>();
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

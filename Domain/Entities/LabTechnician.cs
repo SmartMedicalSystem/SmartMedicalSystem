@@ -1,5 +1,5 @@
 using Domain.Common;
-using Domain.Entities.Baseperson;
+using Domain.Entities.Person;
 using Domain.Enums;
 
 namespace Domain.Entities

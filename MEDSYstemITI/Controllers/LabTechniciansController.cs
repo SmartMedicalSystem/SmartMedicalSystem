@@ -1,10 +1,13 @@
+using Application.DTOs.Auth;
 using Application.DTOs.LabTechnician;
 using Application.Services.Abstraction;
+using Application.Services.Abstraction.Auth;
 using Application.Services.Auth;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 
 namespace MEDSYstemITI.Controllers
 {
@@ -14,10 +17,12 @@ namespace MEDSYstemITI.Controllers
     public class LabTechniciansController : ControllerBase
     {
         private readonly ILabTechnicianService _labTechnicianService;
+        private readonly IAuthService _authService;
 
-        public LabTechniciansController(ILabTechnicianService labTechnicianService)
+        public LabTechniciansController(ILabTechnicianService labTechnicianService, IAuthService authService)
         {
             _labTechnicianService = labTechnicianService;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -42,8 +47,24 @@ namespace MEDSYstemITI.Controllers
         public async Task<ActionResult<LabTechnicianReadDto>> Create(
            LabTechnicianCreateDto dto)
         {
-            var result = await _labTechnicianService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetBySSN), new { ssn = dto.NationalId }, result);
+            var person = await _labTechnicianService.CreateAsync(dto);
+            var user = await _authService.CreateUserAsync(
+             new CreateUserRequestDto
+             {
+                 FirstName = dto.FirstName,
+                 LastName = dto.LastName,
+                 Email = dto.Email,
+                 PhoneNumber = dto.PhoneNumber,
+                 Username = dto.Username,
+                 Password = dto.Password,
+                 Role = Roles.LabTechnician.ToString(),
+                 PersonId = person.Id
+             });
+
+            return Ok(person);
+
+
+
         }
 
         [HttpPut("{ssn}")]

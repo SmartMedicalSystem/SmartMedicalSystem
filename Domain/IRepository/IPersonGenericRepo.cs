@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Baseperson;
+﻿using Domain.Entities.Person;
 using System.Threading.Tasks;
 
 namespace Domain.IRepository

@@ -2,7 +2,7 @@
 
 namespace Application.DTOs.Auth;
 
-public class RegisterRequestDTO
+public class CreateUserRequestDto
 {
     [Required(ErrorMessage = "First name can't be empty")]
     public string FirstName { get; set; } = string.Empty;
@@ -25,4 +25,7 @@ public class RegisterRequestDTO
 
     [Required(ErrorMessage = "Role can't be empty")]
     public string Role { get; set; } = string.Empty;
+
+    public int PersonId { get; set; }
+
 }

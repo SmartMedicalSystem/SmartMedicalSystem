@@ -64,7 +64,7 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<Infrastructure.Services.EncryptionService>();
 
             // Register IPersonGenericRepo using the closed generic implementation type
-            services.AddScoped(typeof(Domain.IRepository.IPersonGenericRepo), typeof(Infrastructure.Repository.PersonGenericRepo<Domain.Entities.Baseperson.BasePerson>));
+            services.AddScoped(typeof(Domain.IRepository.IPersonGenericRepo), typeof(Infrastructure.Repository.PersonGenericRepo<Domain.Entities.Person.BasePerson>));
 
             services.AddScoped<IMemberRepo, MemberRepository>();
             services.AddScoped<ILaboratoryRepo, LaboratoryRepository>();

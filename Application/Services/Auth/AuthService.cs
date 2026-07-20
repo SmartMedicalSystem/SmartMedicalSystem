@@ -29,11 +29,10 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
-    public async Task<AuthResponseDto> RegisterAsync(
-        RegisterRequestDTO request)
+    public async Task<AuthResponseDto> CreateUserAsync(CreateUserRequestDto request)
     {
         _logger.LogInformation(
-            "Admin is attempting to register user {Username} with role {Role}",
+            "Admin is attempting to create user {Username} with role {Role}",
             request.Username,
             request.Role);
 
@@ -54,7 +53,7 @@ public class AuthService : IAuthService
                 out var requestedRole))
         {
             _logger.LogWarning(
-                "Registration failed: invalid role {Role}",
+                "Creating user failed: invalid role {Role}",
                 request.Role);
 
             throw new ValidationException(
@@ -65,7 +64,7 @@ public class AuthService : IAuthService
         if (await _memberRepo.IsValidUsernameAsync(request.Username) != null)
         {
             _logger.LogWarning(
-                "Registration failed: username exists {Username}",
+                "Creating user failed: username exists {Username}",
                 request.Username);
 
             throw new ConflictException(
@@ -76,7 +75,7 @@ public class AuthService : IAuthService
         if (await _memberRepo.IsValidEmailAsync(request.Email) != null)
         {
             _logger.LogWarning(
-                "Registration failed: email exists {Email}",
+                "Creating user failed: email exists {Email}",
                 request.Email);
 
             throw new ConflictException(
@@ -91,6 +90,7 @@ public class AuthService : IAuthService
             PhoneNumber = request.PhoneNumber,
             EmailConfirmed = true
         };
+
 
         var result = await _memberRepo.RegisterAsync(
             user,
@@ -199,10 +199,7 @@ public class AuthService : IAuthService
             "Login successful");
     }
 
-    private async Task<AuthResponseDto> CreateAuthResponseAsync(
-        ApplicationUser user,
-        string role,
-        string message)
+    private async Task<AuthResponseDto> CreateAuthResponseAsync(ApplicationUser user,string role, string message)
     {
         if (string.IsNullOrWhiteSpace(user.UserName))
         {
@@ -222,13 +219,15 @@ public class AuthService : IAuthService
             await _memberRepo.GetPermissionsAsync(role);
 
         var token =
-            await _tokenService.CreateTokenAsync(
+            await _tokenService.CreateTokenAsync
+            (
                 user.Id,
-                user.Person?.Id ?? 0,
+                user.PersonId,
                 user.UserName,
                 user.Email,
                 role,
-                permissions);
+                permissions
+             );
 
         var refreshTokenResponse =
             await _tokenService.GenerateRefreshToken();
@@ -904,4 +903,6 @@ font-size:11px;
         </html>
         """;
     }
+
+   
 }

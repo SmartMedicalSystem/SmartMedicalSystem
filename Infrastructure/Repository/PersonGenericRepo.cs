@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Baseperson;
+﻿using Domain.Entities.Person;
 using Domain.IRepository;
 using Infrastructure.Context;
 using Infrastructure.Services;

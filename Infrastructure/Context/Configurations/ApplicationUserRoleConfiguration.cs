@@ -1,5 +1,4 @@
-﻿using Domain.Entities.Baseperson;
-using Domain.Identity;
+﻿using Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

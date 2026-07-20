@@ -1,5 +1,4 @@
-﻿using Domain.Entities.Baseperson;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Identity
 {
