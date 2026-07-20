@@ -21,7 +21,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet]
-        //[HasPermission(Permissions.ReadLabTechnician)]
+        [HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
         [FromQuery] LabTechnicianFilterDto filter)
         {
@@ -37,10 +37,10 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        //[HasPermission(Permissions.CreateLabTechnician)]
+        [HttpPost("create")]
+        [HasPermission(Permissions.CreateLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> Create(
-            [FromForm] LabTechnicianCreateDto dto)
+           LabTechnicianCreateDto dto)
         {
             var result = await _labTechnicianService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetBySSN), new { ssn = dto.NationalId }, result);

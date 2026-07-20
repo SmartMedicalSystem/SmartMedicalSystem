@@ -89,7 +89,7 @@ namespace Application.Services
             if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
                 throw new Exception("National ID already exists.");
 
-            var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+            //var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
 
             var entity = new LabTechnician
             {
@@ -115,7 +115,7 @@ namespace Application.Services
                 City = dto.City,
                 Country = dto.Country,
                 PostalCode = dto.PostalCode,
-                PhotoUrl = photoUrl,
+                //PhotoUrl = photoUrl,
 
                 Username = dto.Username,
                 AllowLogin = dto.AllowLogin,

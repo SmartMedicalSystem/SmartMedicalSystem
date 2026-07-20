@@ -704,52 +704,6 @@
             }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "Doctors"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DoctorCreateDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DoctorCreateDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/DoctorCreateDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/DoctorReadDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DoctorReadDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DoctorReadDto"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/Doctors/{ssn}": {
@@ -863,6 +817,54 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Doctors/create": {
+      "post": {
+        "tags": [
+          "Doctors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DoctorCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DoctorCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DoctorCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoctorReadDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoctorReadDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoctorReadDto"
+                }
+              }
+            }
           }
         }
       }
@@ -1297,219 +1299,6 @@
             }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "LabTechnicians"
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "FirstName": {
-                    "type": "string"
-                  },
-                  "LastName": {
-                    "type": "string"
-                  },
-                  "Gender": {
-                    "$ref": "#/components/schemas/Gender"
-                  },
-                  "DateOfBirth": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "Nationality": {
-                    "type": "string"
-                  },
-                  "NationalId": {
-                    "type": "string"
-                  },
-                  "EmployeeId": {
-                    "type": "string"
-                  },
-                  "LaboratoryId": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
-                  "JobTitle": {
-                    "type": "string"
-                  },
-                  "EmploymentStatus": {
-                    "$ref": "#/components/schemas/EmploymentStatus"
-                  },
-                  "WorkShift": {
-                    "$ref": "#/components/schemas/WorkShift"
-                  },
-                  "JoiningDate": {
-                    "type": "string",
-                    "format": "date"
-                  },
-                  "YearsOfExperience": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
-                  "PhoneNumber": {
-                    "type": "string"
-                  },
-                  "AlternativePhone": {
-                    "type": "string"
-                  },
-                  "Email": {
-                    "type": "string"
-                  },
-                  "Address": {
-                    "type": "string"
-                  },
-                  "City": {
-                    "type": "string"
-                  },
-                  "Country": {
-                    "type": "string"
-                  },
-                  "PostalCode": {
-                    "type": "string"
-                  },
-                  "Username": {
-                    "type": "string"
-                  },
-                  "Password": {
-                    "type": "string"
-                  },
-                  "AllowLogin": {
-                    "type": "boolean"
-                  },
-                  "AccountActive": {
-                    "type": "boolean"
-                  },
-                  "ReceiveNotifications": {
-                    "type": "boolean"
-                  },
-                  "SendWelcomeEmail": {
-                    "type": "boolean"
-                  },
-                  "SendLoginCredentials": {
-                    "type": "boolean"
-                  },
-                  "PhotoUrl": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
-              },
-              "encoding": {
-                "FirstName": {
-                  "style": "form"
-                },
-                "LastName": {
-                  "style": "form"
-                },
-                "Gender": {
-                  "style": "form"
-                },
-                "DateOfBirth": {
-                  "style": "form"
-                },
-                "Nationality": {
-                  "style": "form"
-                },
-                "NationalId": {
-                  "style": "form"
-                },
-                "EmployeeId": {
-                  "style": "form"
-                },
-                "LaboratoryId": {
-                  "style": "form"
-                },
-                "JobTitle": {
-                  "style": "form"
-                },
-                "EmploymentStatus": {
-                  "style": "form"
-                },
-                "WorkShift": {
-                  "style": "form"
-                },
-                "JoiningDate": {
-                  "style": "form"
-                },
-                "YearsOfExperience": {
-                  "style": "form"
-                },
-                "PhoneNumber": {
-                  "style": "form"
-                },
-                "AlternativePhone": {
-                  "style": "form"
-                },
-                "Email": {
-                  "style": "form"
-                },
-                "Address": {
-                  "style": "form"
-                },
-                "City": {
-                  "style": "form"
-                },
-                "Country": {
-                  "style": "form"
-                },
-                "PostalCode": {
-                  "style": "form"
-                },
-                "Username": {
-                  "style": "form"
-                },
-                "Password": {
-                  "style": "form"
-                },
-                "AllowLogin": {
-                  "style": "form"
-                },
-                "AccountActive": {
-                  "style": "form"
-                },
-                "ReceiveNotifications": {
-                  "style": "form"
-                },
-                "SendWelcomeEmail": {
-                  "style": "form"
-                },
-                "SendLoginCredentials": {
-                  "style": "form"
-                },
-                "PhotoUrl": {
-                  "style": "form"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LabTechnicianReadDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LabTechnicianReadDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LabTechnicianReadDto"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/LabTechnicians/{ssn}": {
@@ -1623,6 +1412,54 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/LabTechnicians/create": {
+      "post": {
+        "tags": [
+          "LabTechnicians"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabTechnicianCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabTechnicianCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabTechnicianCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabTechnicianReadDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabTechnicianReadDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabTechnicianReadDto"
+                }
+              }
+            }
           }
         }
       }
@@ -4575,6 +4412,112 @@
           "address": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LabTechnicianCreateDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nationality": {
+            "type": "string",
+            "nullable": true
+          },
+          "nationalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "employeeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "laboratoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "jobTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "employmentStatus": {
+            "$ref": "#/components/schemas/EmploymentStatus"
+          },
+          "workShift": {
+            "$ref": "#/components/schemas/WorkShift"
+          },
+          "joiningDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "yearsOfExperience": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "alternativePhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "allowLogin": {
+            "type": "boolean"
+          },
+          "accountActive": {
+            "type": "boolean"
+          },
+          "receiveNotifications": {
+            "type": "boolean"
+          },
+          "sendWelcomeEmail": {
+            "type": "boolean"
+          },
+          "sendLoginCredentials": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false

@@ -50,7 +50,7 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         [HasPermission(Permissions.CreateDoctor)]
         public async Task<ActionResult<DoctorReadDto>> Create([FromBody] DoctorCreateDto dto)
         {
