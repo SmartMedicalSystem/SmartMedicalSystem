@@ -1,5 +1,6 @@
 using Application.Services.Abstraction;
 using Infrastructure.Services;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;

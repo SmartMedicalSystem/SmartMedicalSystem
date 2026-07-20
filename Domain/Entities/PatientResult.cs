@@ -16,6 +16,12 @@ namespace Domain.Entities
 
         public string AISuggestion { get;  set; } = string.Empty;
 
+        // Optional laboratory notes entered by technician
+        public string Notes { get; set; } = string.Empty;
+
+        // Indicates whether this result is a draft (not yet submitted)
+        public bool IsDraft { get; set; } = false;
+
         public string Summary { get;  set; } = string.Empty;
 
         // Navigation Properties
@@ -30,7 +36,7 @@ namespace Domain.Entities
         private PatientResult() { }
 
         public PatientResult(int patientId, int sessionId, int labTestId, string summary,
-            string aiClassifiedReport = "", string aiSuggestion = "")
+            string aiClassifiedReport = "", string aiSuggestion = "", string notes = "", bool isDraft = false)
         {
             PatientId = Guard.Positive(patientId, nameof(patientId));
             SessionId = Guard.Positive(sessionId, nameof(sessionId));
@@ -38,6 +44,8 @@ namespace Domain.Entities
             Summary = Guard.NotNullOrWhiteSpace(summary, nameof(summary), 2000);
             AIClassifiedReport = aiClassifiedReport ?? string.Empty;
             AISuggestion = aiSuggestion ?? string.Empty;
+            Notes = notes ?? string.Empty;
+            IsDraft = isDraft;
         }
 
         public void UpdateAIOutput(string aiClassifiedReport, string aiSuggestion, string summary)
