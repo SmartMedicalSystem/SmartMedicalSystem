@@ -1,5 +1,6 @@
 using Application.DTOs.Auth;
 using Application.Services.Abstraction.Auth;
+using Application.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         /// <summary>Registers a new account with the given role (Admin, Doctor, DepartmentManager, LabTechnician).</summary>
-        [AllowAnonymous]
+       // [HasPermission(Domain.Enums.Permissions.CreateUser)]
         [HttpPost("register")]
         public async Task<ActionResult<RefreshTokenRequestDto>> Register([FromBody] RegisterRequestDTO request)
         {

@@ -1,8 +1,9 @@
 namespace Application.Common
 {
-    /// <summary>Thrown by AuthService for login/registration failures (bad credentials, duplicate username/email, etc).</summary>
-    public class AuthenticationException : Exception
+    /// <summary>Legacy authentication exception kept for backward compatibility.
+    /// Prefer throwing UnauthorizedException for new code.</summary>
+    public class AuthenticationException : UnauthorizedException
     {
-        public AuthenticationException(string message) : base(message) { }
+        public AuthenticationException(string message, string errorCode = "INVALID_CREDENTIALS") : base(message, errorCode) { }
     }
 }

@@ -265,6 +265,34 @@
               "format": "int32",
               "default": 10
             }
+          },
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "statusFilter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "creationDateFilter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "managerFilter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -451,6 +479,90 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Departments/active": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DepartmentReadDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DepartmentReadDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DepartmentReadDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Departments/unique": {
+      "get": {
+        "tags": [
+          "Departments"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "excludeId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -866,6 +978,9 @@
                   "NationalId": {
                     "type": "string"
                   },
+                  "EmployeeId": {
+                    "type": "string"
+                  },
                   "Laboratory": {
                     "type": "string"
                   },
@@ -951,6 +1066,9 @@
                   "style": "form"
                 },
                 "NationalId": {
+                  "style": "form"
+                },
+                "EmployeeId": {
                   "style": "form"
                 },
                 "Laboratory": {
@@ -2946,7 +3064,21 @@
             "type": "string",
             "nullable": true
           },
-          "departmentMangager": {
+          "floorNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "headDoctor": {
+            "type": "string",
+            "nullable": true
+          },
+          "headDoctorId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "status": {
             "type": "string",
             "nullable": true
           }
@@ -2964,13 +3096,37 @@
             "type": "string",
             "nullable": true
           },
-          "departmentMangager": {
+          "floorNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "headDoctor": {
             "type": "string",
             "nullable": true
           },
-          "doctorId": {
+          "headDoctorId": {
             "type": "integer",
             "format": "int32",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "doctorCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "doctors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DoctorAtDepartmentDto"
+            },
             "nullable": true
           }
         },
@@ -3030,9 +3186,41 @@
             "type": "string",
             "nullable": true
           },
-          "departmentMangager": {
+          "floorNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "headDoctor": {
             "type": "string",
             "nullable": true
+          },
+          "headDoctorId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DoctorAtDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "specialization": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -3292,6 +3480,10 @@
             "nullable": true
           },
           "nationalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "employeeId": {
             "type": "string",
             "nullable": true
           },

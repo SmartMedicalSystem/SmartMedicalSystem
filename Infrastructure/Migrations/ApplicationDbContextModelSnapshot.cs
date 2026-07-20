@@ -138,12 +138,15 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DepartmentMangager")
+                    b.Property<int?>("FloorNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HeadDoctor")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int?>("DoctorId")
+                    b.Property<int?>("HeadDoctorId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -154,14 +157,28 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Active");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId")
+                    b.HasIndex("HeadDoctorId")
                         .IsUnique()
-                        .HasFilter("[DoctorId] IS NOT NULL");
+                        .HasDatabaseName("IX_Departments_HeadDoctorId_Unique")
+                        .HasFilter("[HeadDoctorId] IS NOT NULL");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Departments_Name");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Departments_Status");
 
                     b.ToTable("Departments", (string)null);
                 });
@@ -601,39 +618,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Identity.Permission", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Permissions", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Identity.RolePermission", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RoleId", "PermissionId");
-
-                    b.HasIndex("PermissionId");
-
-                    b.ToTable("RolePermissions", (string)null);
-                });
-
             modelBuilder.Entity("LabTestRequestLabs", b =>
                 {
                     b.Property<int>("LabTestsId")
@@ -810,12 +794,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Department", b =>
                 {
-                    b.HasOne("Domain.Entities.Doctor", "Doctor")
+                    b.HasOne("Domain.Entities.Doctor", "HeadDoctorEntity")
                         .WithMany()
-                        .HasForeignKey("DoctorId")
+                        .HasForeignKey("HeadDoctorId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Doctor");
+                    b.Navigation("HeadDoctorEntity");
                 });
 
             modelBuilder.Entity("Domain.Entities.LabTestElement", b =>
@@ -959,25 +943,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Identity.RolePermission", b =>
-                {
-                    b.HasOne("Domain.Identity.Permission", "Permission")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Identity.ApplicationRole", "Role")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("LabTestRequestLabs", b =>
                 {
                     b.HasOne("Domain.Entities.LabTest", null)
@@ -1086,8 +1051,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Identity.ApplicationRole", b =>
                 {
-                    b.Navigation("RolePermissions");
-
                     b.Navigation("UserRoles");
                 });
 
@@ -1096,11 +1059,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Person");
 
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("Domain.Identity.Permission", b =>
-                {
-                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("Domain.Entities.Patient", b =>

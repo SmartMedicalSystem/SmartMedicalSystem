@@ -5,6 +5,9 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.IRepository;
 using Domain.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
 namespace Application.Services
 {
@@ -229,5 +232,6 @@ namespace Application.Services
 
 
 
+      
     }
 }

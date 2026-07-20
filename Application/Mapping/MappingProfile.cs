@@ -1,7 +1,6 @@
-using Application.DTOs.Doctor;
+using Application.DTOs.LabTechnician;
 using AutoMapper;
 using Domain.Entities;
-using System.Linq;
 using DeptDto = Application.DTOs.Department;
 using DoctorDto = Application.DTOs.Doctor;
 using DomainEntities = Domain.Entities;
@@ -90,6 +89,7 @@ namespace Application.Mapping
             CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
 
 
+            CreateMap<LabTechnician, LabTechnicianReadDto>().ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.EncryptedNationalId));
 
             CreateMap<DomainEntities.PatientResult, PatientResultDto.PatientResultReadDto>();
             CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
@@ -104,7 +104,7 @@ namespace Application.Mapping
             CreateMap<DomainEntities.LabTestElement, LabTestElementDto.LabTestElementReadDto>();
             CreateMap<LabTestElementDto.LabTestElementCreateDto, DomainEntities.LabTestElement>();
 
-          
+
         }
     }
 }

@@ -142,6 +142,26 @@
         "Name": "pageSize",
         "Type": "System.Int32",
         "IsRequired": false
+      },
+      {
+        "Name": "searchTerm",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "statusFilter",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "creationDateFilter",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "managerFilter",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": [
@@ -275,6 +295,57 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MEDSYstemITI.Controllers.DepartmentsController",
+    "Method": "GetActive",
+    "RelativePath": "api/Departments/active",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[Application.DTOs.Department.DepartmentReadDto, Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "MEDSYstemITI.Controllers.DepartmentsController",
+    "Method": "IsNameUnique",
+    "RelativePath": "api/Departments/unique",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "excludeId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "MEDSYstemITI.Controllers.DoctorsController",
@@ -533,6 +604,11 @@
       },
       {
         "Name": "NationalId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "EmployeeId",
         "Type": "System.String",
         "IsRequired": false
       },

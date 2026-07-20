@@ -12,10 +12,7 @@ namespace Infrastructure.Context.Configurations
 
             builder.Property(r => r.Name).HasMaxLength(256);
 
-            builder.HasMany(r => r.RolePermissions)
-                .WithOne(rp => rp.Role)
-                .HasForeignKey(rp => rp.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
+         
 
             builder.HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)

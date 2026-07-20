@@ -1,5 +1,8 @@
+using System.Security.Cryptography;
+using Domain.Entities;
 using Domain.Entities.Baseperson;
 using Domain.Identity;
+using Domain.IRepository;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +14,9 @@ namespace Infrastructure.Repository
     /// for account operations and reads permissions straight from the
     /// RolePermissions/Permissions tables via the ApplicationDbContext.
     /// </summary>
-    ///
+    /// 
 
-    public class MemberRepository : Domain.IRepository.IMemberRepo
+    public class MemberRepository : IMemberRepo
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -47,22 +50,20 @@ namespace Infrastructure.Repository
 
         public async Task<ApplicationUser?> IsValidPasswordAsync(
             string password,
-             ApplicationUser user)
+            ApplicationUser user)
         {
             return await _userManager.CheckPasswordAsync(user, password)
                 ? user
                 : null;
         }
 
-        public async Task<IdentityResult> RegisterAsync(ApplicationUser applicationUser,
+        public async Task<IdentityResult> RegisterAsync( ApplicationUser applicationUser,
             string password)
         {
             return await _userManager.CreateAsync(applicationUser, password);
         }
 
-        public async Task AddRoleAsync(
-            ApplicationUser user,
-            string roleName)
+        public async Task<bool> AddRoleAsync( ApplicationUser user,string roleName)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
                 throw new Exception($"Role '{roleName}' does not exist.");
@@ -71,9 +72,10 @@ namespace Infrastructure.Repository
 
             if (!result.Succeeded)
             {
-                throw new Exception(
-                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                return false;
             }
+
+            return true;
         }
 
         public async Task<string?> GetRoleAsync(ApplicationUser user)
@@ -85,18 +87,21 @@ namespace Infrastructure.Repository
 
         public async Task<IEnumerable<string>> GetPermissionsAsync(string roleName)
         {
-            var role = await _roleManager.Roles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Name == roleName);
+            // Prefer role claims (AspNetRoleClaims). This is the new source of truth.
+            var role = await _roleManager.FindByNameAsync(roleName);
 
             if (role == null)
                 return Enumerable.Empty<string>();
 
-            return await _dbContext.RolePermissions
-                .AsNoTracking()
-                .Where(rp => rp.RoleId == role.Id)
-                .Select(rp => rp.Permission.Name)
-                .ToListAsync();
+            var roleClaims = await _roleManager.GetClaimsAsync(role);
+
+            var permissionsFromClaims = roleClaims
+                .Where(c => c.Type == Domain.Constants.CustomClaimTypes.Permission)
+                .Select(c => c.Value)
+                .Distinct()
+                .ToList();
+
+            return permissionsFromClaims;
         }
 
         public async Task UpdateAsync(ApplicationUser user)
@@ -123,7 +128,7 @@ namespace Infrastructure.Repository
 
             if (user == null)
                 return null;
-
+           
             return await _userManager.GeneratePasswordResetTokenAsync(user);
 
         }
@@ -149,9 +154,9 @@ namespace Infrastructure.Repository
             return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
         }
 
-        public async Task<ApplicationUser?> GetByIdAsync(string userId, BasePerson person)
+        public async Task<ApplicationUser?> GetByIdAsync(string userId , BasePerson person)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == person.Id);
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id== person.Id);
         }
     }
 }

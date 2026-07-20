@@ -9,95 +9,145 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
-    /// <summary>
-    /// Repository for managing Department entities.
-    /// Includes eager loading of related Doctor collections.
-    /// Standard CRUD (Add/Update/Delete/SoftDelete/Exists) and the alias
-    /// GetAllActiveAsync/GetAllActivePaginatedAsync members are inherited
-    /// unchanged from GenericRepository&lt;Department&gt;.
-    /// </summary>
     public class DepartmentRepository : GenericRepository<Department>, IDepartmentRepo
     {
         public DepartmentRepository(ApplicationDbContext context) : base(context)
         {
         }
 
-        /// <summary>
-        /// Retrieves a department by ID with all related doctors.
-        /// Uses INCLUDE to load the Doctors collection to avoid N+1 queries.
-        /// </summary>
-        public override async Task<Department?> GetByIdAsync(int id)
+        // ============================================================
+        // 1. GET BY ID with Doctors + Head Doctor
+        // ============================================================
+        public async Task<Department?> GetDepartmentWithDoctorsAsync(int id)
         {
             return await _context.Departments
                 .Include(d => d.Doctors.Where(doc => !doc.IsDeleted))
+                .Include(d => d.HeadDoctorEntity)
                 .Where(d => d.Id == id && !d.IsDeleted)
                 .FirstOrDefaultAsync();
         }
 
-        /// <summary>
-        /// Retrieves all active departments with their doctor collections.
-        /// </summary>
-        public override async Task<IEnumerable<Department>> GetAllAsync()
+        // ============================================================
+        // 2. GET ALL with Doctors + Head Doctor
+        // ============================================================
+        public async Task<IEnumerable<Department>> GetAllWithDoctorsAsync()
         {
             return await _context.Departments
                 .Include(d => d.Doctors.Where(doc => !doc.IsDeleted))
+                .Include(d => d.HeadDoctorEntity)
                 .Where(d => !d.IsDeleted)
                 .OrderBy(d => d.Name)
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Searches for a department by name (case-insensitive).
-        /// </summary>
-        public async Task<Department?> GetByNameAsync(string name)
+        // ============================================================
+        // 3. GET ALL PAGINATED with Doctors + Head Doctor
+        // ============================================================
+        // في DepartmentRepository
+        public async Task<PaginatedResult<Department>> GetAllPaginatedAsync(
+            PaginationParams pagination,
+            string? searchTerm = null,
+            string? statusFilter = null,
+            string? creationDateFilter = null,
+            string? managerFilter = null)
         {
-            return await _context.Departments
+            var query = _context.Departments
                 .Include(d => d.Doctors.Where(doc => !doc.IsDeleted))
-                .Where(d => !d.IsDeleted && d.Name.ToLower().Contains(name.ToLower()))
-                .FirstOrDefaultAsync();
-        }
+                .Include(d => d.HeadDoctorEntity)
+                .Where(d => !d.IsDeleted)
+                .AsQueryable();
 
-        /// <summary>
-        /// Retrieves a department with all its related doctors (full collection loading).
-        /// Explicitly loads the Doctors collection for the specified department ID.
-        /// </summary>
-        public async Task<Department?> GetWithDoctorsAsync(int id)
-        {
-            var department = await _context.Departments
-                .Where(d => d.Id == id && !d.IsDeleted)
-                .FirstOrDefaultAsync();
-
-            if (department != null)
+            // Search Filter
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                // Explicitly load the Doctors collection
-                await _context.Entry(department)
-                    .Collection(d => d.Doctors)
-                    .LoadAsync();
+                var search = searchTerm.Trim().ToLower();
+                query = query.Where(d => d.Name.ToLower().Contains(search) ||
+                                         d.HeadDoctor.ToLower().Contains(search));
             }
 
-            return department;
-        }
+            // Status Filter
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                query = query.Where(d => d.Status == statusFilter);
+            }
 
-        /// <summary>
-        /// Retrieves a paginated list of all active departments.
-        /// </summary>
-        public override async Task<PaginatedResult<Department>> GetAllPaginatedAsync(PaginationParams pagination)
-        {
-            // Get total count
-            var totalCount = await _context.Departments
-                .Where(d => !d.IsDeleted)
-                .CountAsync();
+            // Creation Date Filter
+            if (!string.IsNullOrWhiteSpace(creationDateFilter))
+            {
+                var today = DateTime.Today;
+                if (creationDateFilter == "Last 30 Days")
+                {
+                    var thirtyDaysAgo = today.AddDays(-30);
+                    query = query.Where(d => d.CreatedAt >= thirtyDaysAgo);
+                }
+                else if (creationDateFilter == "This Year")
+                {
+                    var startOfYear = new DateTime(today.Year, 1, 1);
+                    query = query.Where(d => d.CreatedAt >= startOfYear);
+                }
+            }
 
-            // Get paginated departments
-            var items = await _context.Departments
-                .Include(d => d.Doctors.Where(doc => !doc.IsDeleted))
-                .Where(d => !d.IsDeleted)
+            // Manager Filter (Head Doctor)
+            if (!string.IsNullOrWhiteSpace(managerFilter))
+            {
+                query = query.Where(d => d.HeadDoctor == managerFilter);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
                 .OrderBy(d => d.Name)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();
 
             return PaginatedResult<Department>.Create(items, totalCount, pagination);
+        }
+
+        // ============================================================
+        // 4. GET ACTIVE DEPARTMENTS
+        // ============================================================
+        public async Task<IEnumerable<Department>> GetActiveDepartmentsAsync()
+        {
+            return await _context.Departments
+                .Include(d => d.Doctors.Where(doc => !doc.IsDeleted))
+                .Include(d => d.HeadDoctorEntity)
+                .Where(d => !d.IsDeleted && d.Status == "Active")
+                .OrderBy(d => d.Name)
+                .ToListAsync();
+        }
+
+        // ============================================================
+        // 5. CHECK UNIQUE DEPARTMENT NAME
+        // ============================================================
+        public async Task<bool> IsDepartmentNameUniqueAsync(string name, int? excludeId = null)
+        {
+            var query = _context.Departments
+                .Where(d => !d.IsDeleted && d.Name.ToLower() == name.ToLower());
+
+            if (excludeId.HasValue)
+            {
+                query = query.Where(d => d.Id != excludeId.Value);
+            }
+
+            return !await query.AnyAsync();
+        }
+
+        // ============================================================
+        // 6. GET BY NAME (Search)
+        // ============================================================
+        public async Task<Department?> GetByNameAsync(string name)
+        {
+            return await _context.Departments
+                .Include(d => d.Doctors.Where(doc => !doc.IsDeleted))
+                .Include(d => d.HeadDoctorEntity)
+                .Where(d => !d.IsDeleted && d.Name.ToLower().Contains(name.ToLower()))
+                .FirstOrDefaultAsync();
+        }
+
+        public Task<Department?> GetWithDoctorsAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

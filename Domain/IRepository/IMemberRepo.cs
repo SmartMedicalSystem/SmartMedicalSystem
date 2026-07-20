@@ -24,9 +24,7 @@ namespace Domain.IRepository
 
         Task<ApplicationUser?> GetByIdAsync(string userId , BasePerson person);
 
-        Task AddRoleAsync(
-            ApplicationUser user,
-            string roleName);
+        Task<bool> AddRoleAsync(ApplicationUser user,string roleName);
 
         Task<string?> GetRoleAsync(  ApplicationUser user);
 

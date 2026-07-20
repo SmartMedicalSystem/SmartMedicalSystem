@@ -1,6 +1,11 @@
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using Application.Common;
+using Application.Common.Models;
+
+// Global exception middleware that returns a consistent ErrorResponse JSON object
 
 namespace MEDSYstemITI.Middleware
 {
@@ -35,30 +40,61 @@ namespace MEDSYstemITI.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var (statusCode, message) = exception switch
+            // Default response
+            var traceId = context.TraceIdentifier ?? Guid.NewGuid().ToString();
+
+            ErrorResponse response;
+            int httpStatus;
+
+            if (exception is AppException appEx)
             {
-                NotFoundException => (HttpStatusCode.NotFound, exception.Message),
-                AuthenticationException => (HttpStatusCode.Unauthorized, exception.Message),
-                ArgumentException => (HttpStatusCode.BadRequest, exception.Message),
-                UnauthorizedAccessException => (HttpStatusCode.Forbidden, exception.Message),
-                _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred.")
+                httpStatus = appEx.StatusCode;
+
+                response = new ErrorResponse
+                {
+                    StatusCode = appEx.StatusCode,
+                    Message = appEx.Message,
+                    ErrorCode = appEx.ErrorCode,
+                    TraceId = traceId,
+                    Errors = appEx.Errors is null ? new List<ErrorDetail>() : new List<ErrorDetail>(appEx.Errors)
+                };
+
+                // Expected application exceptions are less severe
+                _logger.LogWarning(exception, "Handled application exception. TraceId: {TraceId}, ErrorCode: {ErrorCode}, Path: {Path}, Method: {Method}",
+                    traceId, appEx.ErrorCode, context.Request.Path, context.Request.Method);
+            }
+            else if (exception is ArgumentException argEx)
+            {
+                httpStatus = (int)HttpStatusCode.BadRequest;
+                response = new ErrorResponse
+                {
+                    StatusCode = httpStatus,
+                    Message = argEx.Message,
+                    ErrorCode = "BAD_REQUEST",
+                    TraceId = traceId
             };
 
-            if (statusCode == HttpStatusCode.InternalServerError)
+                _logger.LogWarning(exception, "Bad request. TraceId: {TraceId}, Path: {Path}, Method: {Method}", traceId, context.Request.Path, context.Request.Method);
+            }
+            else
             {
-                _logger.LogError(exception, "Unhandled exception processing {Method} {Path}",
-                    context.Request.Method, context.Request.Path);
+                httpStatus = (int)HttpStatusCode.InternalServerError;
+                response = new ErrorResponse
+            {
+                    StatusCode = httpStatus,
+                    Message = "An unexpected error occurred.",
+                    ErrorCode = "INTERNAL_SERVER_ERROR",
+                    TraceId = traceId
+                };
+
+                _logger.LogError(exception, "Unhandled exception. TraceId: {TraceId}, Path: {Path}, Method: {Method}",
+                    traceId, context.Request.Path, context.Request.Method);
             }
 
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)statusCode;
+            context.Response.StatusCode = httpStatus;
 
-            var payload = JsonSerializer.Serialize(new
-            {
-                statusCode = (int)statusCode,
-                message,
-                details = exception.ToString()
-            });
+            var payload = JsonSerializer.Serialize(response);
 
             await context.Response.WriteAsync(payload);
         }

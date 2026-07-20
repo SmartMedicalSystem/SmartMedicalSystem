@@ -81,10 +81,12 @@ public static class DbInitializer
         UserManager<ApplicationUser> userManager)
     {
 
-        // ── 1-3: Identity / permission infrastructure ────────────────────────────
+        // ── 1-2: Identity infrastructure and role claim seeding ─────────────────
         await RoleSeeder.SeedAsync(roleManager);
-        await PermissionSeeder.SeedAsync(context);
-        await RolePermissionSeeder.SeedAsync(context);
+        // Seed role claims (permissions) from code-defined mappings
+        await RoleClaimsSeeder.SeedAsync(context, roleManager);
+        // Migrate legacy RolePermissions into AspNetRoleClaims and ensure role claims are present.
+        await RoleClaimsSeeder.SeedAsync(context, roleManager);
 
         // ── 4: Admin account ──────────────────────────────────────────────────────
         await SeedAdminUserAsync(userManager);
