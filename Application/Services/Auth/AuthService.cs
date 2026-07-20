@@ -88,7 +88,8 @@ public class AuthService : IAuthService
             UserName = request.Username,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            PersonId = request.PersonId,
         };
 
 
@@ -137,8 +138,8 @@ public class AuthService : IAuthService
             "User registered successfully");
     }
 
-    public async Task<AuthResponseDto> LoginAsync(
-        LoginRequestDto request)
+    //login method
+    public async Task<AuthResponseDto> LoginAsync( LoginRequestDto request)
     {
         _logger.LogInformation(
             "Login attempt for {UserOrEmail}",

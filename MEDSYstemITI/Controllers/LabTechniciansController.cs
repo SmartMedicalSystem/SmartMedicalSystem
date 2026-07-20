@@ -44,22 +44,10 @@ namespace MEDSYstemITI.Controllers
 
         [HttpPost("create")]
         [HasPermission(Permissions.CreateLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> Create(
-           LabTechnicianCreateDto dto)
+        public async Task<ActionResult<LabTechnicianReadDto>> Create(   LabTechnicianCreateDto dto)
         {
             var person = await _labTechnicianService.CreateAsync(dto);
-            var user = await _authService.CreateUserAsync(
-             new CreateUserRequestDto
-             {
-                 FirstName = dto.FirstName,
-                 LastName = dto.LastName,
-                 Email = dto.Email,
-                 PhoneNumber = dto.PhoneNumber,
-                 Username = dto.Username,
-                 Password = dto.Password,
-                 Role = Roles.LabTechnician.ToString(),
-                 PersonId = person.Id
-             });
+            
 
             return Ok(person);
 

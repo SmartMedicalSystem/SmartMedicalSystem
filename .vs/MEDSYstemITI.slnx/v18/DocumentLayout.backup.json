@@ -3,64 +3,26 @@
   "WorkspaceRootPath": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\infrastructure\\context\\dataseed\\patientseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\dataseed\\patientseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F80C4E72-27A0-12B5-0634-DD5C11CFB0C1}|Application\\Application.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\application\\services\\labtechnicianservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F80C4E72-27A0-12B5-0634-DD5C11CFB0C1}|Application\\Application.csproj|solutionrelative:application\\services\\labtechnicianservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Migrations\\20260720182149_AddAdminPerson.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Infrastructure\\Migrations\\20260720182149_AddAdminPerson.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{EA79B455-E13B-CD23-BD2C-77226D336514}|MEDSYstemITI\\MEDSYstemITI.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\medsystemiti\\controllers\\labtechnicianscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EA79B455-E13B-CD23-BD2C-77226D336514}|MEDSYstemITI\\MEDSYstemITI.csproj|solutionrelative:medsystemiti\\controllers\\labtechnicianscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\infrastructure\\context\\dataseed\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\dataseed\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F80C4E72-27A0-12B5-0634-DD5C11CFB0C1}|Application\\Application.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\application\\dtos\\labtechnician\\labtechniciancreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F80C4E72-27A0-12B5-0634-DD5C11CFB0C1}|Application\\Application.csproj|solutionrelative:application\\dtos\\labtechnician\\labtechniciancreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\infrastructure\\context\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F80C4E72-27A0-12B5-0634-DD5C11CFB0C1}|Application\\Application.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\application\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F80C4E72-27A0-12B5-0634-DD5C11CFB0C1}|Application\\Application.csproj|solutionrelative:application\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E528BBC3-1C26-8C35-F682-23718816ADCD}|Domain\\Domain.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\domain\\entities\\person\\adminperson.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E528BBC3-1C26-8C35-F682-23718816ADCD}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\person\\adminperson.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.RequestLabs.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\infrastructure\\context\\dataseed\\labtechnicianseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\dataseed\\labtechnicianseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\infrastructure\\context\\dataseed\\doctorseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\dataseed\\doctorseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.AspNetUsers(2).data.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.AspNetUsers.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.AspNetUsers.data.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.BasePersons.data.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.BasePersons.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|c:\\users\\akram\\source\\repos\\smartmedicalsystem\\version1\\infrastructure\\context\\dataseed\\laboratoryseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5872AEB3-BAA3-FE31-B0EB-0FB6DBEDCF83}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\context\\dataseed\\laboratoryseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Migrations\\20260720175359_update-User.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Infrastructure\\Migrations\\20260720175359_update-User.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.BasePersons.data.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.AspNetUsers.data.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.AspNetUsers(2).data.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.LabTests.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
     }
   ],
   "DocumentGroupContainers": [
@@ -70,184 +32,82 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LabTechnicianCreateDto.cs",
+              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Application\\DTOs\\LabTechnician\\LabTechnicianCreateDto.cs",
+              "RelativeDocumentMoniker": "Application\\DTOs\\LabTechnician\\LabTechnicianCreateDto.cs",
+              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Application\\DTOs\\LabTechnician\\LabTechnicianCreateDto.cs*",
+              "RelativeToolTip": "Application\\DTOs\\LabTechnician\\LabTechnicianCreateDto.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-20T20:43:25.393Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "20260720182149_AddAdminPerson.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Migrations\\20260720182149_AddAdminPerson.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Migrations\\20260720182149_AddAdminPerson.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Migrations\\20260720182149_AddAdminPerson.cs",
-              "RelativeToolTip": "Infrastructure\\Migrations\\20260720182149_AddAdminPerson.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "LabTechniciansController.cs",
+              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\MEDSYstemITI\\Controllers\\LabTechniciansController.cs",
+              "RelativeDocumentMoniker": "MEDSYstemITI\\Controllers\\LabTechniciansController.cs",
+              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\MEDSYstemITI\\Controllers\\LabTechniciansController.cs*",
+              "RelativeToolTip": "MEDSYstemITI\\Controllers\\LabTechniciansController.cs*",
+              "ViewState": "AgIAACwAAAAAyszMzMwmwDEAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T18:21:49.716Z",
+              "WhenOpened": "2026-07-20T20:37:47.489Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\ApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Context\\ApplicationDbContext.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\ApplicationDbContext.cs",
-              "RelativeToolTip": "Infrastructure\\Context\\ApplicationDbContext.cs",
-              "ViewState": "AgIAAB4AAADgZWZmZmY+wCwAAAAxAAAAAAAAAA==",
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Application\\Services\\Auth\\AuthService.cs",
+              "RelativeDocumentMoniker": "Application\\Services\\Auth\\AuthService.cs",
+              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Application\\Services\\Auth\\AuthService.cs",
+              "RelativeToolTip": "Application\\Services\\Auth\\AuthService.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAAIwEUAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T18:19:11.122Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AdminPerson.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Domain\\Entities\\Person\\AdminPerson.cs",
-              "RelativeDocumentMoniker": "Domain\\Entities\\Person\\AdminPerson.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Domain\\Entities\\Person\\AdminPerson.cs",
-              "RelativeToolTip": "Domain\\Entities\\Person\\AdminPerson.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T18:17:08.153Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "LabTechnicianSeeder.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\LabTechnicianSeeder.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Context\\DataSeed\\LabTechnicianSeeder.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\LabTechnicianSeeder.cs",
-              "RelativeToolTip": "Infrastructure\\Context\\DataSeed\\LabTechnicianSeeder.cs",
-              "ViewState": "AgIAAAgBAAAAAAAAAAAAwDYBAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T18:06:26.831Z",
+              "WhenOpened": "2026-07-20T20:37:19.605Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "PatientSeeder.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\PatientSeeder.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Context\\DataSeed\\PatientSeeder.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\PatientSeeder.cs*",
-              "RelativeToolTip": "Infrastructure\\Context\\DataSeed\\PatientSeeder.cs*",
-              "ViewState": "AgIAAGQAAAAAzczMzAwjwHEAAAAkAAAAAAAAAA==",
+              "Title": "LabTechnicianService.cs",
+              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Application\\Services\\LabTechnicianService.cs",
+              "RelativeDocumentMoniker": "Application\\Services\\LabTechnicianService.cs",
+              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Application\\Services\\LabTechnicianService.cs*",
+              "RelativeToolTip": "Application\\Services\\LabTechnicianService.cs*",
+              "ViewState": "AgIAAHwAAACAyszMzMwYwI4AAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T18:06:40.721Z",
+              "WhenOpened": "2026-07-20T20:36:48.973Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "dbo.AspNetUsers(2).data ",
-              "DocumentMoniker": "C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.AspNetUsers(2).data.sql",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\dbo.AspNetUsers(2).data.sql",
-              "ToolTip": "dbo.AspNetUsers(2).data *",
+              "DocumentIndex": 4,
+              "Title": "dbo.RequestLabs [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.RequestLabs.sql",
+              "ToolTip": "dbo.RequestLabs [Data]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-07-20T18:05:29.793Z",
+              "WhenOpened": "2026-07-20T20:17:08.469Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "dbo.AspNetUsers.data ",
-              "DocumentMoniker": "C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.AspNetUsers.data.sql",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\dbo.AspNetUsers.data.sql",
-              "ToolTip": "dbo.AspNetUsers.data *",
+              "DocumentIndex": 5,
+              "Title": "dbo.LabTests [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.LabTests.sql",
+              "ToolTip": "dbo.LabTests [Data]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-07-20T18:04:49.784Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "dbo.BasePersons.data ",
-              "DocumentMoniker": "C:\\Users\\akram\\AppData\\Local\\Temp\\dbo.BasePersons.data.sql",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\dbo.BasePersons.data.sql",
-              "ToolTip": "dbo.BasePersons.data *",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-07-20T18:01:58.004Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "DoctorSeeder.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\DoctorSeeder.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Context\\DataSeed\\DoctorSeeder.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\DoctorSeeder.cs",
-              "RelativeToolTip": "Infrastructure\\Context\\DataSeed\\DoctorSeeder.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAACEvR0BAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T18:00:01.455Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "LaboratorySeeder.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\LaboratorySeeder.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Context\\DataSeed\\LaboratorySeeder.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\LaboratorySeeder.cs",
-              "RelativeToolTip": "Infrastructure\\Context\\DataSeed\\LaboratorySeeder.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T18:00:00.14Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "DbInitializer.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\DbInitializer.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Context\\DataSeed\\DbInitializer.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Context\\DataSeed\\DbInitializer.cs",
-              "RelativeToolTip": "Infrastructure\\Context\\DataSeed\\DbInitializer.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAUwCoAAAA7AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T17:56:03.246Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "dbo.BasePersons [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.BasePersons.sql",
-              "ToolTip": "dbo.BasePersons [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-07-20T17:55:16.384Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "dbo.AspNetUsers [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/MedicalSystemITI/True/SqlTable/dbo.AspNetUsers.sql",
-              "ToolTip": "dbo.AspNetUsers [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-07-20T17:54:49.022Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "20260720175359_update-User.cs",
-              "DocumentMoniker": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Migrations\\20260720175359_update-User.cs",
-              "RelativeDocumentMoniker": "Infrastructure\\Migrations\\20260720175359_update-User.cs",
-              "ToolTip": "C:\\Users\\akram\\source\\repos\\SmartMedicalSystem\\version1\\Infrastructure\\Migrations\\20260720175359_update-User.cs",
-              "RelativeToolTip": "Infrastructure\\Migrations\\20260720175359_update-User.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-20T17:53:59.374Z",
+              "WhenOpened": "2026-07-20T20:13:33.383Z",
               "EditorCaption": ""
             }
           ]

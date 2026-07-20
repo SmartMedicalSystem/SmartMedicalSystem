@@ -1,8 +1,11 @@
 using Application.Common;
+using Application.DTOs.Auth;
 using Application.DTOs.LabTechnician;
 using Application.Services.Abstraction;
+using Application.Services.Abstraction.Auth;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -17,13 +20,16 @@ namespace Application.Services
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
+        private readonly IAuthService _authService;
 
-        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper, IFileStorageService fileStorageService)
+        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo,
+            IMapper mapper, IFileStorageService fileStorageService, IAuthService authService)
         {
             _uow = uow;
             _personRepo = personRepo;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
+            _authService = authService;
         }
 
         // Compatibility overloads for id-based operations
@@ -125,6 +131,19 @@ namespace Application.Services
             };
 
             await _uow.LabTechnicians.AddAsync(entity);
+
+            var user = await _authService.CreateUserAsync(
+             new CreateUserRequestDto
+             {
+                 FirstName = entity.FirstName,
+                 LastName = entity.LastName,
+                 Email = entity.Email,
+                 PhoneNumber = entity.PhoneNumber,
+                 Username = entity.Username,
+                 Password = dto.Password,
+                 Role = Roles.LabTechnician.ToString(),
+                 PersonId = entity.Id
+             });
 
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }

@@ -7,6 +7,7 @@ namespace Application.DTOs.LabTechnician
     {
         // Personal Information
 
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -62,6 +63,6 @@ namespace Application.DTOs.LabTechnician
 
         public bool SendLoginCredentials { get; set; }
 
-        public IFormFile? PhotoUrl { get; set; }
+       // public IFormFile? PhotoUrl { get; set; }
     }
 }
