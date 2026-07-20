@@ -21,7 +21,7 @@ namespace Domain.Entities
         public LabTechnician? HeadTechnician { get; set; }
         public Department? Department { get; set; }
         public ICollection<LabTest> LabTests { get; private set; } = new List<LabTest>();
-        public ICollection<LabTechnician> Technicians { get; private set; } = new List<LabTechnician>();
+        public ICollection<LabTechnician> LabTechnicians { get; private set; } = new List<LabTechnician>();
 
         private Laboratory() { }
 
@@ -85,15 +85,15 @@ namespace Domain.Entities
         public void AddTechnician(LabTechnician technician)
         {
             if (technician == null) throw new ArgumentNullException(nameof(technician));
-            if (!Technicians.Contains(technician))
-                Technicians.Add(technician);
+            if (!LabTechnicians.Contains(technician))
+                LabTechnicians.Add(technician);
         }
 
         public void RemoveTechnician(LabTechnician technician)
         {
             if (technician == null) throw new ArgumentNullException(nameof(technician));
-            if (Technicians.Contains(technician))
-                Technicians.Remove(technician);
+            if (LabTechnicians.Contains(technician))
+                LabTechnicians.Remove(technician);
         }
     }
 }

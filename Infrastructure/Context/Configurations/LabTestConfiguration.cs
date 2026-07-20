@@ -33,7 +33,7 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasOne(lt => lt.Laboratory)
                 .WithMany(l => l.LabTests)
-                .HasForeignKey(lt => lt.LabId)
+                .HasForeignKey(lt => lt.LaboratoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // =========================

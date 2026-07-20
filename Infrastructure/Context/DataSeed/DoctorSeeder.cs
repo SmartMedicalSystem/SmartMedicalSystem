@@ -20,6 +20,14 @@ public static class DoctorSeeder
         if (await context.Doctors.AnyAsync())
             return;
 
+        var departmentIds = await context.Departments
+            .ToDictionaryAsync(d => d.Name, d => d.Id);
+
+        if (departmentIds.Count == 0)
+            return;
+
+        int DepartmentId(string name) => departmentIds[name];
+
         // ── 1. Seed domain Doctor records ──────────────────────────────────────
         var doctors = new List<Doctor>
        {
@@ -33,16 +41,16 @@ public static class DoctorSeeder
            //CreateDoctor(8,  "Dr. Heba Salah",      "Internal Medicine",   "01078901234", Gender.Female, 8,  new DateTime(1982, 12, 8), "heba.salah@medsystem.local",      "5 Corniche El-Nil, Cairo"),
            //CreateDoctor(9,  "Dr. Omar Zaki",       "Dermatology",         "01089012345", Gender.Male,   9,  new DateTime(1988, 2, 19), "omar.zaki@medsystem.local",       "29 Ahmed Urabi St., Cairo"),
            //CreateDoctor(10, "Dr. Rania Adel",      "Laboratory Medicine", "01090123456", Gender.Female, 10, new DateTime(1983, 8, 11), "rania.adel@medsystem.local",      "14 El-Galaa St., Mansoura"),
-           CreateDoctor( "Dr. Ahmed Hassan",    "Cardiology",         "01001234567", Gender.Male,   1,  new DateTime(1975, 3, 15), "ahmed.hassan@medsystem.local",    "12 Tahrir Square, Cairo"),
-           CreateDoctor( "Dr. Sara Mohamed",    "Neurology",           "01012345678", Gender.Female, 2,  new DateTime(1980, 7, 22), "sara.mohamed@medsystem.local",    "45 Nile St., Giza"),
-           CreateDoctor( "Dr. Khaled Ali",      "Orthopedics",         "01023456789", Gender.Male,   3,  new DateTime(1972, 11, 5), "khaled.ali@medsystem.local",      "8 Al-Haram Blvd., Giza"),
-           CreateDoctor( "Dr. Mona Ibrahim",    "Pediatrics",          "01034567890", Gender.Female, 4,  new DateTime(1985, 1, 30), "mona.ibrahim@medsystem.local",    "22 Port Said St., Alexandria"),
-           CreateDoctor( "Dr. Youssef Nasser",  "Oncology",            "01045678901", Gender.Male,   5,  new DateTime(1968, 9, 14), "youssef.nasser@medsystem.local",  "7 El-Nasr Rd., Cairo"),
-           CreateDoctor( "Dr. Nadia Farouk",    "Radiology",           "01056789012", Gender.Female, 6,  new DateTime(1978, 4, 18), "nadia.farouk@medsystem.local",    "33 October 6th St., Giza"),
-           CreateDoctor( "Dr. Tarek Mostafa",   "General Surgery",     "01067890123", Gender.Male,   7,  new DateTime(1970, 6, 25), "tarek.mostafa@medsystem.local",   "17 Salah Salem St., Cairo"),
-           CreateDoctor( "Dr. Heba Salah",      "Internal Medicine",   "01078901234", Gender.Female, 8,  new DateTime(1982, 12, 8), "heba.salah@medsystem.local",      "5 Corniche El-Nil, Cairo"),
-           CreateDoctor( "Dr. Omar Zaki",       "Dermatology",         "01089012345", Gender.Male,   9,  new DateTime(1988, 2, 19), "omar.zaki@medsystem.local",       "29 Ahmed Urabi St., Cairo"),
-           CreateDoctor( "Dr. Rania Adel",      "Laboratory Medicine", "01090123456", Gender.Female, 10, new DateTime(1983, 8, 11), "rania.adel@medsystem.local",      "14 El-Galaa St., Mansoura"),
+           CreateDoctor( "Dr. Ahmed Hassan",    "Cardiology",         "01001234567", Gender.Male,   DepartmentId("Cardiology"),        new DateTime(1975, 3, 15), "ahmed.hassan@medsystem.local",    "12 Tahrir Square, Cairo"),
+           CreateDoctor( "Dr. Sara Mohamed",    "Neurology",           "01012345678", Gender.Female, DepartmentId("Neurology"),          new DateTime(1980, 7, 22), "sara.mohamed@medsystem.local",    "45 Nile St., Giza"),
+           CreateDoctor( "Dr. Khaled Ali",      "Orthopedics",         "01023456789", Gender.Male,   DepartmentId("Orthopedics"),        new DateTime(1972, 11, 5), "khaled.ali@medsystem.local",      "8 Al-Haram Blvd., Giza"),
+           CreateDoctor( "Dr. Mona Ibrahim",    "Pediatrics",          "01034567890", Gender.Female, DepartmentId("Pediatrics"),         new DateTime(1985, 1, 30), "mona.ibrahim@medsystem.local",    "22 Port Said St., Alexandria"),
+           CreateDoctor( "Dr. Youssef Nasser",  "Oncology",            "01045678901", Gender.Male,   DepartmentId("Oncology"),           new DateTime(1968, 9, 14), "youssef.nasser@medsystem.local",  "7 El-Nasr Rd., Cairo"),
+           CreateDoctor( "Dr. Nadia Farouk",    "Radiology",           "01056789012", Gender.Female, DepartmentId("Radiology"),          new DateTime(1978, 4, 18), "nadia.farouk@medsystem.local",    "33 October 6th St., Giza"),
+           CreateDoctor( "Dr. Tarek Mostafa",   "General Surgery",     "01067890123", Gender.Male,   DepartmentId("General Surgery"),    new DateTime(1970, 6, 25), "tarek.mostafa@medsystem.local",   "17 Salah Salem St., Cairo"),
+           CreateDoctor( "Dr. Heba Salah",      "Internal Medicine",   "01078901234", Gender.Female, DepartmentId("Internal Medicine"),  new DateTime(1982, 12, 8), "heba.salah@medsystem.local",      "5 Corniche El-Nil, Cairo"),
+           CreateDoctor( "Dr. Omar Zaki",       "Dermatology",         "01089012345", Gender.Male,   DepartmentId("Dermatology"),        new DateTime(1988, 2, 19), "omar.zaki@medsystem.local",       "29 Ahmed Urabi St., Cairo"),
+           CreateDoctor( "Dr. Rania Adel",      "Laboratory Medicine", "01090123456", Gender.Female, DepartmentId("Laboratory"),         new DateTime(1983, 8, 11), "rania.adel@medsystem.local",      "14 El-Galaa St., Mansoura"),
 
        };
 

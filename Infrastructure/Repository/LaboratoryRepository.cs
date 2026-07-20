@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace Infrastructure.Repository
 {
     public class LaboratoryRepository : GenericRepository<Laboratory>, ILaboratoryRepo
@@ -27,7 +28,7 @@ namespace Infrastructure.Repository
                 .Include(l => l.HeadTechnician)
                 .Include(l => l.Department)
                 .Include(l => l.LabTests.Where(lt => !lt.IsDeleted))
-                .Include(l => l.Technicians.Where(t => !t.IsDeleted))
+                .Include(l => l.LabTechnicians.Where(t => !t.IsDeleted))
                 .Where(l => !l.IsDeleted)
                 .AsQueryable();
 
@@ -73,7 +74,7 @@ namespace Infrastructure.Repository
                 .Include(l => l.HeadTechnician)
                 .Include(l => l.Department)
                 .Include(l => l.LabTests.Where(lt => !lt.IsDeleted))
-                .Include(l => l.Technicians.Where(t => !t.IsDeleted))
+                .Include(l => l.LabTechnicians.Where(t => !t.IsDeleted))
                 .Where(l => !l.IsDeleted)
                 .OrderBy(l => l.Name)
                 .ToListAsync();
@@ -119,7 +120,7 @@ namespace Infrastructure.Repository
                 .Include(l => l.HeadTechnician)
                 .Include(l => l.Department)
                 .Include(l => l.LabTests.Where(lt => !lt.IsDeleted))
-                .Include(l => l.Technicians.Where(t => !t.IsDeleted))
+                .Include(l => l.LabTechnicians.Where(t => !t.IsDeleted))
                 .Where(l => l.Id == id && !l.IsDeleted)
                 .FirstOrDefaultAsync();
         }
@@ -133,7 +134,7 @@ namespace Infrastructure.Repository
             var now = DateTime.Now;
 
             return await _context.LabTests
-                .Where(lt => lt.LabId == labId
+                .Where(lt => lt.LaboratoryId == labId
                              && !lt.IsDeleted
                              && lt.CreatedAt.Month == now.Month
                              && lt.CreatedAt.Year == now.Year)

@@ -70,7 +70,9 @@ namespace Infrastructure.Repository
 
             if (!string.IsNullOrWhiteSpace(laboratory))
             {
-                query = query.Where(x => x.Laboratory.Contains(laboratory));
+                //query = query.Where(x => x.LaboratoryId == );
+                // connect labortary with labtechnician with laboratory name where labtech include labid
+                query = query.Where(x => x.Laboratory.Name.ToLower() == laboratory.Trim().ToLower());
             }
 
             if (employmentStatus.HasValue)

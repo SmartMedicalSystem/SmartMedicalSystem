@@ -20,6 +20,15 @@ public static class LabTechnicianSeeder
         if (await context.LabTechnicians.AnyAsync())
             return;
 
+        var laboratoryIds = await context.Laboratories
+            .Where(l => l.Code != null)
+            .ToDictionaryAsync(l => l.Code!, l => l.Id);
+
+        if (laboratoryIds.Count == 0)
+            return;
+
+        int LaboratoryId(string code) => laboratoryIds[code];
+
         // ── 1. Seed domain LabTechnician records ────────────────────────────────
         // LabTechnicianConfiguration marks Nationality/EncryptedNationalId/Laboratory/
         // JobTitle/Email/Address/City/Country/Username as required columns, so every
@@ -27,35 +36,35 @@ public static class LabTechnicianSeeder
         var techs = new List<LabTechnician>
         {
             CreateTech("Amir",   "Hassan",   "01112345678", "amir.hassan@medsystem.local",    "tech.amir.hassan",
-                "Hematology Lab",    "Senior Lab Technician", EmploymentStatus.FullTime, WorkShift.Morning,
+                LaboratoryId("LAB-HEMA"), "Senior Lab Technician", EmploymentStatus.FullTime, WorkShift.Morning,
                 new DateOnly(2016, 4, 1),  9, Gender.Male,   new DateTime(1988, 5, 12), "Cairo",     "Egypt"),
 
             CreateTech("Samira", "Nour",     "01123456789", "samira.nour@medsystem.local",    "tech.samira.nour",
-                "Biochemistry Lab",  "Lab Technician",        EmploymentStatus.FullTime, WorkShift.Morning,
+                LaboratoryId("LAB-CHEM"), "Lab Technician",        EmploymentStatus.FullTime, WorkShift.Morning,
                 new DateOnly(2019, 9, 15), 6, Gender.Female, new DateTime(1992, 2, 20), "Giza",      "Egypt"),
 
             CreateTech("Bassem", "Fouad",    "01134567890", "bassem.fouad@medsystem.local",   "tech.bassem.fouad",
-                "Microbiology Lab",  "Lab Technician",        EmploymentStatus.FullTime, WorkShift.Evening,
+                LaboratoryId("LAB-MICRO"), "Lab Technician",        EmploymentStatus.FullTime, WorkShift.Evening,
                 new DateOnly(2020, 1, 10), 5, Gender.Male,   new DateTime(1994, 7, 3),  "Alexandria","Egypt"),
 
             CreateTech("Hana",   "Wael",     "01145678901", "hana.wael@medsystem.local",      "tech.hana.wael",
-                "Hematology Lab",    "Lab Technician",        EmploymentStatus.PartTime, WorkShift.Evening,
+                LaboratoryId("LAB-PATH"), "Lab Technician",        EmploymentStatus.PartTime, WorkShift.Evening,
                 new DateOnly(2021, 6, 1),  4, Gender.Female, new DateTime(1996, 11, 8), "Cairo",     "Egypt"),
 
             CreateTech("Ramy",   "El-Sayed", "01156789012", "ramy.elsayed@medsystem.local",   "tech.ramy.elsayed",
-                "Biochemistry Lab",  "Chief Lab Technician",  EmploymentStatus.FullTime, WorkShift.Morning,
+                LaboratoryId("LAB-MICRO"), "Chief Lab Technician",  EmploymentStatus.FullTime, WorkShift.Morning,
                 new DateOnly(2012, 3, 20), 13, Gender.Male,  new DateTime(1983, 9, 27), "Mansoura",  "Egypt"),
 
             CreateTech("Dalia",  "Sherif",   "01167890123", "dalia.sherif@medsystem.local",   "tech.dalia.sherif",
-                "Radiology Lab",     "Lab Technician",        EmploymentStatus.FullTime, WorkShift.Night,
+                LaboratoryId("LAB-PATH"), "Lab Technician",        EmploymentStatus.FullTime, WorkShift.Night,
                 new DateOnly(2018, 8, 5),  7, Gender.Female, new DateTime(1991, 4, 16), "Giza",      "Egypt"),
 
             CreateTech("Tarek",  "Amin",     "01178901234", "tarek.amin@medsystem.local",     "tech.tarek.amin",
-                "Microbiology Lab",  "Senior Lab Technician", EmploymentStatus.FullTime, WorkShift.Night,
+                LaboratoryId("LAB-PATH"), "Senior Lab Technician", EmploymentStatus.FullTime, WorkShift.Night,
                 new DateOnly(2015, 11, 1), 10, Gender.Male,  new DateTime(1987, 1, 30), "Cairo",     "Egypt"),
 
             CreateTech("Menna",  "Gamal",    "01189012345", "menna.gamal@medsystem.local",    "tech.menna.gamal",
-                "Radiology Lab",     "Lab Technician",        EmploymentStatus.Contract, WorkShift.Morning,
+                LaboratoryId("LAB-PATH"), "Lab Technician",        EmploymentStatus.Contract, WorkShift.Morning,
                 new DateOnly(2022, 2, 14), 3, Gender.Female, new DateTime(1998, 6, 22), "Aswan",     "Egypt"),
         };
 
@@ -97,7 +106,7 @@ public static class LabTechnicianSeeder
     // ── Helper ──────────────────────────────────────────────────────────────────
     private static LabTechnician CreateTech(
         string firstName, string lastName, string contact, string email, string username,
-        string laboratory, string jobTitle, EmploymentStatus employmentStatus, WorkShift workShift,
+        int laboratoryId, string jobTitle, EmploymentStatus employmentStatus, WorkShift workShift,
         DateOnly joiningDate, int yearsOfExperience, Gender gender, DateTime dateOfBirth,
         string city, string country)
     {
@@ -105,7 +114,7 @@ public static class LabTechnicianSeeder
         {
             Email = email,
             Username = username,
-            Laboratory = laboratory,
+            LaboratoryId = laboratoryId,
             JobTitle = jobTitle,
             EmploymentStatus = employmentStatus,
             WorkShift = workShift,
@@ -115,7 +124,8 @@ public static class LabTechnicianSeeder
             DateOfBirth = dateOfBirth,
             Nationality = "Egyptian",
             EncryptedNationalId = (20000000 + new Random().Next(1, 1000000)).ToString(),
-            Address = $"{laboratory}, {city}",
+            Address = $"{city}, {country}",
+            //Address = $"{laboratory}, {city}",
             City = city,
             Country = country,
             AllowLogin = true,

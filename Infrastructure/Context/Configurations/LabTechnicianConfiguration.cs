@@ -43,9 +43,14 @@ namespace Infrastructures.Data.Configurations
             //builder.HasIndex(t => t.EmployeeId)
             //    .IsUnique();
 
-            builder.Property(t => t.Laboratory)
-                .HasMaxLength(100)
-                .IsRequired();
+            //builder.Property(t => t.Laboratory)
+            //    .HasMaxLength(100)
+            //    .IsRequired();
+
+            builder.HasOne(t => t.Laboratory)
+                .WithMany(l => l.LabTechnicians)
+                .HasForeignKey(t => t.LaboratoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(t => t.JobTitle)
                 .HasMaxLength(100)

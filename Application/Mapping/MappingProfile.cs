@@ -116,7 +116,7 @@ namespace Application.Mapping
                 .ForMember(d => d.HeadTechnicianName, o => o.MapFrom(s => s.HeadTechnician != null ? s.HeadTechnician.Name : null))
                 .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department != null ? s.Department.Name : null))
                 .ForMember(d => d.TestCount, o => o.MapFrom(s => s.LabTests.Count))
-                .ForMember(d => d.TechnicianCount, o => o.MapFrom(s => s.Technicians.Count));
+                .ForMember(d => d.TechnicianCount, o => o.MapFrom(s => s.LabTechnicians.Count));
 
             CreateMap<LaboratoryCreateDto, Laboratory>();
             CreateMap<LaboratoryUpdateDto, Laboratory>();

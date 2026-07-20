@@ -41,7 +41,7 @@ namespace Infrastructure.Context
 
 
         public DbSet<Laboratory> Laboratories => Set<Laboratory>();
-        public DbSet<Permission> Permissions { get; set; }
+     
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

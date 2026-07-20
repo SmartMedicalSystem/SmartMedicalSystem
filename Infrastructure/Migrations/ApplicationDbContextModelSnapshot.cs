@@ -143,8 +143,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("HeadDoctor")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("HeadDoctorId")
                         .HasColumnType("int");
@@ -154,8 +154,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -185,110 +185,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Departments", (string)null);
                 });
 
-<<<<<<< HEAD:Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
-=======
-            modelBuilder.Entity("Domain.Entities.Doctor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Contact")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MobileNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<int>("NationalId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("Doctors", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Contact")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("LaboratoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LaboratoryId");
-
-                    b.ToTable("LabTechnicians", (string)null);
-                });
-
->>>>>>> origin/Ahmed/Department:MEDSYstemITI-solution/MEDSYstemITI/Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
                 {
                     b.Property<int>("Id")
@@ -308,20 +204,20 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("LabId")
+                    b.Property<int?>("LaboratoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("TestName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LabId");
+                    b.HasIndex("LaboratoryId");
 
                     b.ToTable("LabTests", (string)null);
                 });
@@ -937,10 +833,8 @@ namespace Infrastructure.Migrations
                     b.Property<DateOnly>("JoiningDate")
                         .HasColumnType("date");
 
-                    b.Property<string>("Laboratory")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("LaboratoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -952,6 +846,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("YearsOfExperience")
                         .HasColumnType("int");
+
+                    b.HasIndex("LaboratoryId");
 
                     b.ToTable("LabTechnicians", (string)null);
                 });
@@ -986,37 +882,16 @@ namespace Infrastructure.Migrations
                     b.Navigation("HeadDoctorEntity");
                 });
 
-<<<<<<< HEAD:Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
-=======
-            modelBuilder.Entity("Domain.Entities.Doctor", b =>
-                {
-                    b.HasOne("Domain.Entities.Department", "Department")
-                        .WithMany("Doctors")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
-                {
-                    b.HasOne("Domain.Entities.Laboratory", null)
-                        .WithMany("Technicians")
-                        .HasForeignKey("LaboratoryId");
-                });
-
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
                 {
                     b.HasOne("Domain.Entities.Laboratory", "Laboratory")
                         .WithMany("LabTests")
-                        .HasForeignKey("LabId")
+                        .HasForeignKey("LaboratoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Laboratory");
                 });
 
->>>>>>> origin/Ahmed/Department:MEDSYstemITI-solution/MEDSYstemITI/Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
             modelBuilder.Entity("Domain.Entities.LabTestElement", b =>
                 {
                     b.HasOne("Domain.Entities.LabTest", "LabTest")
@@ -1039,7 +914,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Laboratory", b =>
                 {
                     b.HasOne("Domain.Entities.Department", "Department")
-                        .WithMany()
+                        .WithMany("Laboratories")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -1250,6 +1125,14 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("Domain.Entities.LabTechnician", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.Laboratory", "Laboratory")
+                        .WithMany("LabTechnicians")
+                        .HasForeignKey("LaboratoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Laboratory");
                 });
 
             modelBuilder.Entity("Domain.Entities.Patient", b =>
@@ -1264,6 +1147,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Department", b =>
                 {
                     b.Navigation("Doctors");
+
+                    b.Navigation("Laboratories");
                 });
 
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
@@ -1271,21 +1156,13 @@ namespace Infrastructure.Migrations
                     b.Navigation("LabTestElements");
                 });
 
-<<<<<<< HEAD:Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
-=======
             modelBuilder.Entity("Domain.Entities.Laboratory", b =>
                 {
+                    b.Navigation("LabTechnicians");
+
                     b.Navigation("LabTests");
-
-                    b.Navigation("Technicians");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Patient", b =>
-                {
-                    b.Navigation("Sessions");
-                });
-
->>>>>>> origin/Ahmed/Department:MEDSYstemITI-solution/MEDSYstemITI/Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
             modelBuilder.Entity("Domain.Entities.PatientResult", b =>
                 {
                     b.Navigation("ResultElements");

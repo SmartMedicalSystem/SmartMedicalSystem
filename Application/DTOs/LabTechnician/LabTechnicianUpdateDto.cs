@@ -19,7 +19,7 @@ namespace Application.DTOs.LabTechnician
         public string NationalId { get; set; } 
 
         // Employment Information
-        public string Laboratory { get; set; } 
+        public int LaboratoryId { get; set; } 
 
         public string JobTitle { get; set; } 
 

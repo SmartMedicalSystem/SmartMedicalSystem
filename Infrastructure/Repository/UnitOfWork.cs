@@ -87,6 +87,10 @@ namespace Infrastructure.Repository
         // ===== NEW =====
         public ILaboratoryRepo Laboratories =>
             _laboratories ??= new LaboratoryRepository(_context);
+
+        public IPersonGenericRepo PersonGeneric =>
+              _personGeneric ??= new PersonGenericRepo<BasePerson>(_context, new EncryptionService(_dataProtectionProvider));
+
         // ===============
 
         public IGenericRepository<T> Repository<T>() where T : BaseEntity

@@ -39,7 +39,7 @@ namespace Application.Services
             entity.DateOfBirth = dto.DateOfBirth;
             entity.Nationality = dto.Nationality;
 
-            entity.Laboratory = dto.Laboratory;
+            entity.LaboratoryId = dto.LaboratoryId;
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;
             entity.WorkShift = dto.WorkShift;
@@ -101,7 +101,7 @@ namespace Application.Services
                 EncryptedNationalId = dto.NationalId,
 
                 //employeeidentitynumber = dto.employeeidentitynumber,
-                Laboratory = dto.Laboratory,
+                LaboratoryId = dto.LaboratoryId,
                 JobTitle = dto.JobTitle,
                 EmploymentStatus = dto.EmploymentStatus,
                 WorkShift = dto.WorkShift,
@@ -161,7 +161,7 @@ namespace Application.Services
             entity.EncryptedNationalId = dto.NationalId;
 
             // Employment Information
-            entity.Laboratory = dto.Laboratory;
+            entity.LaboratoryId = dto.LaboratoryId;
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;
             entity.WorkShift = dto.WorkShift;

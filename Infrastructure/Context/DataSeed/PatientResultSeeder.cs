@@ -11,51 +11,54 @@ public static class PatientResultSeeder
         if (await context.PatientResults.AnyAsync())
             return;
 
-        var sessions = await context.Sessions.OrderBy(s => s.Id).ToListAsync();
-        var labTests = await context.LabTests.OrderBy(t => t.Id).ToListAsync();
+        var sessions = await context.Sessions
+            .OrderBy(s => s.SessionDate)
+            .ToListAsync();
+        var labTests = await context.LabTests
+            .ToDictionaryAsync(t => t.TestName, t => t.Id);
 
         if (sessions.Count < 4 || labTests.Count < 7)
-            return; // Prerequisites not seeded yet.
+            return;
 
         Session Session(int position) => sessions[position - 1];
-        LabTest Test(int position) => labTests[position - 1];
+        int LabTestId(string name) => labTests[name];
 
         var results = new List<PatientResult>
         {
-            CreateResult(patientId: Session(1).PatientId, sessionId: Session(1).Id, labTestId: Test(1).Id,
-                summary: "CBC within normal limits. No signs of anemia or infection.",
-                aiReport: "Normal CBC profile.",
-                aiSuggestion: "No action required. Routine follow-up in 6 months."),
+            CreateResult(Session(1).PatientId, Session(1).Id, LabTestId("Complete Blood Count (CBC)"),
+                "CBC within normal limits. No signs of anemia or infection.",
+                "Normal CBC profile.",
+                "No action required. Routine follow-up in 6 months."),
 
-            CreateResult(patientId: Session(1).PatientId, sessionId: Session(1).Id, labTestId: Test(4).Id,
-                summary: "Borderline high total cholesterol (210 mg/dL). LDL slightly elevated.",
-                aiReport: "Mild dyslipidemia detected.",
-                aiSuggestion: "Dietary modification recommended. Consider statin therapy if no improvement in 3 months."),
+            CreateResult(Session(1).PatientId, Session(1).Id, LabTestId("Lipid Profile"),
+                "Borderline high total cholesterol (210 mg/dL). LDL slightly elevated.",
+                "Mild dyslipidemia detected.",
+                "Dietary modification recommended. Consider statin therapy if no improvement in 3 months."),
 
-            CreateResult(patientId: Session(2).PatientId, sessionId: Session(2).Id, labTestId: Test(4).Id,
-                summary: "Lipid profile within target range for hypertensive patient.",
-                aiReport: "Lipid profile acceptable.",
-                aiSuggestion: "Continue current antihypertensive regimen and low-sodium diet."),
+            CreateResult(Session(2).PatientId, Session(2).Id, LabTestId("Lipid Profile"),
+                "Lipid profile within target range for hypertensive patient.",
+                "Lipid profile acceptable.",
+                "Continue current antihypertensive regimen and low-sodium diet."),
 
-            CreateResult(patientId: Session(2).PatientId, sessionId: Session(2).Id, labTestId: Test(7).Id,
-                summary: "Electrolytes balanced. Potassium slightly low at 3.3 mEq/L.",
-                aiReport: "Mild hypokalemia noted.",
-                aiSuggestion: "Increase dietary potassium. Recheck in 2 weeks."),
+            CreateResult(Session(2).PatientId, Session(2).Id, LabTestId("Electrolytes Panel"),
+                "Electrolytes balanced. Potassium slightly low at 3.3 mEq/L.",
+                "Mild hypokalemia noted.",
+                "Increase dietary potassium. Recheck in 2 weeks."),
 
-            CreateResult(patientId: Session(3).PatientId, sessionId: Session(3).Id, labTestId: Test(1).Id,
-                summary: "CBC normal. Hemoglobin 13.5 g/dL, no leukocytosis.",
-                aiReport: "Normal CBC.",
-                aiSuggestion: "CBC does not explain migraine symptoms. Proceed with neurological imaging."),
+            CreateResult(Session(3).PatientId, Session(3).Id, LabTestId("Complete Blood Count (CBC)"),
+                "CBC normal. Hemoglobin 13.5 g/dL, no leukocytosis.",
+                "Normal CBC.",
+                "CBC does not explain migraine symptoms. Proceed with neurological imaging."),
 
-            CreateResult(patientId: Session(4).PatientId, sessionId: Session(4).Id, labTestId: Test(5).Id,
-                summary: "Fasting glucose 112 mg/dL – pre-diabetic range. HbA1c 5.9%.",
-                aiReport: "Pre-diabetes indicators present.",
-                aiSuggestion: "Lifestyle modification. Low-glycaemic diet and exercise program. Re-test in 3 months."),
+            CreateResult(Session(4).PatientId, Session(4).Id, LabTestId("Blood Glucose Profile"),
+                "Fasting glucose 112 mg/dL - pre-diabetic range. HbA1c 5.9%.",
+                "Pre-diabetes indicators present.",
+                "Lifestyle modification. Low-glycaemic diet and exercise program. Re-test in 3 months."),
 
-            CreateResult(patientId: Session(4).PatientId, sessionId: Session(4).Id, labTestId: Test(1).Id,
-                summary: "CBC shows mild macrocytic anemia (MCV 102 fL, Hgb 11.1 g/dL).",
-                aiReport: "Macrocytic anemia – likely B12 or folate deficiency.",
-                aiSuggestion: "Check serum B12 and folate levels. Start empiric supplementation if deficiency confirmed."),
+            CreateResult(Session(4).PatientId, Session(4).Id, LabTestId("Complete Blood Count (CBC)"),
+                "CBC shows mild macrocytic anemia (MCV 102 fL, Hgb 11.1 g/dL).",
+                "Macrocytic anemia - likely B12 or folate deficiency.",
+                "Check serum B12 and folate levels. Start empiric supplementation if deficiency confirmed.")
         };
 
         await context.PatientResults.AddRangeAsync(results);
@@ -64,50 +67,59 @@ public static class PatientResultSeeder
         if (await context.PatientResultElements.AnyAsync())
             return;
 
-        var elements = new List<PatientResultElement>
+        var elements = await context.TestElements
+            .ToDictionaryAsync(e => e.ElementName, e => e.Id);
+        var technicians = await context.LabTechnicians
+            .Where(t => t.Email != null)
+            .ToDictionaryAsync(t => t.Email!, t => t.Id);
+
+        int ElementId(string name) => elements[name];
+        int TechId(string email) => technicians[email];
+
+        var resultElements = new List<PatientResultElement>
         {
-            CreateElement(patientResultId: results[0].Id, testElementId: 1,  value: 14.5,  techId: 23),
-            CreateElement(patientResultId: results[0].Id, testElementId: 2,  value: 7.2,   techId: 23),
-            CreateElement(patientResultId: results[0].Id, testElementId: 3,  value: 5.1,   techId: 23),
-            CreateElement(patientResultId: results[0].Id, testElementId: 4,  value: 230.0, techId: 23),
-            CreateElement(patientResultId: results[0].Id, testElementId: 5,  value: 43.0,  techId: 23),
-            CreateElement(patientResultId: results[0].Id, testElementId: 6,  value: 88.0,  techId: 23),
+            CreateElement(results[0].Id, ElementId("Hemoglobin"), 14.5, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[0].Id, ElementId("White Blood Cells (WBC)"), 7.2, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[0].Id, ElementId("Red Blood Cells (RBC)"), 5.1, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[0].Id, ElementId("Platelets"), 230.0, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[0].Id, ElementId("Hematocrit (HCT)"), 43.0, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[0].Id, ElementId("Mean Corpuscular Volume"), 88.0, TechId("amir.hassan@medsystem.local")),
 
-            CreateElement(patientResultId: results[1].Id, testElementId: 17, value: 210.0, techId: 24),
-            CreateElement(patientResultId: results[1].Id, testElementId: 18, value: 45.0,  techId: 24),
-            CreateElement(patientResultId: results[1].Id, testElementId: 19, value: 128.0, techId: 24),
-            CreateElement(patientResultId: results[1].Id, testElementId: 20, value: 145.0, techId: 24),
+            CreateElement(results[1].Id, ElementId("Total Cholesterol"), 210.0, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[1].Id, ElementId("HDL Cholesterol"), 45.0, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[1].Id, ElementId("LDL Cholesterol"), 128.0, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[1].Id, ElementId("Triglycerides"), 145.0, TechId("samira.nour@medsystem.local")),
 
-            CreateElement(patientResultId: results[2].Id, testElementId: 17, value: 185.0, techId: 23),
-            CreateElement(patientResultId: results[2].Id, testElementId: 18, value: 52.0,  techId: 23),
-            CreateElement(patientResultId: results[2].Id, testElementId: 19, value: 96.0,  techId: 23),
-            CreateElement(patientResultId: results[2].Id, testElementId: 20, value: 130.0, techId: 23),
+            CreateElement(results[2].Id, ElementId("Total Cholesterol"), 185.0, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[2].Id, ElementId("HDL Cholesterol"), 52.0, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[2].Id, ElementId("LDL Cholesterol"), 96.0, TechId("amir.hassan@medsystem.local")),
+            CreateElement(results[2].Id, ElementId("Triglycerides"), 130.0, TechId("amir.hassan@medsystem.local")),
 
-            CreateElement(patientResultId: results[3].Id, testElementId: 27, value: 140.0, techId: 25),
-            CreateElement(patientResultId: results[3].Id, testElementId: 28, value: 3.3,   techId: 25),
-            CreateElement(patientResultId: results[3].Id, testElementId: 29, value: 100.0, techId: 25),
-            CreateElement(patientResultId: results[3].Id, testElementId: 30, value: 9.2,   techId: 25),
+            CreateElement(results[3].Id, ElementId("Sodium (Na)"), 140.0, TechId("bassem.fouad@medsystem.local")),
+            CreateElement(results[3].Id, ElementId("Potassium (K)"), 3.3, TechId("bassem.fouad@medsystem.local")),
+            CreateElement(results[3].Id, ElementId("Chloride (Cl)"), 100.0, TechId("bassem.fouad@medsystem.local")),
+            CreateElement(results[3].Id, ElementId("Calcium (Ca)"), 9.2, TechId("bassem.fouad@medsystem.local")),
 
-            CreateElement(patientResultId: results[4].Id, testElementId: 1,  value: 13.5,  techId: 24),
-            CreateElement(patientResultId: results[4].Id, testElementId: 2,  value: 6.8,   techId: 24),
-            CreateElement(patientResultId: results[4].Id, testElementId: 3,  value: 4.7,   techId: 24),
-            CreateElement(patientResultId: results[4].Id, testElementId: 4,  value: 210.0, techId: 24),
-            CreateElement(patientResultId: results[4].Id, testElementId: 5,  value: 40.0,  techId: 24),
-            CreateElement(patientResultId: results[4].Id, testElementId: 6,  value: 85.0,  techId: 24),
+            CreateElement(results[4].Id, ElementId("Hemoglobin"), 13.5, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[4].Id, ElementId("White Blood Cells (WBC)"), 6.8, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[4].Id, ElementId("Red Blood Cells (RBC)"), 4.7, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[4].Id, ElementId("Platelets"), 210.0, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[4].Id, ElementId("Hematocrit (HCT)"), 40.0, TechId("samira.nour@medsystem.local")),
+            CreateElement(results[4].Id, ElementId("Mean Corpuscular Volume"), 85.0, TechId("samira.nour@medsystem.local")),
 
-            CreateElement(patientResultId: results[5].Id, testElementId: 21, value: 112.0, techId: 26),
-            CreateElement(patientResultId: results[5].Id, testElementId: 22, value: 5.9,   techId: 26),
-            CreateElement(patientResultId: results[5].Id, testElementId: 23, value: 148.0, techId: 26),
+            CreateElement(results[5].Id, ElementId("Fasting Blood Glucose"), 112.0, TechId("hana.wael@medsystem.local")),
+            CreateElement(results[5].Id, ElementId("HbA1c"), 5.9, TechId("hana.wael@medsystem.local")),
+            CreateElement(results[5].Id, ElementId("Post-Prandial Glucose"), 148.0, TechId("hana.wael@medsystem.local")),
 
-            CreateElement(patientResultId: results[6].Id, testElementId: 1,  value: 11.1,  techId: 27),
-            CreateElement(patientResultId: results[6].Id, testElementId: 2,  value: 5.9,   techId: 27),
-            CreateElement(patientResultId: results[6].Id, testElementId: 3,  value: 4.2,   techId: 27),
-            CreateElement(patientResultId: results[6].Id, testElementId: 4,  value: 190.0, techId: 27),
-            CreateElement(patientResultId: results[6].Id, testElementId: 5,  value: 34.0,  techId: 27),
-            CreateElement(patientResultId: results[6].Id, testElementId: 6,  value: 102.0, techId: 27),
+            CreateElement(results[6].Id, ElementId("Hemoglobin"), 11.1, TechId("ramy.elsayed@medsystem.local")),
+            CreateElement(results[6].Id, ElementId("White Blood Cells (WBC)"), 5.9, TechId("ramy.elsayed@medsystem.local")),
+            CreateElement(results[6].Id, ElementId("Red Blood Cells (RBC)"), 4.2, TechId("ramy.elsayed@medsystem.local")),
+            CreateElement(results[6].Id, ElementId("Platelets"), 190.0, TechId("ramy.elsayed@medsystem.local")),
+            CreateElement(results[6].Id, ElementId("Hematocrit (HCT)"), 34.0, TechId("ramy.elsayed@medsystem.local")),
+            CreateElement(results[6].Id, ElementId("Mean Corpuscular Volume"), 102.0, TechId("ramy.elsayed@medsystem.local"))
         };
 
-        await context.PatientResultElements.AddRangeAsync(elements);
+        await context.PatientResultElements.AddRangeAsync(resultElements);
         await context.SaveChangesAsync();
     }
 

@@ -70,9 +70,9 @@ namespace Infrastructure.Data.Configurations
             // Laboratory 1 ---> N Technicians
             // =========================
 
-            builder.HasMany(l => l.Technicians)
-                .WithOne(t => t.Laboratory)
-                .HasForeignKey(t => t.LaboratoryId)
+            builder.HasMany(l => l.LabTechnicians)
+                .WithOne(lt => lt.Laboratory)
+                .HasForeignKey(lt => lt.LaboratoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // =========================
@@ -82,7 +82,7 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasMany(l => l.LabTests)
                 .WithOne(lt => lt.Laboratory)
-                .HasForeignKey(lt => lt.LabId)
+                .HasForeignKey(lt => lt.LaboratoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // =========================

@@ -85,8 +85,6 @@ public static class DbInitializer
         await RoleSeeder.SeedAsync(roleManager);
         // Seed role claims (permissions) from code-defined mappings
         await RoleClaimsSeeder.SeedAsync(context, roleManager);
-        // Migrate legacy RolePermissions into AspNetRoleClaims and ensure role claims are present.
-        await RoleClaimsSeeder.SeedAsync(context, roleManager);
 
         // ── 4: Admin account ──────────────────────────────────────────────────────
         await SeedAdminUserAsync(userManager);
@@ -101,6 +99,8 @@ public static class DbInitializer
         await PatientSeeder.SeedAsync(context, userManager);
 
         // ── 8: Lab Technicians ────────────────────────────────────────────────────
+        await LaboratorySeeder.SeedAsync(context);
+
         await LabTechnicianSeeder.SeedAsync(context, userManager);
 
         // ── 9: Test Elements (building blocks of lab tests) ───────────────────────

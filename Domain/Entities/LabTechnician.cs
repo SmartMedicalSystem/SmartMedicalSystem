@@ -24,7 +24,10 @@ namespace Domain.Entities
 
         // Personal Information
         // Employment / lab-specific fields
-        public string Laboratory { get; set; } = string.Empty;
+        public Laboratory Laboratory { get; set; }
+
+        //navigation property for laboratory
+        public int LaboratoryId { get; set; }
         public string JobTitle { get; set; } = string.Empty;
         public EmploymentStatus EmploymentStatus { get; set; }
         public WorkShift WorkShift { get; set; }

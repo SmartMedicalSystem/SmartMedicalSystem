@@ -100,7 +100,7 @@ namespace Application.Services
                 DepartmentId = entity.DepartmentId,
                 DepartmentName = entity.Department?.Name,
                 TestCount = entity.LabTests?.Count ?? 0,
-                TechnicianCount = entity.Technicians?.Count ?? 0,
+                TechnicianCount = entity.LabTechnicians?.Count ?? 0,
                 CreatedAt = entity.CreatedAt
             }).ToList();
 
