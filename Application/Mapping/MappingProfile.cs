@@ -14,6 +14,7 @@ using PatientResultElementDto = Application.DTOs.PatientResultElement;
 using RequestLabsDto = Application.DTOs.RequestLabs;
 using SessionDto = Application.DTOs.Session;
 using TestElementDto = Application.DTOs.TestElement;
+using LabTechProfileDto = Application.DTOs.LabTechProfile;
 
 namespace Application.Mapping
 {
@@ -90,6 +91,8 @@ namespace Application.Mapping
 
 
             CreateMap<LabTechnician, LabTechnicianReadDto>().ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.EncryptedNationalId));
+            CreateMap<DomainEntities.LabTechProfile, LabTechProfileDto.LabTechProfileReadDto>();
+            CreateMap<LabTechProfileDto.LabTechProfileCreateDto, DomainEntities.LabTechProfile>();
 
             CreateMap<DomainEntities.PatientResult, PatientResultDto.PatientResultReadDto>();
             CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
