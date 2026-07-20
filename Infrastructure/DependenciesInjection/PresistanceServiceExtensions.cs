@@ -1,20 +1,22 @@
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Infrastructure.Context;
-using Infrastructure.Repository;
-using Infrastructure.Services;
-using Domain.IRepository;
-using Domain.Identity;
+using Application.Services;
+using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using Application.Services.Auth;
-using StackExchange.Redis;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Identity;
+using Domain.Identity;
+using Domain.IRepository;
+using Infrastructure.Context;
+using Infrastructure.Context.Configurations.Jwt;
+using Infrastructure.Repository;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Infrastructure.Context.Configurations.Jwt;
+using StackExchange.Redis;
 using System.Text;
 using Infrastructure.Services;
 using Infrastructure.Middleware;
@@ -64,6 +66,9 @@ namespace Infrastructure.DependenciesInjection
             // Register IPersonGenericRepo using the closed generic implementation type
             services.AddScoped(typeof(Domain.IRepository.IPersonGenericRepo), typeof(Infrastructure.Repository.PersonGenericRepo<Domain.Entities.Baseperson.BasePerson>));
 
+            services.AddScoped<IMemberRepo, MemberRepo>();
+            services.AddScoped<ILaboratoryRepo, LaboratoryRepository>();
+            services.AddScoped<ILaboratoryService, LaboratoryService>();
             // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -149,6 +154,12 @@ namespace Infrastructure.DependenciesInjection
             // Rate limiting service and memory cache used by middleware
             IServiceCollection serviceCollection = services.AddMemoryCache();
             services.AddSingleton<IRateLimitService, InMemoryRateLimitService>();
+
+            services.AddControllers()
+               .AddJsonOptions(options =>
+                  {
+                       options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                  });
             services.AddAuthorization();
 
 

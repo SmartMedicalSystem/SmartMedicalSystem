@@ -36,6 +36,9 @@ namespace Infrastructure.Repository
         private IPersonGenericRepo? _personGeneric;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
+        // ===== NEW =====
+        private ILaboratoryRepo? _laboratories;  
+        // ===============
 
         private readonly Dictionary<Type, object> _genericRepositories = new();
 
@@ -81,14 +84,11 @@ namespace Infrastructure.Repository
         public ITestElementRepo TestElements =>
             _testElements ??= new TestElementRepository(_context);
 
-        public IPersonGenericRepo PersonGeneric =>
-            _personGeneric ??= new PersonGenericRepo<BasePerson>(_context, new EncryptionService(_dataProtectionProvider));
-            
+        // ===== NEW =====
+        public ILaboratoryRepo Laboratories =>
+            _laboratories ??= new LaboratoryRepository(_context);
+        // ===============
 
-        /// <summary>
-        /// Generic accessor for entities that don't have a dedicated specialized repository.
-        /// Instances are cached per entity type for the lifetime of this Unit of Work.
-        /// </summary>
         public IGenericRepository<T> Repository<T>() where T : BaseEntity
         {
             var type = typeof(T);
@@ -123,4 +123,5 @@ namespace Infrastructure.Repository
             _disposed = true;
         }
     }
+
 }

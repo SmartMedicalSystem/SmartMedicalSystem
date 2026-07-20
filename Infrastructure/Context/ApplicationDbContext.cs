@@ -40,6 +40,8 @@ namespace Infrastructure.Context
         public DbSet<LabTestElement> LabTestElements => Set<LabTestElement>();
 
 
+        public DbSet<Laboratory> Laboratories => Set<Laboratory>();
+        public DbSet<Permission> Permissions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

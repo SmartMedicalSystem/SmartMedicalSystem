@@ -4,6 +4,7 @@ using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720053241_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,111 +24,6 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Domain.Entities.Baseperson.BasePerson", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AccountActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<bool>("AllowLogin")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("AlternativePhone")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int?>("ApplicationUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("EncryptedNationalId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Nationality")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("PhotoUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("PostalCode")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<bool>("ReceiveNotifications")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId")
-                        .IsUnique()
-                        .HasFilter("[ApplicationUserId] IS NOT NULL");
-
-                    b.ToTable("BasePersons", (string)null);
-
-                    b.UseTptMappingStrategy();
-                });
 
             modelBuilder.Entity("Domain.Entities.Department", b =>
                 {
@@ -143,8 +41,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("HeadDoctor")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("HeadDoctorId")
                         .HasColumnType("int");
@@ -154,8 +52,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -185,8 +83,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Departments", (string)null);
                 });
 
-<<<<<<< HEAD:Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
-=======
             modelBuilder.Entity("Domain.Entities.Doctor", b =>
                 {
                     b.Property<int>("Id")
@@ -275,8 +171,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -288,7 +184,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("LabTechnicians", (string)null);
                 });
 
->>>>>>> origin/Ahmed/Department:MEDSYstemITI-solution/MEDSYstemITI/Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
                 {
                     b.Property<int>("Id")
@@ -313,8 +208,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("TestName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -450,6 +345,60 @@ namespace Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Patient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BloodType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("MobileNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NationalId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Patients", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PatientResult", b =>
@@ -702,12 +651,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<bool>("AccountActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("AllowLogin")
-                        .HasColumnType("bit");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -721,14 +664,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastLoginAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -753,16 +689,12 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("ReceiveNotifications")
-                        .HasColumnType("bit");
-
                     b.Property<string>("RefreshToken")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("SSN")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -787,19 +719,34 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Identity.ApplicationUserRole", b =>
+            modelBuilder.Entity("Domain.Identity.Permission", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Identity.RolePermission", b =>
+                {
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("RoleId");
+                    b.HasKey("RoleId", "PermissionId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("LabTestRequestLabs", b =>
@@ -886,6 +833,21 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.Property<int>("UserId")
@@ -905,77 +867,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Doctor", b =>
-                {
-                    b.HasBaseType("Domain.Entities.Baseperson.BasePerson");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("Doctors", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
-                {
-                    b.HasBaseType("Domain.Entities.Baseperson.BasePerson");
-
-                    b.Property<int>("EmploymentStatus")
-                        .HasColumnType("int");
-
-                    b.Property<string>("JobTitle")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateOnly>("JoiningDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Laboratory")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("WorkShift")
-                        .HasColumnType("int");
-
-                    b.Property<int>("YearsOfExperience")
-                        .HasColumnType("int");
-
-                    b.ToTable("LabTechnicians", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Patient", b =>
-                {
-                    b.HasBaseType("Domain.Entities.Baseperson.BasePerson");
-
-                    b.Property<int>("BloodType")
-                        .HasColumnType("int");
-
-                    b.ToTable("Patients", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Baseperson.BasePerson", b =>
-                {
-                    b.HasOne("Domain.Identity.ApplicationUser", "ApplicationUser")
-                        .WithOne("Person")
-                        .HasForeignKey("Domain.Entities.Baseperson.BasePerson", "ApplicationUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("ApplicationUser");
-                });
-
             modelBuilder.Entity("Domain.Entities.Department", b =>
                 {
                     b.HasOne("Domain.Entities.Doctor", "HeadDoctorEntity")
@@ -986,8 +877,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("HeadDoctorEntity");
                 });
 
-<<<<<<< HEAD:Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
-=======
             modelBuilder.Entity("Domain.Entities.Doctor", b =>
                 {
                     b.HasOne("Domain.Entities.Department", "Department")
@@ -1001,9 +890,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
                 {
-                    b.HasOne("Domain.Entities.Laboratory", null)
+                    b.HasOne("Domain.Entities.Laboratory", "Laboratory")
                         .WithMany("Technicians")
-                        .HasForeignKey("LaboratoryId");
+                        .HasForeignKey("LaboratoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Laboratory");
                 });
 
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
@@ -1016,7 +908,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Laboratory");
                 });
 
->>>>>>> origin/Ahmed/Department:MEDSYstemITI-solution/MEDSYstemITI/Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
             modelBuilder.Entity("Domain.Entities.LabTestElement", b =>
                 {
                     b.HasOne("Domain.Entities.LabTest", "LabTest")
@@ -1039,7 +930,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Laboratory", b =>
                 {
                     b.HasOne("Domain.Entities.Department", "Department")
-                        .WithMany()
+                        .WithMany("Laboratories")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -1156,23 +1047,23 @@ namespace Infrastructure.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("Domain.Identity.ApplicationUserRole", b =>
+            modelBuilder.Entity("Domain.Identity.RolePermission", b =>
                 {
-                    b.HasOne("Domain.Identity.ApplicationRole", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
+                    b.HasOne("Domain.Identity.Permission", "permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Identity.ApplicationUser", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
+                    b.HasOne("Domain.Identity.ApplicationRole", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");
 
-                    b.Navigation("User");
+                    b.Navigation("permission");
                 });
 
             modelBuilder.Entity("LabTestRequestLabs", b =>
@@ -1217,6 +1108,21 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("Domain.Identity.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("Domain.Identity.ApplicationUser", null)
@@ -1226,44 +1132,11 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.Doctor", b =>
-                {
-                    b.HasOne("Domain.Entities.Department", "Department")
-                        .WithMany("Doctors")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Baseperson.BasePerson", null)
-                        .WithOne()
-                        .HasForeignKey("Domain.Entities.Doctor", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
-                {
-                    b.HasOne("Domain.Entities.Baseperson.BasePerson", null)
-                        .WithOne()
-                        .HasForeignKey("Domain.Entities.LabTechnician", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Entities.Patient", b =>
-                {
-                    b.HasOne("Domain.Entities.Baseperson.BasePerson", null)
-                        .WithOne()
-                        .HasForeignKey("Domain.Entities.Patient", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Entities.Department", b =>
                 {
                     b.Navigation("Doctors");
+
+                    b.Navigation("Laboratories");
                 });
 
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
@@ -1271,8 +1144,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("LabTestElements");
                 });
 
-<<<<<<< HEAD:Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
-=======
             modelBuilder.Entity("Domain.Entities.Laboratory", b =>
                 {
                     b.Navigation("LabTests");
@@ -1285,7 +1156,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Sessions");
                 });
 
->>>>>>> origin/Ahmed/Department:MEDSYstemITI-solution/MEDSYstemITI/Infrastructure/Migrations/ApplicationDbContextModelSnapshot.cs
             modelBuilder.Entity("Domain.Entities.PatientResult", b =>
                 {
                     b.Navigation("ResultElements");
@@ -1298,19 +1168,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Identity.ApplicationRole", b =>
                 {
-                    b.Navigation("UserRoles");
+                    b.Navigation("RolePermissions");
                 });
 
-            modelBuilder.Entity("Domain.Identity.ApplicationUser", b =>
+            modelBuilder.Entity("Domain.Identity.Permission", b =>
                 {
-                    b.Navigation("Person");
-
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Patient", b =>
-                {
-                    b.Navigation("Sessions");
+                    b.Navigation("RolePermissions");
                 });
 #pragma warning restore 612, 618
         }

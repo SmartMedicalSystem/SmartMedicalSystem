@@ -22,6 +22,8 @@ namespace Domain.Entities
 
         // Collection of Doctors in this department
         public ICollection<Doctor> Doctors { get; private set; } = new List<Doctor>();
+        public ICollection<Laboratory> Laboratories { get; set; }
+    = new List<Laboratory>();
 
         // Computed property for Frontend (not stored in DB)
         public int DoctorCount => Doctors?.Count ?? 0;
