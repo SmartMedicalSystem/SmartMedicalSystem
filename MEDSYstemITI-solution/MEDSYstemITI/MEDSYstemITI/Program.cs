@@ -1,6 +1,10 @@
-using Infrastructure.DependenciesInjection;
 using Application.DependencyInjection;
+using Application.Services;
+using Application.Services.Abstraction;
+using Domain.IRepository;
 using Infrastructure.DataSeed;
+using Infrastructure.DependenciesInjection;
+using Infrastructure.Repository;
 using MEDSYstemITI.Middleware;
 
 namespace MEDSYstemITI
@@ -31,6 +35,9 @@ namespace MEDSYstemITI
             builder.Services.AddinfrastructreServices(builder.Configuration);
             builder.Services.AddApplicationServices();
 
+         
+           
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

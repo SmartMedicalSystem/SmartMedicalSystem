@@ -18,6 +18,8 @@ namespace Domain.IRepository
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
+        //ahmed
+        ILaboratoryRepo Laboratories { get; }
         IDepartmentRepo Departments { get; }
         IDoctorRepo Doctors { get; }
         ILabTechnicianRepo LabTechnicians { get; }

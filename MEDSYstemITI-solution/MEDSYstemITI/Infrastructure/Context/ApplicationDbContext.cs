@@ -27,6 +27,7 @@ namespace Infrastructure.Context
         public DbSet<TestElement> TestElements => Set<TestElement>();
         public DbSet<LabTestElement> LabTestElements => Set<LabTestElement>();
 
+        public DbSet<Laboratory> Laboratories => Set<Laboratory>();
         public DbSet<Permission> Permissions { get; set; }
 
         public DbSet<RolePermission> RolePermissions { get; set; }

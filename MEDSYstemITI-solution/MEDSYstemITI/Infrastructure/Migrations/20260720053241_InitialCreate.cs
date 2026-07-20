@@ -56,40 +56,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LabTechnicians",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Contact = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LabTechnicians", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LabTests",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TestName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LabTests", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Patients",
                 columns: table => new
                 {
@@ -300,37 +266,13 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LabTestElements",
-                columns: table => new
-                {
-                    LabTestId = table.Column<int>(type: "int", nullable: false),
-                    TestElementId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LabTestElements", x => new { x.LabTestId, x.TestElementId });
-                    table.ForeignKey(
-                        name: "FK_LabTestElements_LabTests_LabTestId",
-                        column: x => x.LabTestId,
-                        principalTable: "LabTests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_LabTestElements_TestElements_TestElementId",
-                        column: x => x.TestElementId,
-                        principalTable: "TestElements",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Departments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    HeadDoctor = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    HeadDoctor = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FloorNumber = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active"),
                     HeadDoctorId = table.Column<int>(type: "int", nullable: true),
@@ -413,6 +355,131 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RequestLabs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SessionId = table.Column<int>(type: "int", nullable: false),
+                    RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestLabs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestLabs_Sessions_SessionId",
+                        column: x => x.SessionId,
+                        principalTable: "Sessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Laboratories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Active"),
+                    Code = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Specialty = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    HeadTechnicianId = table.Column<int>(type: "int", nullable: true),
+                    DepartmentId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Laboratories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Laboratories_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LabTechnicians",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Contact = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LaboratoryId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LabTechnicians", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LabTechnicians_Laboratories_LaboratoryId",
+                        column: x => x.LaboratoryId,
+                        principalTable: "Laboratories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LabTests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TestName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    LabId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LabTests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LabTests_Laboratories_LabId",
+                        column: x => x.LabId,
+                        principalTable: "Laboratories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LabTestElements",
+                columns: table => new
+                {
+                    LabTestId = table.Column<int>(type: "int", nullable: false),
+                    TestElementId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LabTestElements", x => new { x.LabTestId, x.TestElementId });
+                    table.ForeignKey(
+                        name: "FK_LabTestElements_LabTests_LabTestId",
+                        column: x => x.LabTestId,
+                        principalTable: "LabTests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LabTestElements_TestElements_TestElementId",
+                        column: x => x.TestElementId,
+                        principalTable: "TestElements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PatientResults",
                 columns: table => new
                 {
@@ -452,25 +519,25 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RequestLabs",
+                name: "RequestLabsLabTests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SessionId = table.Column<int>(type: "int", nullable: false),
-                    RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    LabTestsId = table.Column<int>(type: "int", nullable: false),
+                    RequestLabsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RequestLabs", x => x.Id);
+                    table.PrimaryKey("PK_RequestLabsLabTests", x => new { x.LabTestsId, x.RequestLabsId });
                     table.ForeignKey(
-                        name: "FK_RequestLabs_Sessions_SessionId",
-                        column: x => x.SessionId,
-                        principalTable: "Sessions",
+                        name: "FK_RequestLabsLabTests_LabTests_LabTestsId",
+                        column: x => x.LabTestsId,
+                        principalTable: "LabTests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RequestLabsLabTests_RequestLabs_RequestLabsId",
+                        column: x => x.RequestLabsId,
+                        principalTable: "RequestLabs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -510,30 +577,6 @@ namespace Infrastructure.Migrations
                         principalTable: "TestElements",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RequestLabsLabTests",
-                columns: table => new
-                {
-                    LabTestsId = table.Column<int>(type: "int", nullable: false),
-                    RequestLabsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RequestLabsLabTests", x => new { x.LabTestsId, x.RequestLabsId });
-                    table.ForeignKey(
-                        name: "FK_RequestLabsLabTests_LabTests_LabTestsId",
-                        column: x => x.LabTestsId,
-                        principalTable: "LabTests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RequestLabsLabTests_RequestLabs_RequestLabsId",
-                        column: x => x.RequestLabsId,
-                        principalTable: "RequestLabs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -585,7 +628,9 @@ namespace Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Departments_Name",
                 table: "Departments",
-                column: "Name");
+                column: "Name",
+                unique: true,
+                filter: "[IsDeleted] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Departments_Status",
@@ -598,9 +643,46 @@ namespace Infrastructure.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Laboratories_Code_Unique",
+                table: "Laboratories",
+                column: "Code",
+                unique: true,
+                filter: "[Code] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Laboratories_DepartmentId",
+                table: "Laboratories",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Laboratories_HeadTechnicianId",
+                table: "Laboratories",
+                column: "HeadTechnicianId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Laboratories_Name",
+                table: "Laboratories",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Laboratories_Status",
+                table: "Laboratories",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LabTechnicians_LaboratoryId",
+                table: "LabTechnicians",
+                column: "LaboratoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LabTestElements_TestElementId",
                 table: "LabTestElements",
                 column: "TestElementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LabTests_LabId",
+                table: "LabTests",
+                column: "LabId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -674,6 +756,14 @@ namespace Infrastructure.Migrations
                 principalTable: "Doctors",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Laboratories_LabTechnicians_HeadTechnicianId",
+                table: "Laboratories",
+                column: "HeadTechnicianId",
+                principalTable: "LabTechnicians",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />
@@ -682,6 +772,14 @@ namespace Infrastructure.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Departments_Doctors_HeadDoctorId",
                 table: "Departments");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Laboratories_Departments_DepartmentId",
+                table: "Laboratories");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Laboratories_LabTechnicians_HeadTechnicianId",
+                table: "Laboratories");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -717,9 +815,6 @@ namespace Infrastructure.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "LabTechnicians");
-
-            migrationBuilder.DropTable(
                 name: "PatientResults");
 
             migrationBuilder.DropTable(
@@ -748,6 +843,12 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Departments");
+
+            migrationBuilder.DropTable(
+                name: "LabTechnicians");
+
+            migrationBuilder.DropTable(
+                name: "Laboratories");
         }
     }
 }

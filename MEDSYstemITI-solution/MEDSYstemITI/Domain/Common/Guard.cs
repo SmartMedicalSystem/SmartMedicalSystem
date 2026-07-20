@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 
 namespace Domain.Common
 {
@@ -68,5 +69,19 @@ namespace Domain.Common
             if (min >= max)
                 throw new ArgumentException($"{minParamName} must be less than {maxParamName}.");
         }
+
+        public static string ValidatePhone(string phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone))
+                throw new ArgumentException("Phone number is required.", nameof(phone));
+
+            if (!Regex.IsMatch(phone, @"^(010|011|012|015)\d{8}$"))
+                throw new ArgumentException(
+                    "Phone number must start with 010, 011, 012, or 015 followed by 8 digits.",
+                    nameof(phone));
+
+            return phone;
+        }
+
     }
 }

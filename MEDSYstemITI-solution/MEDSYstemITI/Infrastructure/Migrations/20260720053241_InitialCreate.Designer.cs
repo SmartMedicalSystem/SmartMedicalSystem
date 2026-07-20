@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260715132454_InitialCreate")]
+    [Migration("20260720053241_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -41,8 +41,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("HeadDoctor")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("HeadDoctorId")
                         .HasColumnType("int");
@@ -52,8 +52,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -73,7 +73,9 @@ namespace Infrastructure.Migrations
                         .HasFilter("[HeadDoctorId] IS NOT NULL");
 
                     b.HasIndex("Name")
-                        .HasDatabaseName("IX_Departments_Name");
+                        .IsUnique()
+                        .HasDatabaseName("IX_Departments_Name")
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("Status")
                         .HasDatabaseName("IX_Departments_Status");
@@ -164,15 +166,20 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("LaboratoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LaboratoryId");
 
                     b.ToTable("LabTechnicians", (string)null);
                 });
@@ -196,15 +203,20 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("LabId")
+                        .HasColumnType("int");
+
                     b.Property<string>("TestName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LabId");
 
                     b.ToTable("LabTests", (string)null);
                 });
@@ -222,6 +234,79 @@ namespace Infrastructure.Migrations
                     b.HasIndex("TestElementId");
 
                     b.ToTable("LabTestElements", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Laboratory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HeadTechnicianId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("Specialty")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Active");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Laboratories_Code_Unique")
+                        .HasFilter("[Code] IS NOT NULL");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("HeadTechnicianId");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Laboratories_Name");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Laboratories_Status");
+
+                    b.ToTable("Laboratories", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Notification", b =>
@@ -803,6 +888,26 @@ namespace Infrastructure.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
+                {
+                    b.HasOne("Domain.Entities.Laboratory", "Laboratory")
+                        .WithMany("Technicians")
+                        .HasForeignKey("LaboratoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Laboratory");
+                });
+
+            modelBuilder.Entity("Domain.Entities.LabTest", b =>
+                {
+                    b.HasOne("Domain.Entities.Laboratory", "Laboratory")
+                        .WithMany("LabTests")
+                        .HasForeignKey("LabId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Laboratory");
+                });
+
             modelBuilder.Entity("Domain.Entities.LabTestElement", b =>
                 {
                     b.HasOne("Domain.Entities.LabTest", "LabTest")
@@ -820,6 +925,23 @@ namespace Infrastructure.Migrations
                     b.Navigation("LabTest");
 
                     b.Navigation("TestElement");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Laboratory", b =>
+                {
+                    b.HasOne("Domain.Entities.Department", "Department")
+                        .WithMany("Laboratories")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.Entities.LabTechnician", "HeadTechnician")
+                        .WithMany()
+                        .HasForeignKey("HeadTechnicianId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Department");
+
+                    b.Navigation("HeadTechnician");
                 });
 
             modelBuilder.Entity("Domain.Entities.Notification", b =>
@@ -1013,11 +1135,20 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Department", b =>
                 {
                     b.Navigation("Doctors");
+
+                    b.Navigation("Laboratories");
                 });
 
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
                 {
                     b.Navigation("LabTestElements");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Laboratory", b =>
+                {
+                    b.Navigation("LabTests");
+
+                    b.Navigation("Technicians");
                 });
 
             modelBuilder.Entity("Domain.Entities.Patient", b =>

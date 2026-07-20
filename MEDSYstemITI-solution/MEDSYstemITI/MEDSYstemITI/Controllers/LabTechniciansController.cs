@@ -21,7 +21,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet]
-        [HasPermission(Permissions.ReadLabTechnician)]
+      //  [HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {

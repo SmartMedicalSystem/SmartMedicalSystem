@@ -8,6 +8,8 @@ namespace Domain.Entities
 
         public string Contact { get;  set; } = null!;
 
+        public int? LaboratoryId { get; set; }
+        public Laboratory? Laboratory { get; set; }
         private LabTechnician() { }
 
         public LabTechnician(string name, string contact)

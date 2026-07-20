@@ -1,5 +1,7 @@
 using Application.DTOs.Department;
 using Application.DTOs.Doctor;
+using Application.DTOs.Laboratory;
+using Application.DTOs.LabTest;
 using AutoMapper;
 using Domain.Entities;
 using System.Linq;
@@ -110,7 +112,20 @@ namespace Application.Mapping
             CreateMap<DomainEntities.LabTestElement, LabTestElementDto.LabTestElementReadDto>();
             CreateMap<LabTestElementDto.LabTestElementCreateDto, DomainEntities.LabTestElement>();
 
-          
+
+            //laboratory Ahmed
+            CreateMap<LabTest, TestDto>();
+            CreateMap<Laboratory, LaboratoryReadDto>()
+                .ForMember(d => d.HeadTechnicianName, o => o.MapFrom(s => s.HeadTechnician != null ? s.HeadTechnician.Name : null))
+                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Department != null ? s.Department.Name : null))
+                .ForMember(d => d.TestCount, o => o.MapFrom(s => s.LabTests.Count))
+                .ForMember(d => d.TechnicianCount, o => o.MapFrom(s => s.Technicians.Count));
+
+            CreateMap<LaboratoryCreateDto, Laboratory>();
+            CreateMap<LaboratoryUpdateDto, Laboratory>();
+            CreateMap<Laboratory, LaboratoryForSelectDto>();
+
+
         }
     }
 }
