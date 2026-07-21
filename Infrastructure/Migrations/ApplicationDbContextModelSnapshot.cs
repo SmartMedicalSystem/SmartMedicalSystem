@@ -160,7 +160,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LabTechProfiles", (string)null);
+                    b.ToTable("LabTechProfiles");
                 });
 
             modelBuilder.Entity("Domain.Entities.LabTest", b =>

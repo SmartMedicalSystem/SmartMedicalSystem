@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260720113603_test")]
-    partial class test
+    [Migration("20260721130919_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,111 +24,6 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Domain.Entities.Baseperson.BasePerson", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AccountActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<bool>("AllowLogin")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("AlternativePhone")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int?>("ApplicationUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("EncryptedNationalId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Nationality")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("PhotoUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("PostalCode")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<bool>("ReceiveNotifications")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId")
-                        .IsUnique()
-                        .HasFilter("[ApplicationUserId] IS NOT NULL");
-
-                    b.ToTable("BasePersons", (string)null);
-
-                    b.UseTptMappingStrategy();
-                });
 
             modelBuilder.Entity("Domain.Entities.Department", b =>
                 {
@@ -526,6 +421,104 @@ namespace Infrastructure.Migrations
                     b.ToTable("PatientResultElements", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Person.BasePerson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AccountActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("AllowLogin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("AlternativePhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("EncryptedNationalId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Nationality")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("ReceiveNotifications")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BasePersons", (string)null);
+
+                    b.UseTptMappingStrategy();
+                });
+
             modelBuilder.Entity("Domain.Entities.RequestLabs", b =>
                 {
                     b.Property<int>("Id")
@@ -735,6 +728,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -771,6 +767,9 @@ namespace Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("PersonId")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -893,9 +892,16 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.AdminPerson", b =>
+                {
+                    b.HasBaseType("Domain.Entities.Person.BasePerson");
+
+                    b.ToTable("AdminPersons");
+                });
+
             modelBuilder.Entity("Domain.Entities.Doctor", b =>
                 {
-                    b.HasBaseType("Domain.Entities.Baseperson.BasePerson");
+                    b.HasBaseType("Domain.Entities.Person.BasePerson");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
@@ -912,7 +918,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
                 {
-                    b.HasBaseType("Domain.Entities.Baseperson.BasePerson");
+                    b.HasBaseType("Domain.Entities.Person.BasePerson");
 
                     b.Property<int>("EmploymentStatus")
                         .HasColumnType("int");
@@ -946,22 +952,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Patient", b =>
                 {
-                    b.HasBaseType("Domain.Entities.Baseperson.BasePerson");
+                    b.HasBaseType("Domain.Entities.Person.BasePerson");
 
                     b.Property<int>("BloodType")
                         .HasColumnType("int");
 
                     b.ToTable("Patients", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Baseperson.BasePerson", b =>
-                {
-                    b.HasOne("Domain.Identity.ApplicationUser", "ApplicationUser")
-                        .WithOne("Person")
-                        .HasForeignKey("Domain.Entities.Baseperson.BasePerson", "ApplicationUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Domain.Entities.Department", b =>
@@ -1123,6 +1119,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("Domain.Identity.ApplicationUser", b =>
+                {
+                    b.HasOne("Domain.Entities.Person.BasePerson", "Person")
+                        .WithOne("User")
+                        .HasForeignKey("Domain.Identity.ApplicationUser", "PersonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("Domain.Identity.ApplicationUserRole", b =>
                 {
                     b.HasOne("Domain.Identity.ApplicationRole", "Role")
@@ -1201,7 +1208,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Baseperson.BasePerson", null)
+                    b.HasOne("Domain.Entities.Person.BasePerson", null)
                         .WithOne()
                         .HasForeignKey("Domain.Entities.Doctor", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1212,7 +1219,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.LabTechnician", b =>
                 {
-                    b.HasOne("Domain.Entities.Baseperson.BasePerson", null)
+                    b.HasOne("Domain.Entities.Person.BasePerson", null)
                         .WithOne()
                         .HasForeignKey("Domain.Entities.LabTechnician", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1229,7 +1236,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Patient", b =>
                 {
-                    b.HasOne("Domain.Entities.Baseperson.BasePerson", null)
+                    b.HasOne("Domain.Entities.Person.BasePerson", null)
                         .WithOne()
                         .HasForeignKey("Domain.Entities.Patient", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1260,6 +1267,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("ResultElements");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Person.BasePerson", b =>
+                {
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.TestElement", b =>
                 {
                     b.Navigation("LabTestElements");
@@ -1272,8 +1284,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Identity.ApplicationUser", b =>
                 {
-                    b.Navigation("Person");
-
                     b.Navigation("UserRoles");
                 });
 

@@ -1,6 +1,5 @@
 using Application.DTOs.Auth;
 using Application.Services.Abstraction.Auth;
-using Application.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +14,6 @@ namespace MEDSYstemITI.Controllers
         public AuthController(IAuthService authService)
         {
             _authService = authService;
-        }
-
-        /// <summary>Registers a new account with the given role (Admin, Doctor, DepartmentManager, LabTechnician).</summary>
-       // [HasPermission(Domain.Enums.Permissions.CreateUser)]
-        [HttpPost("register")]
-        public async Task<ActionResult<RefreshTokenRequestDto>> CreateUser([FromBody] CreateUserRequestDto request)
-        {
-            var result = await _authService.CreateUserAsync(request);
-            return Ok(result);
         }
 
         /// <summary>Logs in with either username or email + password.</summary>
@@ -46,7 +36,7 @@ namespace MEDSYstemITI.Controllers
         //[Authorize]
 
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword( [FromBody] ChangePasswordRequestDto request)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto request)
         {
             var response = await _authService.ChangePasswordAsync(request);
 

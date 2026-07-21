@@ -8,10 +8,6 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Microsoft.Extensions.Hosting;
 
 namespace Application.Services
 {

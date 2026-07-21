@@ -20,7 +20,7 @@ namespace Application.DTOs.LabTechnician
         public string NationalId { get; set; }
         // Employment
 
-        
+
         public int LaboratoryId { get; set; }
         public string JobTitle { get; set; }
 
@@ -62,6 +62,6 @@ namespace Application.DTOs.LabTechnician
 
         public bool SendLoginCredentials { get; set; }
 
-       // public IFormFile? PhotoUrl { get; set; }
+        public IFormFile? PhotoUrl { get; set; }
     }
 }
