@@ -67,8 +67,8 @@ public static class PatientResultSeeder
         if (await context.PatientResultElements.AnyAsync())
             return;
 
-        var elements = await context.TestElements
-            .ToDictionaryAsync(e => e.ElementName, e => e.Id);
+        var elements = await context.Elements
+            .ToDictionaryAsync(e => e.Name, e => e.Id);
         var technicians = await context.LabTechnicians
             .Where(t => t.Email != null)
             .ToDictionaryAsync(t => t.Email!, t => t.Id);
@@ -131,8 +131,8 @@ public static class PatientResultSeeder
         };
 
     private static PatientResultElement CreateElement(int patientResultId,
-        int testElementId, double value, int techId) =>
-        new PatientResultElement(patientResultId, testElementId, value, techId)
+        int elementId, double value, int techId) =>
+        new PatientResultElement(patientResultId, elementId, value.ToString(), techId)
         {
             CreatedAt = DateTime.UtcNow
         };

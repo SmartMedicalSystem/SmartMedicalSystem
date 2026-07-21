@@ -6,32 +6,36 @@ namespace Domain.Entities
     {
         public int PatientResultId { get;  set; }
 
-        public int TestElementId { get;  set; }
+        public int ElementId { get;  set; }
 
-        public double Value { get;  set; }
+        public string Value { get;  set; } = null!;
+
+        public string? Comment { get; set; }
 
         public int TechId { get;  set; }
 
         // Navigation Properties
         public PatientResult patientResult { get; set; } = null!; // naming kept exactly as in the source entity
 
-        public TestElement TestElement { get; set; } = null!;
+        public Element Element { get; set; } = null!;
 
         public LabTechnician Technician { get; set; } = null!;
 
         private PatientResultElement() { }
 
-        public PatientResultElement(int patientResultId, int testElementId, double value, int techId)
+        public PatientResultElement(int patientResultId, int elementId, string value, int techId, string? comment = null)
         {
             PatientResultId = Guard.Positive(patientResultId, nameof(patientResultId));
-            TestElementId = Guard.Positive(testElementId, nameof(testElementId));
-            Value = Guard.PositiveOrZero(value, nameof(value));
+            ElementId = Guard.Positive(elementId, nameof(elementId));
+            Value = Guard.NotNullOrWhiteSpace(value, nameof(value), 200);
             TechId = Guard.Positive(techId, nameof(techId));
+            Comment = string.IsNullOrWhiteSpace(comment) ? null : comment.Trim();
         }
 
-        public void UpdateValue(double value)
+        public void UpdateValue(string value, string? comment = null)
         {
-            Value = Guard.PositiveOrZero(value, nameof(value));
+            Value = Guard.NotNullOrWhiteSpace(value, nameof(value), 200);
+            Comment = string.IsNullOrWhiteSpace(comment) ? null : comment.Trim();
         }
     }
 }

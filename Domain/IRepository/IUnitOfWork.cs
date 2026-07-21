@@ -32,6 +32,7 @@ namespace Domain.IRepository
         IPatientResultElementRepo PatientResultElements { get; }
         IRequestLabsRepo RequestLabs { get; }
         ISessionRepo Sessions { get; }
+        IElementRepo Elements { get; }
         ITestElementRepo TestElements { get; }
 
         IPersonGenericRepo PersonGeneric { get; }

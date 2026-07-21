@@ -13,8 +13,6 @@ namespace Domain.Entities
 
         public float NormalMax { get;  set; }
 
-        public ICollection<LabTestElement> LabTestElements { get; } = new List<LabTestElement>();
-
         private TestElement() { }
 
         public TestElement(string elementName, string unit, float normalMin, float normalMax)

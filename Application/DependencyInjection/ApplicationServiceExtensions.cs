@@ -24,6 +24,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IDoctorService, DoctorService>();
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<ILabTestService, LabTestService>();
+            services.AddScoped<IElementService, ElementService>();
             services.AddScoped<ITestElementService, TestElementService>();
             services.AddScoped<ILabTestElementService, LabTestElementService>();
             services.AddScoped<ISessionService, SessionService>();

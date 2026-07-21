@@ -33,6 +33,7 @@ namespace Infrastructure.Repository
         private IPatientResultElementRepo? _patientResultElements;
         private IRequestLabsRepo? _requestLabs;
         private ISessionRepo? _sessions;
+        private IElementRepo? _elements;
         private ITestElementRepo? _testElements;
         private IPersonGenericRepo? _personGeneric;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -83,6 +84,9 @@ namespace Infrastructure.Repository
 
         public ISessionRepo Sessions =>
             _sessions ??= new SessionRepository(_context);
+
+        public IElementRepo Elements =>
+            _elements ??= new ElementRepository(_context);
 
         public ITestElementRepo TestElements =>
             _testElements ??= new TestElementRepository(_context);

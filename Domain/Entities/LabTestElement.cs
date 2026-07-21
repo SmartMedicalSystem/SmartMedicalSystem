@@ -7,15 +7,24 @@ namespace Domain.Entities
         public int LabTestId { get;  set; }
         public LabTest LabTest { get; set; } = null!;
 
-        public int TestElementId { get;  set; }
-        public TestElement TestElement { get; set; } = null!;
+        public int ElementId { get;  set; }
+        public Element Element { get; set; } = null!;
+
+        public int DisplayOrder { get; set; }
+
+        public bool IsRequired { get; set; }
 
         private LabTestElement() { }
 
-        public LabTestElement(int labTestId, int testElementId)
+        public LabTestElement(int labTestId, int elementId, int displayOrder = 0, bool isRequired = true)
         {
             LabTestId = Guard.Positive(labTestId, nameof(labTestId));
-            TestElementId = Guard.Positive(testElementId, nameof(testElementId));
+            ElementId = Guard.Positive(elementId, nameof(elementId));
+            if (displayOrder < 0)
+                throw new System.ArgumentException($"{nameof(displayOrder)} cannot be negative.", nameof(displayOrder));
+
+            DisplayOrder = displayOrder;
+            IsRequired = isRequired;
         }
     }
 }
