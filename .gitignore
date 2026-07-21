@@ -1,3 +1,8 @@
 .vs/
 **/bin/
 **/obj/
+/Application/obj/Debug/net10.0/Application.AssemblyInfo.cs
+/Domain/obj/Debug/net10.0/Domain.dll
+/MEDSYstemITI/bin/Debug/net10.0/Infrastructure.dll
+/Infrastructure/obj/Debug/net10.0/Infrastructure.AssemblyInfoInputs.cache
+/Application/Common/Exceptions/AppException.cs
