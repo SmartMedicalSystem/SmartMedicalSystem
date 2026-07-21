@@ -1,8 +1,53 @@
+# =========================
+# .NET / Visual Studio
+# =========================
+
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
 .vs/
-**/bin/
-**/obj/
-/Application/obj/Debug/net10.0/Application.AssemblyInfo.cs
-/Domain/obj/Debug/net10.0/Domain.dll
-/MEDSYstemITI/bin/Debug/net10.0/Infrastructure.dll
-/Infrastructure/obj/Debug/net10.0/Infrastructure.AssemblyInfoInputs.cache
-/Application/Common/Exceptions/AppException.cs
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build logs
+*.log
+
+# Compiled binaries
+*.dll
+*.exe
+*.pdb
+
+# Generated build files
+*.cache
+*.sourcelink.json
+
+# Assembly generated files
+**/AssemblyInfo.cs
+**/AssemblyInfo.cache
+
+# Test results
+TestResults/
+*.trx
+
+# NuGet
+*.nupkg
+packages/
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# ASP.NET / local settings
+appsettings.Development.json
+
+# OS files
+.DS_Store
+Thumbs.db
