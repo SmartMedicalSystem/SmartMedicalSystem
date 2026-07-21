@@ -17,14 +17,13 @@ namespace MEDSYstemITI.Controllers
     public class LabTechniciansController : ControllerBase
     {
         private readonly ILabTechnicianService _labTechnicianService;
-        private readonly IAuthService _authService;
 
-        public LabTechniciansController(ILabTechnicianService labTechnicianService, IAuthService authService)
+        public LabTechniciansController(ILabTechnicianService labTechnicianService)
         {
             _labTechnicianService = labTechnicianService;
-            _authService = authService;
         }
 
+ 
         [HttpGet]
         [HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
