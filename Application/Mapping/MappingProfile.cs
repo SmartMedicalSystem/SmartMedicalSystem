@@ -94,7 +94,8 @@ namespace Application.Mapping
             CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
 
 
-            CreateMap<LabTechnician, LabTechnicianReadDto>().ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.EncryptedNationalId));
+            CreateMap<LabTechnician, LabTechnicianReadDto>().ForMember(dest => dest.NationalId, 
+                opt => opt.MapFrom(src => src.EncryptedNationalId));
             CreateMap<DomainEntities.LabTechProfile, LabTechProfileDto.LabTechProfileReadDto>();
             CreateMap<LabTechProfileDto.LabTechProfileCreateDto, DomainEntities.LabTechProfile>();
 

@@ -21,9 +21,9 @@ namespace Application.DTOs.LabTechnician
 
         // Employment
 
-        public string EmployeeId { get; set; } = null!;
+        
 
-        public string Laboratory { get; set; } = null!;
+        public int LaboratoryId { get; set; }
 
         public string JobTitle { get; set; } = null!;
 

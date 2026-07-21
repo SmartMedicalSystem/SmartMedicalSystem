@@ -82,7 +82,7 @@ namespace MEDSYstemITI.Middleware
                 response = new ErrorResponse
             {
                     StatusCode = httpStatus,
-                    Message = "An unexpected error occurred.",
+                    Message = exception.ToString(),
                     ErrorCode = "INTERNAL_SERVER_ERROR",
                     TraceId = traceId
                 };

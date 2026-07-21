@@ -11,7 +11,7 @@ namespace MEDSYstemITI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     public class LaboratoriesController : ControllerBase
     {
         private readonly ILaboratoryService _laboratoryService;
