@@ -85,6 +85,7 @@ public class AuthService : IAuthService
 
         var user = new ApplicationUser
         {
+            FullName = $"{request.FirstName} {request.LastName}",
             UserName = request.Username,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
