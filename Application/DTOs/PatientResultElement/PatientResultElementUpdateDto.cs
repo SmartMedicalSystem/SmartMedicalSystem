@@ -3,6 +3,7 @@ namespace Application.DTOs.PatientResultElement
 
     public class PatientResultElementUpdateDto
     {
-        public double Value { get; set; }
+        public string Value { get; set; } = null!;
+        public string? Comment { get; set; }
     }
 }

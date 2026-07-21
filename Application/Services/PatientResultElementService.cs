@@ -24,13 +24,13 @@ namespace Application.Services
         {
             _ = await _uow.PatientResults.GetByIdAsync(dto.PatientResultId)
                 ?? throw new NotFoundException("PatientResult", dto.PatientResultId);
-            _ = await _uow.TestElements.GetByIdAsync(dto.TestElementId)
-                ?? throw new NotFoundException("TestElement", dto.TestElementId);
+            _ = await _uow.Elements.GetByIdAsync(dto.ElementId)
+                ?? throw new NotFoundException("Element", dto.ElementId);
             _ = await _uow.LabTechnicians.GetByIdAsync(dto.TechId)
                 ?? throw new NotFoundException("LabTechnician", dto.TechId);
 
             var entity = new Domain.Entities.PatientResultElement(
-                dto.PatientResultId, dto.TestElementId, dto.Value, dto.TechId);
+                dto.PatientResultId, dto.ElementId, dto.Value, dto.TechId, dto.Comment);
 
             await _uow.PatientResultElements.AddAsync(entity);
             var result = _mapper.Map<PatientResultElementReadDto>(entity);
@@ -42,7 +42,7 @@ namespace Application.Services
             var entity = await _uow.PatientResultElements.GetByIdAsync(id)
                 ?? throw new NotFoundException("PatientResultElement", id);
 
-            entity.UpdateValue(dto.Value);
+            entity.UpdateValue(dto.Value, dto.Comment);
             await _uow.PatientResultElements.UpdateAsync(entity);
             return _mapper.Map<PatientResultElementReadDto>(entity);
         }

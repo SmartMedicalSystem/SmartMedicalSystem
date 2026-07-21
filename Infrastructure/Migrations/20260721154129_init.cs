@@ -71,6 +71,25 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Elements",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ReferenceRange = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Elements", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LabTechProfiles",
                 columns: table => new
                 {
@@ -508,21 +527,23 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     LabTestId = table.Column<int>(type: "int", nullable: false),
-                    TestElementId = table.Column<int>(type: "int", nullable: false)
+                    ElementId = table.Column<int>(type: "int", nullable: false),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
+                    IsRequired = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LabTestElements", x => new { x.LabTestId, x.TestElementId });
+                    table.PrimaryKey("PK_LabTestElements", x => new { x.LabTestId, x.ElementId });
+                    table.ForeignKey(
+                        name: "FK_LabTestElements_Elements_ElementId",
+                        column: x => x.ElementId,
+                        principalTable: "Elements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LabTestElements_LabTests_LabTestId",
                         column: x => x.LabTestId,
                         principalTable: "LabTests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_LabTestElements_TestElements_TestElementId",
-                        column: x => x.TestElementId,
-                        principalTable: "TestElements",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -597,8 +618,9 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PatientResultId = table.Column<int>(type: "int", nullable: false),
-                    TestElementId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<double>(type: "float", nullable: false),
+                    ElementId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     TechId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -607,6 +629,12 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PatientResultElements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PatientResultElements_Elements_ElementId",
+                        column: x => x.ElementId,
+                        principalTable: "Elements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PatientResultElements_LabTechnicians_TechId",
                         column: x => x.TechId,
@@ -619,12 +647,6 @@ namespace Infrastructure.Migrations
                         principalTable: "PatientResults",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PatientResultElements_TestElements_TestElementId",
-                        column: x => x.TestElementId,
-                        principalTable: "TestElements",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -697,6 +719,11 @@ namespace Infrastructure.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Elements_Name",
+                table: "Elements",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Laboratories_Code_Unique",
                 table: "Laboratories",
                 column: "Code",
@@ -729,9 +756,9 @@ namespace Infrastructure.Migrations
                 column: "LaboratoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LabTestElements_TestElementId",
+                name: "IX_LabTestElements_ElementId",
                 table: "LabTestElements",
-                column: "TestElementId");
+                column: "ElementId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LabTests_LaboratoryId",
@@ -744,6 +771,11 @@ namespace Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PatientResultElements_ElementId",
+                table: "PatientResultElements",
+                column: "ElementId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PatientResultElements_PatientResultId",
                 table: "PatientResultElements",
                 column: "PatientResultId");
@@ -752,11 +784,6 @@ namespace Infrastructure.Migrations
                 name: "IX_PatientResultElements_TechId",
                 table: "PatientResultElements",
                 column: "TechId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PatientResultElements_TestElementId",
-                table: "PatientResultElements",
-                column: "TestElementId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PatientResults_LabTestId",
@@ -872,16 +899,19 @@ namespace Infrastructure.Migrations
                 name: "RequestLabsLabTests");
 
             migrationBuilder.DropTable(
+                name: "TestElements");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "PatientResults");
+                name: "Elements");
 
             migrationBuilder.DropTable(
-                name: "TestElements");
+                name: "PatientResults");
 
             migrationBuilder.DropTable(
                 name: "RequestLabs");

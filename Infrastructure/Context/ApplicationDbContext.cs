@@ -37,6 +37,7 @@ namespace Infrastructure.Context
         public DbSet<PatientResultElement> PatientResultElements => Set<PatientResultElement>();
         public DbSet<RequestLabs> RequestLabs => Set<RequestLabs>();
         public DbSet<Session> Sessions => Set<Session>();
+        public DbSet<Element> Elements => Set<Element>();
         public DbSet<TestElement> TestElements => Set<TestElement>();
         public DbSet<LabTestElement> LabTestElements => Set<LabTestElement>();
 
