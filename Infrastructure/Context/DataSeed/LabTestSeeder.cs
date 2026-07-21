@@ -58,16 +58,16 @@ public static class LabTestSeeder
             return;
 
         var testsByName = labTests.ToDictionary(t => t.TestName, t => t.Id);
-        var elementsByName = await context.Elements
-            .ToDictionaryAsync(e => e.Name, e => e.Id);
+        var elementsByName = await context.TestElements
+            .ToDictionaryAsync(e => e.ElementName, e => e.Id);
 
         var joins = new List<LabTestElement>();
 
         void AddElements(string testName, params string[] elementNames)
         {
             var labTestId = testsByName[testName];
-            joins.AddRange(elementNames.Select((elementName, index) =>
-                new LabTestElement(labTestId, elementsByName[elementName], index + 1, true)));
+            joins.AddRange(elementNames.Select(elementName =>
+                new LabTestElement(labTestId, elementsByName[elementName])));
         }
 
         AddElements("Complete Blood Count (CBC)",

@@ -35,11 +35,11 @@ namespace MEDSYstemITI.Controllers
             return CreatedAtAction(nameof(GetByLabTest), new { labTestId = result.LabTestId }, result);
         }
 
-        [HttpDelete("{labTestId:int}/{elementId:int}")]
+        [HttpDelete("{labTestId:int}/{testElementId:int}")]
         [HasPermission(Permissions.UpdateLabTest)]
-        public async Task<IActionResult> Remove(int labTestId, int elementId)
+        public async Task<IActionResult> Remove(int labTestId, int testElementId)
         {
-            await _labTestElementService.RemoveElementFromTestAsync(labTestId, elementId);
+            await _labTestElementService.RemoveElementFromTestAsync(labTestId, testElementId);
             return NoContent();
         }
     }

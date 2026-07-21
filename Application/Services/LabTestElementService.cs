@@ -22,13 +22,13 @@ namespace Application.Services
         public async Task<LabTestElementReadDto> AddElementToTestAsync(LabTestElementCreateDto dto)
         {
             _ = await _uow.LabTests.GetByIdAsync(dto.LabTestId) ?? throw new NotFoundException("LabTest", dto.LabTestId);
-            _ = await _uow.Elements.GetByIdAsync(dto.ElementId) ?? throw new NotFoundException("Element", dto.ElementId);
+            _ = await _uow.TestElements.GetByIdAsync(dto.TestElementId) ?? throw new NotFoundException("TestElement", dto.TestElementId);
 
-            var alreadyLinked = await _uow.LabTestElements.ExistsAsync(dto.LabTestId, dto.ElementId);
+            var alreadyLinked = await _uow.LabTestElements.ExistsAsync(dto.LabTestId, dto.TestElementId);
             if (alreadyLinked)
-                throw new System.ArgumentException("This element is already linked to this lab test.");
+                throw new System.ArgumentException("This test element is already linked to this lab test.");
 
-            var entity = new Domain.Entities.LabTestElement(dto.LabTestId, dto.ElementId, dto.DisplayOrder, dto.IsRequired);
+            var entity = new Domain.Entities.LabTestElement(dto.LabTestId, dto.TestElementId);
             await _uow.LabTestElements.AddAsync(entity);
             return _mapper.Map<LabTestElementReadDto>(entity);
         }

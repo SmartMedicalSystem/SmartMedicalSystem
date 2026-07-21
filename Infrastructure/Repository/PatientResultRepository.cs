@@ -89,7 +89,7 @@ namespace Infrastructure.Repository
                 .Include(pr => pr.Session) // JOIN with Session table
                 .Include(pr => pr.labTest) // JOIN with LabTest table
                 .Include(pr => pr.ResultElements) // JOIN with PatientResultElement collection
-                    .ThenInclude(pre => pre.Element)
+                    .ThenInclude(pre => pre.TestElement) // Then JOIN TestElement for each ResultElement
                 .Include(pr => pr.ResultElements) // Re-include to load Technician
                     .ThenInclude(pre => pre.Technician) // Then JOIN LabTechnician for each ResultElement
                 .Where(pr => pr.Id == id && !pr.IsDeleted)

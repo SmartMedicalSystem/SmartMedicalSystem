@@ -26,7 +26,10 @@ namespace Infrastructure.Data.Configurations
             builder.Property(te => te.NormalMax)
                 .IsRequired();
 
-            builder.HasQueryFilter(te => !te.IsDeleted);
+            builder.HasMany(te => te.LabTestElements)
+                .WithOne(lte => lte.TestElement)
+                .HasForeignKey(lte => lte.TestElementId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

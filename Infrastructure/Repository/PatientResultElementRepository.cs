@@ -33,10 +33,10 @@ namespace Infrastructure.Repository
         public async Task<PatientResultElement?> GetByIdAsync(int patientResultId, int testElementId)
         {
             return await _context.PatientResultElements
-                .Include(pre => pre.Element)
+                .Include(pre => pre.TestElement)
                 .Include(pre => pre.Technician)
                 .Where(pre => pre.PatientResultId == patientResultId &&
-                             pre.ElementId == testElementId &&
+                             pre.TestElementId == testElementId &&
                              !pre.IsDeleted)
                 .FirstOrDefaultAsync();
         }
@@ -48,10 +48,10 @@ namespace Infrastructure.Repository
         public async Task<IEnumerable<PatientResultElement>> GetByPatientResultAsync(int patientResultId)
         {
             return await _context.PatientResultElements
-                .Include(pre => pre.Element)
+                .Include(pre => pre.TestElement)
                 .Include(pre => pre.Technician)
                 .Where(pre => pre.PatientResultId == patientResultId && !pre.IsDeleted)
-                .OrderBy(pre => pre.ElementId)
+                .OrderBy(pre => pre.TestElementId)
                 .ToListAsync();
         }
 
@@ -65,7 +65,7 @@ namespace Infrastructure.Repository
             return await _context.PatientResultElements
                 .Include(pre => pre.patientResult) // JOIN with PatientResult
                 .Include(pre => pre.Technician) // JOIN with LabTechnician
-                .Where(pre => pre.ElementId == testElementId && !pre.IsDeleted)
+                .Where(pre => pre.TestElementId == testElementId && !pre.IsDeleted)
                 .OrderByDescending(pre => pre.CreatedAt)
                 .ToListAsync();
         }
@@ -78,7 +78,7 @@ namespace Infrastructure.Repository
         {
             return await _context.PatientResultElements
                 .Include(pre => pre.patientResult) // JOIN with PatientResult
-                .Include(pre => pre.Element)
+                .Include(pre => pre.TestElement) // JOIN with TestElement
                 .Where(pre => pre.TechId == technicianId && !pre.IsDeleted)
                 .OrderByDescending(pre => pre.CreatedAt)
                 .ToListAsync();
@@ -91,7 +91,7 @@ namespace Infrastructure.Repository
         {
             return await _context.PatientResultElements
                 .Include(pre => pre.patientResult)
-                .Include(pre => pre.Element)
+                .Include(pre => pre.TestElement)
                 .Include(pre => pre.Technician)
                 .Where(pre => !pre.IsDeleted)
                 .OrderByDescending(pre => pre.CreatedAt)
@@ -109,7 +109,7 @@ namespace Infrastructure.Repository
 
             var items = await _context.PatientResultElements
                 .Include(pre => pre.patientResult)
-                .Include(pre => pre.Element)
+                .Include(pre => pre.TestElement)
                 .Include(pre => pre.Technician)
                 .Where(pre => !pre.IsDeleted)
                 .OrderByDescending(pre => pre.CreatedAt)
@@ -130,10 +130,10 @@ namespace Infrastructure.Repository
                 .CountAsync();
 
             var items = await _context.PatientResultElements
-                .Include(pre => pre.Element)
+                .Include(pre => pre.TestElement)
                 .Include(pre => pre.Technician)
                 .Where(pre => pre.PatientResultId == patientResultId && !pre.IsDeleted)
-                .OrderBy(pre => pre.ElementId)
+                .OrderBy(pre => pre.TestElementId)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();
@@ -147,13 +147,13 @@ namespace Infrastructure.Repository
         public async Task<PaginatedResult<PatientResultElement>> GetByTestElementPaginatedAsync(int testElementId, PaginationParams pagination)
         {
             var totalCount = await _context.PatientResultElements
-                .Where(pre => pre.ElementId == testElementId && !pre.IsDeleted)
+                .Where(pre => pre.TestElementId == testElementId && !pre.IsDeleted)
                 .CountAsync();
 
             var items = await _context.PatientResultElements
                 .Include(pre => pre.patientResult)
                 .Include(pre => pre.Technician)
-                .Where(pre => pre.ElementId == testElementId && !pre.IsDeleted)
+                .Where(pre => pre.TestElementId == testElementId && !pre.IsDeleted)
                 .OrderByDescending(pre => pre.CreatedAt)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
@@ -173,7 +173,7 @@ namespace Infrastructure.Repository
 
             var items = await _context.PatientResultElements
                 .Include(pre => pre.patientResult)
-                .Include(pre => pre.Element)
+                .Include(pre => pre.TestElement)
                 .Where(pre => pre.TechId == technicianId && !pre.IsDeleted)
                 .OrderByDescending(pre => pre.CreatedAt)
                 .Skip(pagination.CalculateSkip())
@@ -190,7 +190,7 @@ namespace Infrastructure.Repository
         {
             var element = await _context.PatientResultElements
                 .FirstOrDefaultAsync(pre => pre.PatientResultId == patientResultId &&
-                                           pre.ElementId == testElementId);
+                                           pre.TestElementId == testElementId);
             if (element == null)
                 return false;
 
@@ -207,7 +207,7 @@ namespace Infrastructure.Repository
         {
             var element = await _context.PatientResultElements
                 .FirstOrDefaultAsync(pre => pre.PatientResultId == patientResultId &&
-                                           pre.ElementId == testElementId);
+                                           pre.TestElementId == testElementId);
             if (element == null)
                 return false;
 
@@ -227,7 +227,7 @@ namespace Infrastructure.Repository
         {
             return await _context.PatientResultElements
                 .AnyAsync(pre => pre.PatientResultId == patientResultId &&
-                                pre.ElementId == testElementId &&
+                                pre.TestElementId == testElementId &&
                                 !pre.IsDeleted);
         }
     }

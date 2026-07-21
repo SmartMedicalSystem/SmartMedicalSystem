@@ -36,30 +36,29 @@ namespace Infrastructure.Repository
         }
 
         /// <summary>
-        /// Retrieves a specific association by composite key (LabTestId, ElementId).
-        /// Uses INCLUDE to load related LabTest and Element entities.
+        /// Retrieves a specific association by composite key (LabTestId, TestElementId).
+        /// Uses INCLUDE to load related LabTest and TestElement entities.
         /// </summary>
         public async Task<LabTestElement?> GetByIdAsync(int labTestId, int testElementId)
         {
             return await _context.LabTestElements
                 .Include(lte => lte.LabTest)
-                .Include(lte => lte.Element)
-                .Where(lte => lte.LabTestId == labTestId && lte.ElementId == testElementId)
+                .Include(lte => lte.TestElement)
+                .Where(lte => lte.LabTestId == labTestId && lte.TestElementId == testElementId)
                 .FirstOrDefaultAsync();
         }
 
         /// <summary>
         /// Retrieves all test elements associated with a specific lab test.
         /// Uses foreign key filtering to find all elements in a particular lab test.
-        /// Includes full Element details via JOIN.
+        /// Includes full TestElement details via JOIN.
         /// </summary>
         public async Task<IEnumerable<LabTestElement>> GetByLabTestAsync(int labTestId)
         {
             return await _context.LabTestElements
-                .Include(lte => lte.Element)
+                .Include(lte => lte.TestElement) // JOIN with TestElement
                 .Where(lte => lte.LabTestId == labTestId)
-                .OrderBy(lte => lte.DisplayOrder)
-                .ThenBy(lte => lte.ElementId)
+                .OrderBy(lte => lte.TestElementId)
                 .ToListAsync();
         }
 
@@ -72,7 +71,7 @@ namespace Infrastructure.Repository
         {
             return await _context.LabTestElements
                 .Include(lte => lte.LabTest) // JOIN with LabTest
-                .Where(lte => lte.ElementId == testElementId)
+                .Where(lte => lte.TestElementId == testElementId)
                 .OrderBy(lte => lte.LabTestId)
                 .ToListAsync();
         }
@@ -85,9 +84,9 @@ namespace Infrastructure.Repository
         {
             return await _context.LabTestElements
                 .Include(lte => lte.LabTest)
-                .Include(lte => lte.Element)
+                .Include(lte => lte.TestElement)
                 .OrderBy(lte => lte.LabTestId)
-                .ThenBy(lte => lte.ElementId)
+                .ThenBy(lte => lte.TestElementId)
                 .ToListAsync();
         }
 
@@ -100,9 +99,9 @@ namespace Infrastructure.Repository
 
             var items = await _context.LabTestElements
                 .Include(lte => lte.LabTest)
-                .Include(lte => lte.Element)
+                .Include(lte => lte.TestElement)
                 .OrderBy(lte => lte.LabTestId)
-                .ThenBy(lte => lte.ElementId)
+                .ThenBy(lte => lte.TestElementId)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();
@@ -120,10 +119,9 @@ namespace Infrastructure.Repository
                 .CountAsync();
 
             var items = await _context.LabTestElements
-                .Include(lte => lte.Element)
+                .Include(lte => lte.TestElement)
                 .Where(lte => lte.LabTestId == labTestId)
-                .OrderBy(lte => lte.DisplayOrder)
-                .ThenBy(lte => lte.ElementId)
+                .OrderBy(lte => lte.TestElementId)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();
@@ -137,12 +135,12 @@ namespace Infrastructure.Repository
         public async Task<PaginatedResult<LabTestElement>> GetByTestElementPaginatedAsync(int testElementId, PaginationParams pagination)
         {
             var totalCount = await _context.LabTestElements
-                .Where(lte => lte.ElementId == testElementId)
+                .Where(lte => lte.TestElementId == testElementId)
                 .CountAsync();
 
             var items = await _context.LabTestElements
                 .Include(lte => lte.LabTest)
-                .Where(lte => lte.ElementId == testElementId)
+                .Where(lte => lte.TestElementId == testElementId)
                 .OrderBy(lte => lte.LabTestId)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
@@ -172,7 +170,7 @@ namespace Infrastructure.Repository
         {
             var labTestElement = await _context.LabTestElements
                 .FirstOrDefaultAsync(lte => lte.LabTestId == labTestId && 
-                                           lte.ElementId == testElementId);
+                                           lte.TestElementId == testElementId);
             if (labTestElement == null)
                 return false;
 
@@ -189,7 +187,7 @@ namespace Infrastructure.Repository
         public async Task<bool> ExistsAsync(int labTestId, int testElementId)
         {
             return await _context.LabTestElements
-                .AnyAsync(lte => lte.LabTestId == labTestId && lte.ElementId == testElementId);
+                .AnyAsync(lte => lte.LabTestId == labTestId && lte.TestElementId == testElementId);
         }
     }
 }

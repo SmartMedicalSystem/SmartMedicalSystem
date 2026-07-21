@@ -59,7 +59,7 @@ namespace Infrastructure.Repository
         {
             return await _context.LabTests
                 .Include(lt => lt.LabTestElements) // Load junction table records
-                .ThenInclude(lte => lte.Element)
+                .ThenInclude(lte => lte.TestElement) // Then load related TestElements
                 .Where(lt => lt.Id == id && !lt.IsDeleted)
                 .FirstOrDefaultAsync();
         }

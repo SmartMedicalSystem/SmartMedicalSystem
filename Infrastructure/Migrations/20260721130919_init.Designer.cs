@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260721154129_init")]
+    [Migration("20260721130919_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -81,47 +81,6 @@ namespace Infrastructure.Migrations
                         .HasDatabaseName("IX_Departments_Status");
 
                     b.ToTable("Departments", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Element", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("ReferenceRange")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Unit")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name");
-
-                    b.ToTable("Elements", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.LabTechProfile", b =>
@@ -249,18 +208,12 @@ namespace Infrastructure.Migrations
                     b.Property<int>("LabTestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ElementId")
+                    b.Property<int>("TestElementId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                    b.HasKey("LabTestId", "TestElementId");
 
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("bit");
-
-                    b.HasKey("LabTestId", "ElementId");
-
-                    b.HasIndex("ElementId");
+                    b.HasIndex("TestElementId");
 
                     b.ToTable("LabTestElements", (string)null);
                 });
@@ -436,15 +389,8 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Comment")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("ElementId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -455,21 +401,22 @@ namespace Infrastructure.Migrations
                     b.Property<int>("TechId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TestElementId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ElementId");
 
                     b.HasIndex("PatientResultId");
 
                     b.HasIndex("TechId");
+
+                    b.HasIndex("TestElementId");
 
                     b.ToTable("PatientResultElements", (string)null);
                 });
@@ -1035,21 +982,21 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.LabTestElement", b =>
                 {
-                    b.HasOne("Domain.Entities.Element", "Element")
-                        .WithMany("LabTestElements")
-                        .HasForeignKey("ElementId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.LabTest", "LabTest")
                         .WithMany("LabTestElements")
                         .HasForeignKey("LabTestId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Element");
+                    b.HasOne("Domain.Entities.TestElement", "TestElement")
+                        .WithMany("LabTestElements")
+                        .HasForeignKey("TestElementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("LabTest");
+
+                    b.Navigation("TestElement");
                 });
 
             modelBuilder.Entity("Domain.Entities.Laboratory", b =>
@@ -1109,12 +1056,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.PatientResultElement", b =>
                 {
-                    b.HasOne("Domain.Entities.Element", "Element")
-                        .WithMany("PatientResultElements")
-                        .HasForeignKey("ElementId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.PatientResult", "patientResult")
                         .WithMany("ResultElements")
                         .HasForeignKey("PatientResultId")
@@ -1127,9 +1068,15 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Element");
+                    b.HasOne("Domain.Entities.TestElement", "TestElement")
+                        .WithMany()
+                        .HasForeignKey("TestElementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Technician");
+
+                    b.Navigation("TestElement");
 
                     b.Navigation("patientResult");
                 });
@@ -1303,13 +1250,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Laboratories");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Element", b =>
-                {
-                    b.Navigation("LabTestElements");
-
-                    b.Navigation("PatientResultElements");
-                });
-
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
                 {
                     b.Navigation("LabTestElements");
@@ -1330,6 +1270,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Person.BasePerson", b =>
                 {
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TestElement", b =>
+                {
+                    b.Navigation("LabTestElements");
                 });
 
             modelBuilder.Entity("Domain.Identity.ApplicationRole", b =>

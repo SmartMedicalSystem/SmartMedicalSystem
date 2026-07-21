@@ -16,23 +16,17 @@ namespace Infrastructure.Context.Configurations
             builder.HasKey(lte => new
             {
                 lte.LabTestId,
-                lte.ElementId
+                lte.TestElementId
             });
-
-            builder.Property(lte => lte.DisplayOrder)
-                .IsRequired();
-
-            builder.Property(lte => lte.IsRequired)
-                .IsRequired();
 
             builder.HasOne(lte => lte.LabTest)
                 .WithMany(lt => lt.LabTestElements)
                 .HasForeignKey(lte => lte.LabTestId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(lte => lte.Element)
-                .WithMany(e => e.LabTestElements)
-                .HasForeignKey(lte => lte.ElementId)
+            builder.HasOne(lte => lte.TestElement)
+                .WithMany(te => te.LabTestElements)
+                .HasForeignKey(lte => lte.TestElementId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

@@ -13,19 +13,15 @@ namespace Infrastructure.Data.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Value)
-                .HasMaxLength(200)
                 .IsRequired();
-
-            builder.Property(e => e.Comment)
-                .HasMaxLength(500);
 
             // The relationship to PatientResult (via PatientResultId) is
             // configured once, from PatientResultConfiguration, to avoid
             // configuring the same relationship from both sides.
 
-            builder.HasOne(e => e.Element)
-                .WithMany(el => el.PatientResultElements)
-                .HasForeignKey(e => e.ElementId)
+            builder.HasOne(e => e.TestElement)
+                .WithMany()
+                .HasForeignKey(e => e.TestElementId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(e => e.Technician)

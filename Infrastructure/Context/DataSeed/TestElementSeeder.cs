@@ -13,10 +13,10 @@ public static class TestElementSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.Elements.AnyAsync())
+        if (await context.TestElements.AnyAsync())
             return;
 
-        var elements = new List<Element>
+        var elements = new List<TestElement>
        {
            // ── Complete Blood Count (CBC) ──────────────────────────────────────
            Create(  "Hemoglobin",              "g/dL",   12.0f,  17.5f),
@@ -63,12 +63,12 @@ public static class TestElementSeeder
            Create("Calcium (Ca)",             "mg/dL",    8.5f,  10.5f),
        };
 
-        await context.Elements.AddRangeAsync(elements);
+        await context.TestElements.AddRangeAsync(elements);
         await context.SaveChangesAsync();
     }
 
-    private static Element Create(string name, string unit, float min, float max) =>
-        new Element(name, unit, $"{min} - {max}")
+    private static TestElement Create(string name, string unit, float min, float max) =>
+        new TestElement(name, unit, min, max)
         {
 
             CreatedAt = DateTime.UtcNow
