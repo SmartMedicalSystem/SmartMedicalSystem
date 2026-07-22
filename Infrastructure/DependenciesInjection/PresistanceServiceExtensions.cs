@@ -18,11 +18,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Text;
-using Infrastructure.Services;
+//using Infrastructure.Services;
 using Infrastructure.Middleware;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
-using Application.Services.Abstraction;
+//using Application.Services.Abstraction;
 using Application.Interfaces;
 
 namespace Infrastructure.DependenciesInjection
@@ -54,6 +54,7 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<IPatientRepo, PatientRepository>();
             services.AddScoped<IPatientResultRepo, PatientResultRepository>();
             services.AddScoped<IPatientResultElementRepo, PatientResultElementRepository>();
+            services.AddScoped<IPatientRagDocumentRepo, PatientRagDocumentRepository>();
             services.AddScoped<IRequestLabsRepo, RequestLabsRepository>();
             services.AddScoped<ISessionRepo, SessionRepository>();
             services.AddScoped<ITestElementRepo, TestElementRepository>();

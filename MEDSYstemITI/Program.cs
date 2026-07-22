@@ -1,4 +1,5 @@
 using Application.DependencyInjection;
+using Application.MCPTools;
 using Application.Services.Abstraction;
 using Domain.IRepository;
 using Infrastructure.DataSeed;
@@ -8,6 +9,7 @@ using Infrastructure.Services.EmailService;
 using MEDSYstemITI.Hubs;
 using MEDSYstemITI.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using ModelContextProtocol.Server;
 using Serilog;
 using Serilog.Events;
 
@@ -107,6 +109,25 @@ namespace MEDSYstemITI
             builder.Services.AddOpenApi();
             builder.Services.AddSwaggerGen();
 
+
+
+
+            // AI (MedGemma) client used for PatientResult summarization/report generation and the RAG chatbot.
+            builder.Services.AddMedGemmaAI(builder.Configuration);
+
+            // MCP server exposing the AI tools in Application/MCPTools over HTTP at /mcp,
+            // so any MCP-compatible client (Claude Desktop, Claude Code, an internal agent, ...)
+            // can call GeneratePatientResultAIReport / GetPatientFullAIReport / AskPatientRagChatbot directly.
+            builder.Services
+                .AddMcpServer()
+                .WithHttpTransport(options =>
+                {
+                    // Recommended when the server doesn't need server-to-client requests
+                    // (sampling/elicitation) - simpler to scale horizontally behind a load balancer.
+                    options.Stateless = true;
+                })
+                .WithToolsFromAssembly(typeof(PatientAIMcpTools).Assembly);
+
             // =========================================================
             // CORS
             // =========================================================
@@ -198,6 +219,7 @@ namespace MEDSYstemITI
 
             app.MapHub<NotificationHub>(
                 "/notificationHub");
+            app.MapMcp("/mcp");
 
             // =========================================================
             // Database Seeding

@@ -4,7 +4,6 @@ using Application.Services.Abstraction;
 using AutoMapper;
 using Domain.IRepository;
 using Domain.Models;
-using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -48,7 +47,7 @@ namespace Application.Services
             await _uow.Doctors.SoftDeleteAsync(id);
         }
 
-        [Authorize(Roles = "Admin")]
+
         public async Task<DoctorReadDto> CreateAsync(DoctorCreateDto dto)
         {
             // Business rule: the department must exist before staffing a doctor to it.

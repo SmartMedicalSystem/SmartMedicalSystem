@@ -31,11 +31,13 @@ namespace Infrastructure.Repository
         private IPatientRepo? _patients;
         private IPatientResultRepo? _patientResults;
         private IPatientResultElementRepo? _patientResultElements;
+        private IPatientRagDocumentRepo? _patientRagDocuments;
         private IRequestLabsRepo? _requestLabs;
         private ISessionRepo? _sessions;
         private ITestElementRepo? _testElements;
         private IPersonGenericRepo? _personGeneric;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+
 
         // ===== NEW =====
         private ILaboratoryRepo? _laboratories;  
@@ -77,6 +79,10 @@ namespace Infrastructure.Repository
 
         public IPatientResultElementRepo PatientResultElements =>
             _patientResultElements ??= new PatientResultElementRepository(_context);
+
+
+        public IPatientRagDocumentRepo PatientRagDocuments =>
+            _patientRagDocuments ??= new PatientRagDocumentRepository(_context);
 
         public IRequestLabsRepo RequestLabs =>
             _requestLabs ??= new RequestLabsRepository(_context);

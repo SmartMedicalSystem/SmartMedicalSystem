@@ -1,10 +1,13 @@
 using Application.Common;
+using Application.DTOs.AI;
 using Application.DTOs.PatientResult;
 using Application.Services.Abstraction;
+using Application.Services.Abstraction.AI;
 using AutoMapper;
 using Domain.IRepository;
 using Domain.Models;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Services
@@ -13,12 +16,16 @@ namespace Application.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
+        private readonly IPatientResultAIService _patientResultAIService;
 
-        public PatientResultService(IUnitOfWork uow, IMapper mapper)
+        public PatientResultService(IUnitOfWork uow, IMapper mapper, IPatientResultAIService patientResultAIService)
         {
             _uow = uow;
             _mapper = mapper;
+            _patientResultAIService = patientResultAIService;
         }
+        public Task<PatientResultAIAnalysisDto> GenerateAIAnalysisAsync(int id, CancellationToken cancellationToken = default)
+         => _patientResultAIService.GenerateAnalysisAsync(id, cancellationToken);
 
         public async Task<PatientResultReadDto> CreateAsync(PatientResultCreateDto dto)
         {
