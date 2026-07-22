@@ -30,9 +30,12 @@ namespace Domain.IRepository
         IPatientRepo Patients { get; }
         IPatientResultRepo PatientResults { get; }
         IPatientResultElementRepo PatientResultElements { get; }
+
+        IPatientRagDocumentRepo PatientRagDocuments { get; }
         IRequestLabsRepo RequestLabs { get; }
         ISessionRepo Sessions { get; }
         ITestElementRepo TestElements { get; }
+
 
         IPersonGenericRepo PersonGeneric { get; }
 

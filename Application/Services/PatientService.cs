@@ -1,10 +1,17 @@
 using Application.Common;
+using Application.DTOs.AI;
 using Application.DTOs.Patient;
 using Application.Services.Abstraction;
+using Application.Services.Abstraction.AI;
+using Application.Services.AI;
 using AutoMapper;
+using Domain.Entities;
 using Domain.IRepository;
 using Domain.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Services
@@ -14,12 +21,78 @@ namespace Application.Services
         private readonly IUnitOfWork _uow;
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
+        private readonly IPatientResultAIService _patientResultAIService;
+        private readonly IMedicalAIClient _aiClient;
+        private readonly IRagService _ragService;
 
-        public PatientService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
+        public PatientService(
+            IUnitOfWork uow,
+            Domain.IRepository.IPersonGenericRepo personRepo,
+            IMapper mapper,
+            IPatientResultAIService patientResultAIService,
+            IMedicalAIClient aiClient,
+            IRagService ragService)
         {
             _uow = uow;
             _personRepo = personRepo;
             _mapper = mapper;
+            _patientResultAIService = patientResultAIService;
+            _aiClient = aiClient;
+            _ragService = ragService;
+        }
+
+        public async Task<PatientFullAIReportDto> GetFullAIReportAsync(int patientId, CancellationToken cancellationToken = default)
+        {
+            var patient = await _uow.Patients.GetByIdAsync(patientId)
+                ?? throw new NotFoundException("Patient", patientId);
+
+            var patientResults = await _uow.PatientResults.GetByPatientAsync(patientId);
+
+            var analyses = new List<PatientResultAIAnalysisDto>();
+            foreach (var pr in patientResults)
+            {
+                // Reuse existing AI content when already generated; only call the model for
+                // results that haven't been analyzed yet, so building the full report stays cheap
+                // once the individual results have already been processed (e.g. by the MCP tools).
+                var analysis = string.IsNullOrWhiteSpace(pr.Summary) || string.IsNullOrWhiteSpace(pr.AIClassifiedReport)
+                    ? await _patientResultAIService.GenerateAnalysisAsync(pr.Id, cancellationToken)
+                    : await _patientResultAIService.SummarizeElementsAsync(pr.Id, cancellationToken);
+
+                analyses.Add(analysis);
+            }
+
+            var overallSummary = string.Empty;
+            var overallSuggestion = string.Empty;
+
+            if (analyses.Count > 0)
+            {
+                var userPrompt = PatientResultPromptBuilder.BuildFullReportUserPrompt(
+                    patient.FullName, patient.Age, patient.Gender.ToString(), analyses);
+
+                var raw = await _aiClient.GenerateAsync(
+                    PatientResultPromptBuilder.FullReportSystemPrompt, userPrompt, cancellationToken);
+
+                var parsed = PatientResultPromptBuilder.ParseJsonObject(raw);
+                overallSummary = parsed.GetValueOrDefault("overallSummary") ?? parsed.GetValueOrDefault("raw") ?? string.Empty;
+                overallSuggestion = parsed.GetValueOrDefault("overallSuggestion") ?? string.Empty;
+
+                await _ragService.IndexAsync(patientId, null, RagSourceTypes.FullPatientReport,
+                    $"Overall AI summary for {patient.FullName}: {overallSummary}\nOverall AI suggestion: {overallSuggestion}",
+                    cancellationToken);
+            }
+
+            return new PatientFullAIReportDto
+            {
+                PatientId = patientId,
+                PatientFullName = patient.FullName,
+                Age = patient.Age,
+                Gender = patient.Gender.ToString(),
+                BloodType = patient.BloodType.ToString(),
+                GeneratedAtUtc = DateTime.UtcNow,
+                Results = analyses.OrderByDescending(a => a.GeneratedAtUtc).ToList(),
+                OverallAISummary = overallSummary,
+                OverallAISuggestion = overallSuggestion
+            };
         }
 
         // Compatibility overloads for id-based operations
@@ -87,7 +160,7 @@ namespace Application.Services
 
         public async Task<PatientReadDto> GetBySSNAsync(string ssn)
         {
-            
+
             var entity = await _personRepo.FindBySSN(ssn) as Domain.Entities.Patient
                 ?? throw new NotFoundException("Patient", ssn);
             return _mapper.Map<PatientReadDto>(entity);

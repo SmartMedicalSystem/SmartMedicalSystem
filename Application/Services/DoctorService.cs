@@ -8,7 +8,6 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
-using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

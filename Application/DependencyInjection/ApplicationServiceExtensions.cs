@@ -1,7 +1,9 @@
 using Application.Mapping;
 using Application.Services;
 using Application.Services.Abstraction;
+using Application.Services.Abstraction.AI;
 using Application.Services.Abstraction.Auth;
+using Application.Services.AI;
 using Application.Services.Auth;
 using Domain.IRepository;
 using MEDSYstemITI.Service;
@@ -35,6 +37,15 @@ namespace Application.DependencyInjection
             services.AddScoped<IPatientResultElementService, PatientResultElementService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ILabTechProfileService, LabTechProfileService>();
+
+            // AI / RAG services (IMedicalAIClient itself is registered by Infrastructure's
+            // AddMedGemmaAI extension, called from Program.cs, since it needs an HttpClient).
+
+            services.AddScoped<IPatientResultAIService, PatientResultAIService>();
+            services.AddScoped<IRagService, RagService>();
+            services.AddScoped<IRagChatService, RagChatService>();
+
+
             return services;
         }
     }
