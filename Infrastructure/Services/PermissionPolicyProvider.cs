@@ -32,6 +32,7 @@ namespace Infrastructure.Services
 
                 if (Enum.TryParse<Permissions>(permissionName, out var permission))
                 {
+                    System.Console.WriteLine($"[TestDiag] PermissionPolicyProvider.GetPolicyAsync building policy for: {policyName}");
                     var policy = new AuthorizationPolicyBuilder()
                         .RequireAuthenticatedUser()
                         .AddRequirements(new PermissionRequirement(permission))

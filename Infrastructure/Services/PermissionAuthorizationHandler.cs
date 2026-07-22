@@ -27,6 +27,7 @@ namespace Infrastructure.Services
             AuthorizationHandlerContext context,
             PermissionRequirement requirement)
         {
+            System.Console.WriteLine($"[TestDiag] PermissionAuthorizationHandler running for requirement: {requirement.Permission}");
             var hasPermission = context.User.Claims.Any(c =>
                 c.Type == Domain.Constants.CustomClaimTypes.Permission &&
                 string.Equals(c.Value, requirement.Permission.ToString(), StringComparison.OrdinalIgnoreCase));
