@@ -36,7 +36,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPatientResultService, PatientResultService>();
             services.AddScoped<IPatientResultElementService, PatientResultElementService>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             // AI / RAG services (IMedicalAIClient itself is registered by Infrastructure's
             // AddMedGemmaAI extension, called from Program.cs, since it needs an HttpClient).
 

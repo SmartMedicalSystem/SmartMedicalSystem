@@ -25,7 +25,7 @@ namespace MEDSYstemITI.Controllers
 
  
         [HttpGet]
-        [HasPermission(Permissions.ReadLabTechnician)]
+        //[HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
         [FromQuery] LabTechnicianFilterDto filter)
         {
@@ -34,7 +34,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet("{ssn}")]
-        [HasPermission(Permissions.ReadLabTechnician)]
+        //[HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<LabTechnicianReadDto>> GetBySSN(string ssn)
         {
             var result = await _labTechnicianService.GetBySSNAsync(ssn);
@@ -42,8 +42,8 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPost("create")]
-        [HasPermission(Permissions.CreateLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> Create(   LabTechnicianCreateDto dto)
+        //[HasPermission(Permissions.CreateLabTechnician)]
+        public async Task<ActionResult<LabTechnicianReadDto>> Create([FromForm]   LabTechnicianCreateDto dto)
         {
             var person = await _labTechnicianService.CreateAsync(dto);
             
@@ -55,15 +55,15 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPut("{ssn}")]
-        [HasPermission(Permissions.UpdateLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> Update(string ssn, [FromBody] LabTechnicianUpdateDto dto)
+        //[HasPermission(Permissions.UpdateLabTechnician)]
+        public async Task<ActionResult<LabTechnicianReadDto>> Update(string ssn, [FromForm] LabTechnicianUpdateDto dto)
         {
             var result = await _labTechnicianService.UpdateAsync(ssn, dto);
             return Ok(result);
         }
 
         [HttpDelete("{ssn}")]
-        [HasPermission(Permissions.DeleteLabTechnician)]
+        //[HasPermission(Permissions.DeleteLabTechnician)]
         public async Task<IActionResult> Delete(string ssn)
         {
             await _labTechnicianService.DeleteAsync(ssn);

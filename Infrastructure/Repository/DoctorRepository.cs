@@ -38,9 +38,9 @@ namespace Infrastructure.Repository
         public override async Task<IEnumerable<Doctor>> GetAllAsync()
         {
             return await _context.Doctors
-                .Include(d => d.Department)
                 .Where(d => !d.IsDeleted)
-                .OrderBy(d => d.Name)
+                .OrderBy(d => d.FirstName)
+                .ThenBy(d => d.LastName)
                 .ToListAsync();
         }
 
