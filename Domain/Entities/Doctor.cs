@@ -7,14 +7,14 @@ namespace Domain.Entities
     public class Doctor : BasePerson
     {
         // National identifier (string allows leading zeros or mixed formats)
-        public string Specialization { get; private set; } = string.Empty;
+        public string Specialization { get;  set; } = string.Empty;
 
-        public int DepartmentId { get; private set; }   // FK -> Department (required staff membership)
+        public int DepartmentId { get;  set; }   // FK -> Department (required staff membership)
 
-        public Department Department { get; private set; } = null!;
+        public Department Department { get;  set; } = null!;
 
         // EF Core materialization constructor
-        protected Doctor() { }
+        public Doctor() { }
 
       
 

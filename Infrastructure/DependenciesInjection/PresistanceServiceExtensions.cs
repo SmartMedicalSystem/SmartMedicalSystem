@@ -61,7 +61,7 @@ namespace Infrastructure.DependenciesInjection
 
             // Person generic repository (handles encrypted SSN lookups)
             // Encryption service for SSN handling
-            services.AddScoped<Infrastructure.Services.EncryptionService>();
+            services.AddScoped<Infrastructure.Services.NationalIDEncryptionService>();
 
             // Register IPersonGenericRepo using the closed generic implementation type
             services.AddScoped(typeof(Domain.IRepository.IPersonGenericRepo), typeof(Infrastructure.Repository.PersonGenericRepo<Domain.Entities.Person.BasePerson>));

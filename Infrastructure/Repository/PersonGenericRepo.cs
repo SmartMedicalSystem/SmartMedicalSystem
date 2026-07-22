@@ -3,32 +3,58 @@ using Domain.IRepository;
 using Infrastructure.Context;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace Infrastructure.Repository
 {
     public class PersonGenericRepo<T> : GenericRepository<T>, IPersonGenericRepo where T : BasePerson
     {
-        private readonly EncryptionService _encryptionService;
+        private readonly NationalIDEncryptionService _encryptionService;
         protected readonly ApplicationDbContext _context;
 
-        public PersonGenericRepo(ApplicationDbContext context, EncryptionService encryptionService) : base(context)
+        public PersonGenericRepo(ApplicationDbContext context, NationalIDEncryptionService encryptionService) : base(context)
         {
             _context = context;
             _encryptionService = encryptionService;
         }
         public async Task<BasePerson?> FindBySSN(string ssn)
         {
-            var encrypted = await _encryptionService.Encrypt(ssn);
-            var entity = await _context.Set<T>()
-                .FirstOrDefaultAsync(e => e.EncryptedNationalId == encrypted && !e.IsDeleted);
-            return entity as BasePerson;
+            var persons = await _context.Set<BasePerson>()
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+
+            foreach (var person in persons)
+            {
+                try
+                {
+                    var decryptedNationalId =
+                        _encryptionService.Decrypt(
+                            person.EncryptedNationalId);
+
+                    if (decryptedNationalId == ssn)
+                    {
+                        return person;
+                    }
+                }
+                catch (CryptographicException)
+                {
+                    // This record was not encrypted using the current protector
+                    continue;
+                }
+            }
+
+            return null;
         }
 
         public async Task AddPerson(string ssn, BasePerson person)
         {
             var encrypted = await _encryptionService.Encrypt(ssn);
             person.EncryptedNationalId = encrypted;
-            await _context.Set<T>().AddAsync((T)person);
+
+            await _context.AddAsync(person);
+            await _context.SaveChangesAsync();
+
+         
         }
 
         public async Task UpdateSSNAsync(BasePerson person, string ssn)

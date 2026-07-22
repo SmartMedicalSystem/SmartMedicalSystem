@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 
 namespace Infrastructure.Services;
-public class EncryptionService
+public class NationalIDEncryptionService
 {
     private readonly IDataProtector _dataProtector;
 
-    public EncryptionService(IDataProtectionProvider dataProtectionProvidor)
+    public NationalIDEncryptionService(IDataProtectionProvider dataProtectionProvidor)
     {
         _dataProtector = dataProtectionProvidor.CreateProtector("Secure SSN");
     }
@@ -13,5 +13,9 @@ public class EncryptionService
     {
         return  _dataProtector.Protect(ssn);
 
+    }
+    public string Decrypt(string encryptedSsn)
+    {
+        return _dataProtector.Unprotect(encryptedSsn);
     }
 }

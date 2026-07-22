@@ -3,6 +3,7 @@ using Application.Services.Abstraction;
 using Application.Services.Auth;
 using Domain.Enums;
 using Domain.Models;
+using MEDSYstemITI.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,6 +56,8 @@ namespace MEDSYstemITI.Controllers
 
         [HttpDelete("{ssn}")]
         [HasPermission(Permissions.DeletePatient)]
+        [LogSensitiveAction]
+
         public async Task<IActionResult> Delete(string ssn)
         {
             await _patientService.DeleteAsync(ssn);

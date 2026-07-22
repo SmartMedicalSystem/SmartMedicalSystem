@@ -21,6 +21,7 @@ namespace Infrastructure.Repository
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ApplicationDbContext _dbContext;
+        //private readonly PersonGenericRepo _personGenericRepo;
 
         public MemberRepository(
             UserManager<ApplicationUser> userManager,

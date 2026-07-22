@@ -13,7 +13,6 @@ namespace Application.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-
         public LabTechProfileService(IUnitOfWork uow, IMapper mapper)
         {
             _uow = uow;
@@ -58,7 +57,7 @@ namespace Application.Services
 
         public async Task<LabTechProfileReadDto> GetByUserIdAsync(int userId)
         {
-            var entity = await _uow.LabTechProfiles.GetByUserIdAsync(userId)
+            var entity = await _uow.LabTechnicians.GetByIdAsync(userId)
                 ?? throw new NotFoundException("LabTechProfile", userId);
             return _mapper.Map<LabTechProfileReadDto>(entity);
         }

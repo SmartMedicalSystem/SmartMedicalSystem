@@ -126,11 +126,11 @@ namespace Application.Services
                 ReceiveNotifications = dto.ReceiveNotifications,
 
             };
+            var EncryptedNationalId = dto.NationalId;
 
-            await _uow.LabTechnicians.AddAsync(entity);
+            await _uow.PersonGeneric.AddPerson(EncryptedNationalId, entity);
 
-            var user = await _authService.CreateUserAsync(
-             new CreateUserRequestDto
+            var user = await _authService.CreateUserAsync(new CreateUserRequestDto
              {
                  FirstName = entity.FirstName,
                  LastName = entity.LastName,
@@ -145,9 +145,7 @@ namespace Application.Services
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> UpdateAsync(
-               string nationalId,
-               LabTechnicianUpdateDto dto)
+        public async Task<LabTechnicianReadDto> UpdateAsync(   string nationalId, LabTechnicianUpdateDto dto)
         {
             var entity = await _uow.LabTechnicians.GetByNationalIdAsync(nationalId)
                 ?? throw new NotFoundException("LabTechnician", nationalId);

@@ -11,4 +11,7 @@
   <Folder Name="/presentationAPI/">
     <Project Path="MEDSYstemITI/MEDSYstemITI.csproj" />
   </Folder>
+  <Folder Name="/presentationAPI/Filters/">
+    <File Path="MEDSYstemITI/Attributes/LogSensitiveActionFilter.cs" />
+  </Folder>
 </Solution>

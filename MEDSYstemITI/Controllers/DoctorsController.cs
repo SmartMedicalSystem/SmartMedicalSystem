@@ -4,6 +4,7 @@ using Application.Services.Auth;
 using Domain.Enums;
 using Domain.Models;
 using Infrastructure.Context;
+using MEDSYstemITI.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ namespace MEDSYstemITI.Controllers
 
 
         [HttpGet("by-department/{departmentId:int}")]
-     //   [HasPermission(Permissions.ReadDoctor)]
+      [HasPermission(Permissions.ReadDoctor)]
         public async Task<ActionResult<PaginatedResult<DoctorReadDto>>> GetByDepartment(
             int departmentId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -34,7 +35,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet]
-     //   [HasPermission(Permissions.ReadDoctor)]
+     [HasPermission(Permissions.ReadDoctor)]
         public async Task<ActionResult<PaginatedResult<DoctorReadDto>>> GetAll(
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -68,6 +69,7 @@ namespace MEDSYstemITI.Controllers
 
         [HttpDelete("{ssn}")]
         [HasPermission(Permissions.DeleteDoctor)]
+        [LogSensitiveAction]
         public async Task<IActionResult> Delete(string ssn)
         {
             await _doctorService.DeleteAsync(ssn);

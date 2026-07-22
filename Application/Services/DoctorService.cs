@@ -1,7 +1,11 @@
 using Application.Common;
+using Application.DTOs.Auth;
 using Application.DTOs.Doctor;
 using Application.Services.Abstraction;
+using Application.Services.Abstraction.Auth;
 using AutoMapper;
+using Domain.Entities;
+using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +17,14 @@ namespace Application.Services
     public class DoctorService : IDoctorService
     {
         private readonly IUnitOfWork _uow;
+        private readonly IAuthService _authService;
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
 
-        public DoctorService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
+        public DoctorService(IUnitOfWork uow, IAuthService authService, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
         {
             _uow = uow;
+            _authService = authService;
             _personRepo = personRepo;
             _mapper = mapper;
         }
@@ -48,20 +54,66 @@ namespace Application.Services
             await _uow.Doctors.SoftDeleteAsync(id);
         }
 
-        [Authorize(Roles = "Admin")]
         public async Task<DoctorReadDto> CreateAsync(DoctorCreateDto dto)
         {
-            // Business rule: the department must exist before staffing a doctor to it.
-            var department = await _uow.Departments.GetByIdAsync(dto.DepartmentId)
-                ?? throw new NotFoundException("Department", dto.DepartmentId);
+            var department = await _uow.Departments
+                .GetByIdAsync(dto.DepartmentId)
+                ?? throw new NotFoundException(
+                    "Department",
+                    dto.DepartmentId);
 
-            var entity = new Domain.Entities.Doctor(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.DepartmentId);
-            await _personRepo.AddPerson(dto.NationalId.ToString(), entity);
-            await _uow.SaveChangesAsync();
+            var entity = new Doctor
+            {
+                FirstName = dto.Name.Split(' ', 2)[0],
+
+                LastName = dto.Name
+                .Split(' ', 2)
+                .ElementAtOrDefault(1) ?? string.Empty,
+
+                Specialization = dto.Specialization,
+
+                PhoneNumber = dto.MobileNumber,
+
+                DateOfBirth = dto.DateOfBirth,
+
+                Email = dto.Email,
+
+                Address = dto.Address,
+
+                Gender = dto.Gender,
+
+                DepartmentId = dto.DepartmentId,
+
+                EncryptedNationalId = dto.NationalId
+            };
+            var EncryptedNationalId = dto.NationalId;
+            await _uow.PersonGeneric.AddPerson(EncryptedNationalId, entity);
+
+            var user = await _authService.CreateUserAsync(
+                new CreateUserRequestDto
+                {
+                    FirstName = entity.FirstName,
+
+                    LastName = entity.LastName,
+
+                    Email = entity.Email,
+
+                    PhoneNumber = entity.PhoneNumber,
+
+                    Username = dto.Email,
+
+                    Password = dto.Password,
+
+                    Role = Roles.Doctor.ToString(),
+
+                    PersonId = entity.Id
+                });
+
+
             return _mapper.Map<DoctorReadDto>(entity);
         }
 
-        
+
         public async Task<DoctorReadDto> UpdateAsync(string ssn, DoctorUpdateDto dto)
         {
             var person = await _personRepo.FindBySSN(ssn)

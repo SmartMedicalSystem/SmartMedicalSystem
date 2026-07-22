@@ -92,7 +92,7 @@ namespace Infrastructure.Repository
             _laboratories ??= new LaboratoryRepository(_context);
 
         public IPersonGenericRepo PersonGeneric =>
-              _personGeneric ??= new PersonGenericRepo<BasePerson>(_context, new EncryptionService(_dataProtectionProvider));
+              _personGeneric ??= new PersonGenericRepo<BasePerson>(_context, new NationalIDEncryptionService(_dataProtectionProvider));
 
         // ===============
 

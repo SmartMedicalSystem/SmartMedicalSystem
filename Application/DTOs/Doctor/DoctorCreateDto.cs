@@ -8,13 +8,15 @@ namespace Application.DTOs.Doctor
 
         public string Specialization { get; set; } = string.Empty;
 
-        public string Contact { get; set; } = string.Empty;
 
         public DateTime DateOfBirth { get; set; }
 
         public string Email { get; set; } = string.Empty;
 
-        public int MobileNumber { get; set; }
+        public string MobileNumber { get; set; }
+
+        public string Password { get; set; } = string.Empty;
+
 
         public string Address { get; set; } = string.Empty;
 

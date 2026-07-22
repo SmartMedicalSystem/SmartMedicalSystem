@@ -94,12 +94,13 @@ namespace Infrastructure.Repository
 
             // Get paginated doctors with department information
             var items = await _context.Doctors
-                .Include(d => d.Department)
-                .Where(d => !d.IsDeleted)
-                .OrderBy(d => d.Name)
-                .Skip(pagination.CalculateSkip())
-                .Take(pagination.PageSize)
-                .ToListAsync();
+            .Include(d => d.Department)
+            .Where(d => !d.IsDeleted)
+            .OrderBy(d => d.FirstName)
+            .ThenBy(d => d.LastName)
+            .Skip(pagination.CalculateSkip())
+            .Take(pagination.PageSize)
+            .ToListAsync();
 
             return PaginatedResult<Doctor>.Create(items, totalCount, pagination);
         }

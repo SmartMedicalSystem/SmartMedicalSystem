@@ -34,8 +34,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPatientResultService, PatientResultService>();
             services.AddScoped<IPatientResultElementService, PatientResultElementService>();
             services.AddScoped<IAuthService, AuthService>();
-            
-
+            services.AddScoped<ILabTechProfileService, LabTechProfileService>();
             return services;
         }
     }
