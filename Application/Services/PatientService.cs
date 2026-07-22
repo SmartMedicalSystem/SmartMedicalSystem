@@ -21,17 +21,17 @@ namespace Application.Services
         private readonly IUnitOfWork _uow;
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
-        private readonly IPatientResultAIService _patientResultAIService;
-        private readonly IMedicalAIClient _aiClient;
-        private readonly IRagService _ragService;
+        private readonly IPatientResultAIService? _patientResultAIService;
+        private readonly IMedicalAIClient? _aiClient;
+        private readonly IRagService? _ragService;
 
         public PatientService(
             IUnitOfWork uow,
             Domain.IRepository.IPersonGenericRepo personRepo,
             IMapper mapper,
-            IPatientResultAIService patientResultAIService,
-            IMedicalAIClient aiClient,
-            IRagService ragService)
+            IPatientResultAIService? patientResultAIService = null,
+            IMedicalAIClient? aiClient = null,
+            IRagService? ragService = null)
         {
             _uow = uow;
             _personRepo = personRepo;
@@ -45,6 +45,10 @@ namespace Application.Services
         {
             var patient = await _uow.Patients.GetByIdAsync(patientId)
                 ?? throw new NotFoundException("Patient", patientId);
+            if (_patientResultAIService == null || _aiClient == null || _ragService == null)
+            {
+                throw new InvalidOperationException("AI services not configured. Provide IPatientResultAIService, IMedicalAIClient and IRagService to use GetFullAIReportAsync.");
+            }
 
             var patientResults = await _uow.PatientResults.GetByPatientAsync(patientId);
 

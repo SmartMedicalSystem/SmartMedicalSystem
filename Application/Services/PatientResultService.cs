@@ -16,16 +16,21 @@ namespace Application.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IPatientResultAIService _patientResultAIService;
+        private readonly IPatientResultAIService? _patientResultAIService;
 
-        public PatientResultService(IUnitOfWork uow, IMapper mapper, IPatientResultAIService patientResultAIService)
+        public PatientResultService(IUnitOfWork uow, IMapper mapper, IPatientResultAIService? patientResultAIService = null)
         {
             _uow = uow;
             _mapper = mapper;
             _patientResultAIService = patientResultAIService;
         }
+
         public Task<PatientResultAIAnalysisDto> GenerateAIAnalysisAsync(int id, CancellationToken cancellationToken = default)
-         => _patientResultAIService.GenerateAnalysisAsync(id, cancellationToken);
+        {
+            if (_patientResultAIService == null)
+                throw new InvalidOperationException("AI service not configured. Provide IPatientResultAIService to use GenerateAIAnalysisAsync.");
+            return _patientResultAIService.GenerateAnalysisAsync(id, cancellationToken);
+        }
 
         public async Task<PatientResultReadDto> CreateAsync(PatientResultCreateDto dto)
         {

@@ -16,16 +16,22 @@ namespace Application.Services
     public class DoctorService : IDoctorService
     {
         private readonly IUnitOfWork _uow;
-        private readonly IAuthService _authService;
+        private readonly IAuthService? _authService;
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
 
-        public DoctorService(IUnitOfWork uow, IAuthService authService, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
+        public DoctorService(IUnitOfWork uow, IAuthService? authService, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
         {
             _uow = uow;
             _authService = authService;
             _personRepo = personRepo;
             _mapper = mapper;
+        }
+
+        // Backwards-compatible overload used by tests and simple constructions
+        public DoctorService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
+            : this(uow, null, personRepo, mapper)
+        {
         }
 
         // Compatibility overloads that accept entity id instead of SSN
