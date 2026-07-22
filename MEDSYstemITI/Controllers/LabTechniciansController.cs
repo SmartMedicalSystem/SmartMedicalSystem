@@ -5,7 +5,6 @@ using Application.Services.Abstraction.Auth;
 using Application.Services.Auth;
 using Domain.Enums;
 using Domain.Models;
-using MEDSYstemITI.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
@@ -24,7 +23,7 @@ namespace MEDSYstemITI.Controllers
             _labTechnicianService = labTechnicianService;
         }
 
- 
+
         [HttpGet]
         //[HasPermission(Permissions.ReadLabTechnician)]
         public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetAll(
@@ -44,10 +43,10 @@ namespace MEDSYstemITI.Controllers
 
         [HttpPost("create")]
         //[HasPermission(Permissions.CreateLabTechnician)]
-        public async Task<ActionResult<LabTechnicianReadDto>> Create([FromForm]   LabTechnicianCreateDto dto)
+        public async Task<ActionResult<LabTechnicianReadDto>> Create([FromForm] LabTechnicianCreateDto dto)
         {
             var person = await _labTechnicianService.CreateAsync(dto);
-            
+
 
             return Ok(person);
 
@@ -64,9 +63,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpDelete("{ssn}")]
-        [HasPermission(Permissions.DeleteLabTechnician)]
-        [LogSensitiveAction]
-
+        //[HasPermission(Permissions.DeleteLabTechnician)]
         public async Task<IActionResult> Delete(string ssn)
         {
             await _labTechnicianService.DeleteAsync(ssn);
