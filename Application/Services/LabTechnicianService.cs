@@ -234,12 +234,13 @@ namespace Application.Services
                 page.TotalCount, filter);
         }
 
-        public async Task DeleteAsync(string ssn)
+        public async Task DeleteAsync(string nationalId)
         {
-            var person = await _personRepo.FindBySSN(ssn)
-                ?? throw new NotFoundException("LabTechnician", ssn);
-
-            await _uow.LabTechnicians.SoftDeleteAsync(person.Id);
+            var technician = await _uow.LabTechnicians
+                .GetByNationalIdAsync(nationalId)
+                ?? throw new NotFoundException("LabTechnician", nationalId);
+        
+            await _uow.LabTechnicians.SoftDeleteAsync(technician.Id);
         }
 
         // (int-based overloads implemented above)
