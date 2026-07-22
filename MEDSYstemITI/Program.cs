@@ -150,7 +150,8 @@ namespace MEDSYstemITI
             // =========================================================
 
             builder.Services.AddinfrastructreServices(
-                builder.Configuration);
+                builder.Configuration,
+                builder.Environment);
 
             builder.Services.AddApplicationServices();
 
@@ -225,32 +226,28 @@ namespace MEDSYstemITI
             // Database Seeding
             // =========================================================
 
-            using (var scope =
-                app.Services.CreateScope())
+            // Run seeding except when running under the dedicated "Testing" environment.
+            // Tests set the environment to "Testing" to prevent production seeding logic
+            // (which runs SQL Server-specific commands) from executing against the test DB.
+            if (!app.Environment.IsEnvironment("Testing"))
             {
-                var logger =
-                    scope.ServiceProvider
-                        .GetRequiredService<
-                            ILogger<Program>>();
-
-                try
+                using (var scope = app.Services.CreateScope())
                 {
-                    logger.LogInformation(
-                        "Starting database seeding");
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-                    await DbInitializer.SeedAsync(
-                        scope.ServiceProvider);
+                    try
+                    {
+                        logger.LogInformation("Starting database seeding");
 
-                    logger.LogInformation(
-                        "Database seeding completed successfully");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogCritical(
-                        ex,
-                        "Database seeding failed");
+                        await DbInitializer.SeedAsync(scope.ServiceProvider);
 
-                    throw;
+                        logger.LogInformation("Database seeding completed successfully");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogCritical(ex, "Database seeding failed");
+                        throw;
+                    }
                 }
             }
 

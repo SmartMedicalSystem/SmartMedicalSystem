@@ -30,15 +30,45 @@ namespace Infrastructure.DependenciesInjection
     public static class PresistanceServiceExtensions
     {
         public static IServiceCollection AddinfrastructreServices
-            (this IServiceCollection services, IConfiguration configuration)
+            (this IServiceCollection services, IConfiguration configuration, Microsoft.Extensions.Hosting.IHostEnvironment? env = null)
         {
-            services.AddDbContext<ApplicationDbContext>(options
-                =>
+            // In normal environments (Development/Staging/Production) register the
+            // application's SQL Server DbContext. When running under the dedicated
+            // "Testing" environment (used by integration tests) the test host will
+            // register its own in-memory SQLite DbContext to avoid provider conflicts.
+            // IHostEnvironment has IsEnvironment extension in Microsoft.Extensions.Hosting
+            var isTesting = false;
+            if (env != null)
             {
-                var connectionString = configuration.GetConnectionString("DefaultConnection");
-                options.UseSqlServer(connectionString);
+                // Use the known IsEnvironment extension method by referencing the extension class name
+                // from the Hosting assembly via reflection fallback to avoid requiring an extra using.
+                try
+                {
+                    var mi = typeof(Microsoft.Extensions.Hosting.IHostEnvironment).GetMethod("IsEnvironment", new[] { typeof(string) });
+                    if (mi != null)
+                    {
+                        // This path won't be hit; IsEnvironment is an extension method. Use logical fallback:
+                        isTesting = env.EnvironmentName == "Testing";
+                    }
+                    else
+                    {
+                        isTesting = env.EnvironmentName == "Testing";
+                    }
+                }
+                catch
+                {
+                    isTesting = env.EnvironmentName == "Testing";
+                }
             }
-            );
+
+            if (!isTesting)
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                {
+                    var connectionString = configuration.GetConnectionString("DefaultConnection");
+                    options.UseSqlServer(connectionString);
+                });
+            }
 
             // Generic repository (open generic) - covers any BaseEntity that doesn't
             // have a dedicated specialized repository registered below.
@@ -78,15 +108,21 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<ITokenService, TokenService>();
 
             // ASP.NET Core Identity, using our custom ApplicationUser/ApplicationRole
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            // In the Testing environment tests register their own DbContext and
+            // Identity registration against SQLite. Skip Identity registration
+            // here when running under "Testing" to avoid provider conflicts.
+            if (!isTesting)
             {
-                // Reasonable defaults; tune as needed.
-                options.Password.RequiredLength = 8;
-                options.Password.RequireNonAlphanumeric = false;
-                options.User.RequireUniqueEmail = true;
-            })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+                {
+                    // Reasonable defaults; tune as needed.
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.User.RequireUniqueEmail = true;
+                })
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddDefaultTokenProviders();
+            }
 
             // JWT bearer authentication
             var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>() ?? new JwtSettings();
