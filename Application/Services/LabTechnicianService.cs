@@ -236,10 +236,9 @@ namespace Application.Services
 
         public async Task DeleteAsync(string nationalId)
         {
-            var technician = await _uow.LabTechnicians
-                .GetByNationalIdAsync(nationalId)
-                ?? throw new NotFoundException("LabTechnician", nationalId);
-        
+            var technician = await _uow.PersonGeneric.FindBySSN(nationalId);
+
+
             await _uow.LabTechnicians.SoftDeleteAsync(technician.Id);
         }
 

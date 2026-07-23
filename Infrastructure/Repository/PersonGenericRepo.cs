@@ -19,31 +19,10 @@ namespace Infrastructure.Repository
         }
         public async Task<BasePerson?> FindBySSN(string ssn)
         {
-            var persons = await _context.Set<BasePerson>()
-                .Where(x => !x.IsDeleted)
-                .ToListAsync();
-
-            foreach (var person in persons)
-            {
-                try
-                {
-                    var decryptedNationalId =
-                        _encryptionService.Decrypt(
-                            person.EncryptedNationalId);
-
-                    if (decryptedNationalId == ssn)
-                    {
-                        return person;
-                    }
-                }
-                catch (CryptographicException)
-                {
-                    // This record was not encrypted using the current protector
-                    continue;
-                }
-            }
-
-            return null;
+            return await _context.BasePersons
+               .FirstOrDefaultAsync(x =>
+                   !x.IsDeleted &&
+                   x.EncryptedNationalId == ssn);
         }
 
         public async Task AddPerson(string ssn, BasePerson person)
