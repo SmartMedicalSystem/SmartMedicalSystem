@@ -16,13 +16,13 @@ namespace Application.DTOs.Doctor
 
         public string Email { get; set; } = string.Empty;
 
-        public int MobileNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         public string Address { get; set; } = string.Empty;
 
         public Gender Gender { get; set; }
 
-        public int NationalId { get; set; }
+        public string EncryptedNationalId { get; set; }
 
         public int DepartmentId { get; set; }
 

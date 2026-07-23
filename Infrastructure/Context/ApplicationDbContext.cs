@@ -29,7 +29,6 @@ namespace Infrastructure.Context
         public DbSet<Department> Departments => Set<Department>();
         public DbSet<Doctor> Doctors => Set<Doctor>();
         public DbSet<LabTechnician> LabTechnicians => Set<LabTechnician>();
-        public DbSet<LabTechProfile> LabTechProfiles => Set<LabTechProfile>();
         public DbSet<LabTest> LabTests => Set<LabTest>();
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<Patient> Patients => Set<Patient>();

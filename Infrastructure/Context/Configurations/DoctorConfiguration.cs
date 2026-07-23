@@ -50,6 +50,7 @@ namespace Infrastructure.Data.Configurations
                 .HasMaxLength(10)
                 .IsRequired();
 
+
             // The Department (staff membership) relationship is configured
             // once, from DepartmentConfiguration (HasMany/WithOne), to avoid
             // configuring the same relationship from both sides.

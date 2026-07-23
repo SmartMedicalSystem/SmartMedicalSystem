@@ -61,7 +61,8 @@ namespace Infrastructure.Repository
             _labTechnicians ??= new LabTechnicianRepository(_context);
 
         public ILabTechProfileRepo LabTechProfiles =>
-            _labTechProfiles ??= new LabTechProfileRepository(_context);
+    _labTechProfiles ??= new LabTechProfileRepository(_context);
+
         public ILabTestRepo LabTests =>
             _labTests ??= new LabTestRepository(_context);
 

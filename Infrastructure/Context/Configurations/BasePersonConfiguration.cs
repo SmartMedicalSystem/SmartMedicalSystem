@@ -18,7 +18,9 @@ namespace Infrastructure.Context.Configurations
 
             builder.HasQueryFilter(p => !p.IsDeleted);
 
-            
+
+
+
 
 
         }

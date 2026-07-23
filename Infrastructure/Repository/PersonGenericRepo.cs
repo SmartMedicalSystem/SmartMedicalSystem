@@ -1,7 +1,9 @@
 ﻿using Domain.Entities.Person;
+using Domain.Identity;
 using Domain.IRepository;
 using Infrastructure.Context;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -11,12 +13,14 @@ namespace Infrastructure.Repository
     {
         private readonly NationalIDEncryptionService _encryptionService;
         protected readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public PersonGenericRepo(ApplicationDbContext context, NationalIDEncryptionService encryptionService) : base(context)
         {
             _context = context;
             _encryptionService = encryptionService;
         }
+
         public async Task<BasePerson?> FindBySSN(string ssn)
         {
             return await _context.BasePersons
@@ -43,6 +47,14 @@ namespace Infrastructure.Repository
             _context.Set<T>().Update((T)person);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<ApplicationUser?> GetByUserIdAsync(string userId)
+        {
+            return await _userManager.FindByIdAsync(userId); 
+            
+        }
+
+      
     }
 
 }

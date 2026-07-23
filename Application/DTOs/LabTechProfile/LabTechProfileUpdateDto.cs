@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Microsoft.AspNetCore.Http;
 using System;
 
 namespace Application.DTOs.LabTechProfile
@@ -10,16 +11,19 @@ namespace Application.DTOs.LabTechProfile
     public class LabTechProfileUpdateDto
     {
         // Personal Information
+        public string id { get; set; }
+
+       
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public Gender Gender { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public string Nationality { get; set; } = null!;
-        public string NationalId { get; set; } = null!;
 
         // Contact Information
         public string Email { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
         public string Address { get; set; } = null!;
+
+        public IFormFile? PhotoUrl { get; set; }
+
+
     }
 }

@@ -18,6 +18,7 @@ namespace Domain.IRepository
         // Create
         Task<T> AddAsync(T entity);
 
+
         // Read
         Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
