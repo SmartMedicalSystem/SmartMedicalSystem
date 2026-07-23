@@ -119,7 +119,7 @@ namespace Infrastructure.Repository
             var items = await _context.Doctors
                 .Include(d => d.Department)
                 .Where(d => d.DepartmentId == departmentId && !d.IsDeleted)
-                .OrderBy(d => d.Name)
+                .OrderBy(d => d.FirstName).ThenBy(d=>d.LastName)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();

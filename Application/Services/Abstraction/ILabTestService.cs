@@ -11,5 +11,12 @@ namespace Application.Services.Abstraction
         Task<LabTestReadDto> GetByIdAsync(int id);
         Task<PaginatedResult<LabTestReadDto>> GetAllAsync(PaginationParams pagination);
         Task DeleteAsync(int id);
-    }
+
+        // ===== NEW: Get Lab Tests by Laboratory =====
+        Task<PaginatedResult<LabTestReadDto>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null);
+    
+}
 }

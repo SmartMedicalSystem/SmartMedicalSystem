@@ -17,5 +17,18 @@ namespace Domain.IRepository
          WorkShift? workShift,
          DateOnly? joiningDate,
          PaginationParams pagination);
+
+        // ===== NEW: Get technicians by Laboratory with Pagination =====
+        Task<PaginatedResult<LabTechnician>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null);
+
+        // ===== NEW:
+        Task<PaginatedResult<LabTechnician>>
+    GetAvailableForLaboratoryAsync(
+        int laboratoryId,
+        PaginationParams pagination,
+        string? searchTerm = null);
     }
 }

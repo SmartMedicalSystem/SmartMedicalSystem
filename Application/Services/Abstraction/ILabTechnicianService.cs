@@ -11,5 +11,18 @@ namespace Application.Services.Abstraction
         Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(LabTechnicianFilterDto filter);
         Task DeleteAsync(string ssn);
 
+        // ===== NEW: Get technicians by Laboratory =====
+        Task<PaginatedResult<LabTechnicianReadDto>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null);
+
+        Task<PaginatedResult<LabTechnicianReadDto>>
+    GetAvailableForLaboratoryAsync(
+        int laboratoryId,
+        PaginationParams pagination,
+        string? searchTerm = null);
     }
+
 }
+

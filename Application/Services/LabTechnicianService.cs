@@ -244,6 +244,39 @@ namespace Application.Services
 
         // (int-based overloads implemented above)
 
+        // ===== NEW: Get technicians by Laboratory =====
+        public async Task<PaginatedResult<LabTechnicianReadDto>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null)
+        {
+            var page = await _uow.LabTechnicians.GetByLaboratoryIdAsync(laboratoryId, pagination, searchTerm);
+
+            return PaginatedResult<LabTechnicianReadDto>.Create(
+                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
+
+        public async Task<PaginatedResult<LabTechnicianReadDto>>
+    GetAvailableForLaboratoryAsync(
+        int laboratoryId,
+        PaginationParams pagination,
+        string? searchTerm = null)
+        {
+            var page =
+                await _uow.LabTechnicians
+                    .GetAvailableForLaboratoryAsync(
+                        laboratoryId,
+                        pagination,
+                        searchTerm);
+
+            return PaginatedResult<LabTechnicianReadDto>.Create(
+                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(
+                    page.Items),
+                page.TotalCount,
+                pagination);
+        }
 
 
 

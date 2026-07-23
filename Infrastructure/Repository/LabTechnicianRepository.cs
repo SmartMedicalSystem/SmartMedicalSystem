@@ -101,5 +101,83 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<LabTechnician>.Create(items, totalCount, pagination);
         }
+
+        // ===== NEW: Get technicians by Laboratory with Pagination =====
+        public async Task<PaginatedResult<LabTechnician>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null)
+        {
+            var query = _context.LabTechnicians
+                .Where(t => !t.IsDeleted && t.LaboratoryId == laboratoryId)
+                .Include(t => t.Laboratory)
+                .AsQueryable();
+
+            // Search by Name or JobTitle
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var search = searchTerm.Trim().ToLower();
+                query = query.Where(t =>
+                    (t.FirstName + " " + t.LastName).ToLower().Contains(search) ||
+                    t.JobTitle.ToLower().Contains(search) ||
+                    t.Username.ToLower().Contains(search)
+                );
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(t => t.FirstName)
+                .ThenBy(t => t.LastName)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return PaginatedResult<LabTechnician>.Create(items, totalCount, pagination);
+        }
+
+        public async Task<PaginatedResult<LabTechnician>>
+    GetAvailableForLaboratoryAsync(
+        int laboratoryId,
+        PaginationParams pagination,
+        string? searchTerm = null)
+        {
+            var query = _context.LabTechnicians
+                .Where(t =>
+                    !t.IsDeleted &&
+                    (
+                        t.LaboratoryId == null ||
+                        t.LaboratoryId == laboratoryId
+                    ))
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var search = searchTerm.Trim().ToLower();
+
+                query = query.Where(t =>
+                    (t.FirstName + " " + t.LastName)
+                        .ToLower()
+                        .Contains(search)
+                    ||
+                    t.JobTitle.ToLower().Contains(search)
+                    ||
+                    t.Username.ToLower().Contains(search)
+                );
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(t => t.FirstName)
+                .ThenBy(t => t.LastName)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return PaginatedResult<LabTechnician>
+                .Create(items, totalCount, pagination);
+        }
+
     }
 }

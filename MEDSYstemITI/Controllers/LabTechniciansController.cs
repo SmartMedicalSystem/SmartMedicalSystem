@@ -72,5 +72,42 @@ namespace MEDSYstemITI.Controllers
             await _labTechnicianService.DeleteAsync(ssn);
             return NoContent();
         }
+
+        // ===== NEW: Get technicians by Laboratory with Pagination =====
+        [HttpGet("by-laboratory/{laboratoryId:int}")]
+        [HasPermission(Permissions.ReadLabTechnician)]
+        public async Task<ActionResult<PaginatedResult<LabTechnicianReadDto>>> GetByLaboratory(
+            int laboratoryId,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 5,
+            [FromQuery] string? searchTerm = null)
+        {
+            var pagination = new PaginationParams(pageNumber, pageSize);
+            var result = await _labTechnicianService.GetByLaboratoryIdAsync(laboratoryId, pagination, searchTerm);
+            return Ok(result);
+        }
+
+        [HttpGet("available-for-laboratory/{laboratoryId:int}")]
+        [HasPermission(Permissions.ReadLabTechnician)]
+        public async Task<
+    ActionResult<PaginatedResult<LabTechnicianReadDto>>>
+    GetAvailableForLaboratory(
+        int laboratoryId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? searchTerm = null)
+        {
+            var pagination =
+                new PaginationParams(pageNumber, pageSize);
+
+            var result =
+                await _labTechnicianService
+                    .GetAvailableForLaboratoryAsync(
+                        laboratoryId,
+                        pagination,
+                        searchTerm);
+
+            return Ok(result);
+        }
     }
 }
