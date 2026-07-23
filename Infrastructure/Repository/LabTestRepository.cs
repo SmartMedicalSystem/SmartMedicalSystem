@@ -82,5 +82,36 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<LabTest>.Create(items, totalCount, pagination);
         }
+
+        // ===== NEW: Get Lab Tests by Laboratory =====
+        public async Task<PaginatedResult<LabTest>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null)
+        {
+            var query = _context.LabTests
+                .Where(lt => lt.LaboratoryId == laboratoryId && !lt.IsDeleted)
+                .AsQueryable();
+
+            // Search by Test Name or Description
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var search = searchTerm.Trim().ToLower();
+                query = query.Where(lt =>
+                    lt.TestName.ToLower().Contains(search) ||
+                    lt.Description.ToLower().Contains(search)
+                );
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(lt => lt.TestName)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return PaginatedResult<LabTest>.Create(items, totalCount, pagination);
+        }
     }
 }

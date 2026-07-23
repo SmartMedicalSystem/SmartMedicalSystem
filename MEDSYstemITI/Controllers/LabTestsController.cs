@@ -60,5 +60,19 @@ namespace MEDSYstemITI.Controllers
             await _labTestService.DeleteAsync(id);
             return NoContent();
         }
+
+        // ===== NEW: Get Lab Tests by Laboratory with Pagination =====
+        [HttpGet("by-laboratory/{laboratoryId:int}")]
+        [HasPermission(Permissions.ReadLabTest)]
+        public async Task<ActionResult<PaginatedResult<LabTestReadDto>>> GetByLaboratory(
+            int laboratoryId,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 5,
+            [FromQuery] string? searchTerm = null)
+        {
+            var pagination = new PaginationParams(pageNumber, pageSize);
+            var result = await _labTestService.GetByLaboratoryIdAsync(laboratoryId, pagination, searchTerm);
+            return Ok(result);
+        }
     }
 }

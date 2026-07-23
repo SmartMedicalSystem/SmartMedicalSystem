@@ -9,6 +9,12 @@ namespace Domain.IRepository
         // Entity-specific reads
         Task<LabTest?> GetByNameAsync(string testName);
         Task<LabTest?> GetWithElementsAsync(int id);
-        
+
+        // ===== NEW: Get Lab Tests by Laboratory =====
+        Task<PaginatedResult<LabTest>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null);
+
     }
 }

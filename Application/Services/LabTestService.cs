@@ -62,5 +62,19 @@ namespace Application.Services
             if (!exists) throw new NotFoundException("LabTest", id);
             await _uow.LabTests.SoftDeleteAsync(id);
         }
+
+        // ===== NEW: Get Lab Tests by Laboratory =====
+        public async Task<PaginatedResult<LabTestReadDto>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null)
+        {
+            var page = await _uow.LabTests.GetByLaboratoryIdAsync(laboratoryId, pagination, searchTerm);
+
+            return PaginatedResult<LabTestReadDto>.Create(
+                _mapper.Map<IEnumerable<LabTestReadDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
     }
 }
