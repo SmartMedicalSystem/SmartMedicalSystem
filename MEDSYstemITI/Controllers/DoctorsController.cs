@@ -75,5 +75,29 @@ namespace MEDSYstemITI.Controllers
             await _doctorService.DeleteAsync(ssn);
             return NoContent();
         }
+
+        [HttpGet("by-id/{id:int}")]
+        [HasPermission(Permissions.ReadDoctor)]
+        public async Task<ActionResult<DoctorReadDto>> GetById(int id)
+        {
+            var result = await _doctorService.GetByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpPut("by-id/{id:int}")]
+        [HasPermission(Permissions.UpdateDoctor)]
+        public async Task<ActionResult<DoctorReadDto>> UpdateById(int id, [FromBody] DoctorUpdateDto dto)
+        {
+            var result = await _doctorService.UpdateAsync(id, dto);
+            return Ok(result);
+        }
+        [HttpDelete("by-id/{id:int}")]
+        [HasPermission(Permissions.DeleteDoctor)]
+        [LogSensitiveAction]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            await _doctorService.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }
