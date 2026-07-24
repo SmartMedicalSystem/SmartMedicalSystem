@@ -18,7 +18,6 @@ using PatientResultElementDto = Application.DTOs.PatientResultElement;
 using RequestLabsDto = Application.DTOs.RequestLabs;
 using SessionDto = Application.DTOs.Session;
 using TestElementDto = Application.DTOs.TestElement;
-using LabTechProfileDto = Application.DTOs.LabTechProfile;
 
 namespace Application.Mapping
 {

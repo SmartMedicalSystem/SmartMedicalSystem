@@ -1,9 +1,9 @@
 ﻿using Domain.Enums;
 using System;
 
-namespace Application.DTOs.LabTechProfile
+namespace Application.DTOs.Profile
 {
-    public class LabTechProfileReadDto
+    public class ProfileReadDto
     {
         public int Id { get; set; }
         public int UserId { get; set; }

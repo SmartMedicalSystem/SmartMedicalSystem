@@ -1,4 +1,5 @@
-﻿using Application.DTOs.LabTechProfile;
+﻿using Application.DTOs.LabTechnician;
+using Application.DTOs.Profile;
 using Application.DTOs.User;
 using Application.Services;
 using Application.Services.Abstraction;
@@ -33,7 +34,7 @@ namespace MEDSYstemITI.Controllers
         /// </summary>
         [HttpGet("me/{id:int}")]
         [Authorize(Roles ="LabTechnician")]
-        public async Task<ActionResult<LabTechProfileReadDto>> GetMyProfile(int id)
+        public async Task<ActionResult<ProfileReadDto>> GetMyProfile(int id)
         {
             var result = await _labTechProfileService.GetByIdAsync(id.ToString());
             return Ok(result);
@@ -42,7 +43,7 @@ namespace MEDSYstemITI.Controllers
         /// <summary>Self-service: Save Changes button on Personal + Contact Information sections.</summary>
         [Authorize(Roles = "LabTechnician")]
         [HttpPut("me/{id:int}")]
-        public async Task<ActionResult<LabTechProfileReadDto>> UpdateMyProfile(int id,[FromForm] LabTechProfileUpdateDto dto)
+        public async Task<ActionResult<ProfileReadDto>> UpdateMyProfile(int id,[FromForm] ProfileUpdateDto dto)
         {
             var result = await _labTechProfileService
                 .UpdatePublicInfoAsync(id, dto);

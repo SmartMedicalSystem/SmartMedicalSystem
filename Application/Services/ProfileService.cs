@@ -1,6 +1,6 @@
 ﻿using Application.Common;
 using Application.DTOs.LabTechnician;
-using Application.DTOs.LabTechProfile;
+using Application.DTOs.Profile;
 using Application.DTOs.User;
 using Application.Services.Abstraction;
 using AutoMapper;
@@ -35,7 +35,7 @@ namespace Application.Services
         }
 
 
-        public async Task<LabTechnicianReadDto> GetByIdAsync(string id)
+        public async Task<ProfileReadDto> GetByIdAsync(string id)
         {
             var entity = await _uow.LabTechProfiles.GetByIdAsync(int.Parse(id))
            ?? throw new NotFoundException("LabTechProfile", id);
@@ -45,10 +45,10 @@ namespace Application.Services
             await CheckPersonFromToken(int.Parse(id));
             
 
-            return _mapper.Map<LabTechnicianReadDto>(entity);
+            return _mapper.Map<ProfileReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> UpdatePublicInfoAsync(int id,LabTechProfileUpdateDto dto)
+        public async Task<ProfileReadDto> UpdatePublicInfoAsync(int id, ProfileUpdateDto dto)
         {
 
             var entity = await _uow.LabTechnicians.GetByIdAsync(id)
@@ -81,12 +81,12 @@ namespace Application.Services
 
             await _uow.LabTechnicians.UpdateAsync(entity);
 
-            return _mapper.Map<LabTechnicianReadDto>(entity);
+            return _mapper.Map<ProfileReadDto>(entity);
         }
 
 
 
-        public async Task<LabTechnicianReadDto> UpdateUserInfoAsync(int id, UserUpdateDto dto)
+        public async Task<ProfileReadDto> UpdateUserInfoAsync(int id, UserUpdateDto dto)
         {
             var userId = _currentUserService.UserId;
 
@@ -119,7 +119,7 @@ namespace Application.Services
 
                 throw new InvalidOperationException(errors);
             }
-            return _mapper.Map<LabTechnicianReadDto>(user);
+            return _mapper.Map<ProfileReadDto>(user);
         }
 
    
@@ -135,6 +135,6 @@ namespace Application.Services
             }
         }
 
-
+     
     }
 }

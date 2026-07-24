@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Http;
 using System;
 
-namespace Application.DTOs.LabTechProfile
+namespace Application.DTOs.Profile
 {
     /// <summary>
     /// Self-service update: what the technician can edit on their own page —
     /// Personal Information + Contact Information sections (Save Changes button).
     /// </summary>
-    public class LabTechProfileUpdateDto
+    public class ProfileUpdateDto
     {
         // Personal Information
 

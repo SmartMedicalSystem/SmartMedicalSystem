@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.LabTechnician;
-using Application.DTOs.LabTechProfile;
+using Application.DTOs.Profile;
 using Application.DTOs.User;
 using Domain.Models;
 using System.Threading.Tasks;
@@ -8,10 +8,10 @@ namespace Application.Services.Abstraction
 {
     public interface IProfileService
     {
-        Task<LabTechnicianReadDto> GetByIdAsync(string id);
+        Task<ProfileReadDto> GetByIdAsync(string id);
 
-        Task<LabTechnicianReadDto> UpdatePublicInfoAsync(int id, LabTechProfileUpdateDto dto);
+        Task<ProfileReadDto> UpdatePublicInfoAsync(int id, ProfileUpdateDto dto);
 
-        Task<LabTechnicianReadDto> UpdateUserInfoAsync(int id, UserUpdateDto dto);
+        Task<ProfileReadDto> UpdateUserInfoAsync(int id, UserUpdateDto dto);
     }
 }
