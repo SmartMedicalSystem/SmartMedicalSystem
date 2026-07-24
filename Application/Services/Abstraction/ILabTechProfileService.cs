@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Application.Services.Abstraction
 {
-    public interface ILabTechProfileService
+    public interface IProfileService
     {
         Task<LabTechnicianReadDto> GetByIdAsync(string id);
 

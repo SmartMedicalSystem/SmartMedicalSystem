@@ -18,14 +18,14 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public class LabTechProfileService : ILabTechProfileService
+    public class ProfileService : IProfileService
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
         private readonly ICurrentUserService _currentUserService;
 
-        public LabTechProfileService(IUnitOfWork uow, IMapper mapper, IFileStorageService fileStorageService,
+        public ProfileService(IUnitOfWork uow, IMapper mapper, IFileStorageService fileStorageService,
             ICurrentUserService currentUserService)
         {
             _uow = uow;

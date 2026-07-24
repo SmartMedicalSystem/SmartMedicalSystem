@@ -36,7 +36,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPatientResultService, PatientResultService>();
             services.AddScoped<IPatientResultElementService, PatientResultElementService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ILabTechProfileService, LabTechProfileService>();
+            services.AddScoped<IProfileService, ProfileService>();
 
             services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             // AI / RAG services (IMedicalAIClient itself is registered by Infrastructure's

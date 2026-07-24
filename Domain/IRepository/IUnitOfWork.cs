@@ -24,7 +24,7 @@ namespace Domain.IRepository
         IDepartmentRepo Departments { get; }
         IDoctorRepo Doctors { get; }
         ILabTechnicianRepo LabTechnicians { get; }
-        ILabTechProfileRepo  LabTechProfiles { get; }
+        IProfileRepo  LabTechProfiles { get; }
         ILabTestRepo LabTests { get; }
         ILabTestElementRepo LabTestElements { get; }
         INotificationRepo Notifications { get; }

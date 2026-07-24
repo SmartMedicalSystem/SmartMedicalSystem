@@ -27,7 +27,7 @@ namespace Infrastructure.Repository
         private IDepartmentRepo? _departments;
         private IDoctorRepo? _doctors;
         private ILabTechnicianRepo? _labTechnicians;
-        private ILabTechProfileRepo? _labTechProfiles;
+        private IProfileRepo? _labTechProfiles;
         private ILabTestRepo? _labTests;
         private ILabTestElementRepo? _labTestElements;
         private INotificationRepo? _notifications;
@@ -66,7 +66,7 @@ namespace Infrastructure.Repository
         public ILabTechnicianRepo LabTechnicians =>
             _labTechnicians ??= new LabTechnicianRepository(_context);
 
-        public ILabTechProfileRepo LabTechProfiles =>
+        public  IProfileRepo LabTechProfiles =>
     _labTechProfiles ??= new LabTechProfileRepository(_context);
 
         public ILabTestRepo LabTests =>

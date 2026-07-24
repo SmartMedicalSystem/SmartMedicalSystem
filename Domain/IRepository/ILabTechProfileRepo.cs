@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Domain.IRepository
 {
-    public interface ILabTechProfileRepo : IGenericRepository<LabTechnician> 
+    public interface IProfileRepo : IGenericRepository<LabTechnician> 
     {
         /// <summary>Fetches the profile belonging to the currently logged-in technician (self-service page).</summary>
 

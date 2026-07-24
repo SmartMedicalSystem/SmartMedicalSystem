@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.LabTechProfile;
 using Application.DTOs.User;
+using Application.Services;
 using Application.Services.Abstraction;
 using Application.Services.Auth;
 using Domain.Enums;
@@ -17,9 +18,9 @@ namespace MEDSYstemITI.Controllers
     //[Authorize]
     public class LabTechProfileController : ControllerBase
     {
-        private readonly ILabTechProfileService _labTechProfileService;
+        private readonly IProfileService _labTechProfileService;
 
-        public LabTechProfileController(ILabTechProfileService labTechProfileService)
+        public LabTechProfileController(IProfileService labTechProfileService)
         {
             _labTechProfileService = labTechProfileService;
         }
@@ -39,7 +40,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         /// <summary>Self-service: Save Changes button on Personal + Contact Information sections.</summary>
-        //[Authorize(Roles = "LabTechnician")]
+        [Authorize(Roles = "LabTechnician")]
         [HttpPut("me/{id:int}")]
         public async Task<ActionResult<LabTechProfileReadDto>> UpdateMyProfile(int id,[FromForm] LabTechProfileUpdateDto dto)
         {
@@ -49,6 +50,7 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "LabTechnician")]
         [HttpPut("me/user-info/{id:int}")]
         public async Task<IActionResult> UpdateUserInfo(int id,
           [FromBody] UserUpdateDto dto)

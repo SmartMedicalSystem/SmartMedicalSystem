@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
-    public class LabTechProfileRepository : GenericRepository<LabTechnician>, ILabTechProfileRepo
+    public class LabTechProfileRepository : GenericRepository<LabTechnician>, IProfileRepo
     {
 
         private readonly ApplicationDbContext _context;
