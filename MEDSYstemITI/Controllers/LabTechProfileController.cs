@@ -38,7 +38,7 @@ namespace MEDSYstemITI.Controllers
         [HttpPut("me")]
         public async Task<ActionResult<LabTechProfileReadDto>> UpdateMyProfile( [FromBody] LabTechProfileUpdateDto dto)
         {
-            var result = await _labTechProfileService.UpdateAsync(int.Parse(dto.id), dto);
+            var result = await _labTechProfileService.UpdatePublicInfoAsync(int.Parse(dto.id), dto);
             return Ok(result);
         }
 
