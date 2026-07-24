@@ -1,8 +1,10 @@
 using Domain.Entities;
 using Domain.Entities.Person;
+using Domain.Identity;
 using Domain.IRepository;
 using Infrastructure.Context;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace Infrastructure.Repository
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
         private bool _disposed;
 
         private IDepartmentRepo? _departments;
@@ -36,7 +39,10 @@ namespace Infrastructure.Repository
         private ISessionRepo? _sessions;
         private ITestElementRepo? _testElements;
         private IPersonGenericRepo? _personGeneric;
+        private IUserGenericRepo? _userGeneric;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+
+        
 
 
         // ===== NEW =====
@@ -99,7 +105,14 @@ namespace Infrastructure.Repository
             _laboratories ??= new LaboratoryRepository(_context);
 
         public IPersonGenericRepo PersonGeneric =>
+
               _personGeneric ??= new PersonGenericRepo<BasePerson>(_context, new NationalIDEncryptionService(_dataProtectionProvider));
+
+        public IUserGenericRepo UserGeneric =>
+            _userGeneric ??= new UserGenericRepo<ApplicationUser>(_userManager);
+
+
+
 
         // ===============
 

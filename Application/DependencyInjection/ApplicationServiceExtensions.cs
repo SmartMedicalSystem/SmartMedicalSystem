@@ -45,6 +45,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPatientResultAIService, PatientResultAIService>();
             services.AddScoped<IRagService, RagService>();
             services.AddScoped<IRagChatService, RagChatService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();  
 
 
             return services;

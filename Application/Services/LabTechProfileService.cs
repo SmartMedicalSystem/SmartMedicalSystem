@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.DTOs.LabTechnician;
 using Application.DTOs.LabTechProfile;
+using Application.DTOs.User;
 using Application.Services.Abstraction;
 using AutoMapper;
 using Domain.Common;
@@ -22,53 +23,117 @@ namespace Application.Services
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public LabTechProfileService(IUnitOfWork uow, IMapper mapper, IFileStorageService fileStorageService)
+        public LabTechProfileService(IUnitOfWork uow, IMapper mapper, IFileStorageService fileStorageService,
+            ICurrentUserService currentUserService)
         {
             _uow = uow;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
+            _currentUserService = currentUserService;
         }
 
 
-        public async Task<LabTechProfileReadDto> GetByIdAsync(string id)
+        public async Task<LabTechnicianReadDto> GetByIdAsync(string id)
         {
             var entity = await _uow.LabTechProfiles.GetByIdAsync(int.Parse(id))
-                ?? throw new NotFoundException("LabTechProfile", id);
-            return _mapper.Map<LabTechProfileReadDto>(entity);
+           ?? throw new NotFoundException("LabTechProfile", id);
+
+
+            //check if the personId from token matches the entity's personId
+            await CheckPersonFromToken(int.Parse(id));
+            
+
+            return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-       
-        public async Task<LabTechnicianReadDto> UpdatePublicInfoAsync(int id, LabTechProfileUpdateDto dto)
+        public async Task<LabTechnicianReadDto> UpdatePublicInfoAsync(int id,LabTechProfileUpdateDto dto)
         {
+
             var entity = await _uow.LabTechnicians.GetByIdAsync(id)
                 ?? throw new NotFoundException("LabTechnician", id);
+            await CheckPersonFromToken(id);
 
-            // Update fields similar to SSN-based update
-            entity.FirstName = dto.FirstName;
-            entity.LastName = dto.LastName;
 
-            entity.PhoneNumber = dto.PhoneNumber;
-            entity.Email = dto.Email;
-            entity.Address = dto.Address;
+            if (!string.IsNullOrWhiteSpace(dto.FirstName))
+                entity.FirstName = dto.FirstName;
+
+            if (!string.IsNullOrWhiteSpace(dto.LastName))
+                entity.LastName = dto.LastName;
+
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                entity.PhoneNumber = dto.PhoneNumber;
+
+            if (!string.IsNullOrWhiteSpace(dto.Email))
+                entity.Email = dto.Email;
+
+            if (!string.IsNullOrWhiteSpace(dto.Address))
+                entity.Address = dto.Address;
 
             if (dto.PhotoUrl != null)
             {
-                var updatedPhotoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+                var updatedPhotoUrl =
+                    await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+
                 entity.PhotoUrl = updatedPhotoUrl ?? entity.PhotoUrl;
             }
 
             await _uow.LabTechnicians.UpdateAsync(entity);
+
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task UpdateUserInfo() //add here update usesr dto 
+
+
+        public async Task<LabTechnicianReadDto> UpdateUserInfoAsync(int id, UserUpdateDto dto)
         {
-            //var user = await _uow.PersonGeneric.GetByUserIdAsync();
-            //add mapping between user and new values
+            var userId = _currentUserService.UserId;
+
+            if (userId is null)
+                throw new UnauthorizedAccessException(
+                    "Current user is not authenticated.");
+
+            var user = await _uow.UserGeneric
+                .GetByUserIdAsync(userId.Value.ToString())
+                ?? throw new NotFoundException(
+                    "User",
+                    userId.Value);
+
+            if (!string.IsNullOrWhiteSpace(dto.UserName))
+                user.UserName = dto.UserName;
+
+            if (!string.IsNullOrWhiteSpace(dto.Email))
+                user.Email = dto.Email;
+
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                user.PhoneNumber = dto.PhoneNumber;
+
+            var result = await _uow.UserGeneric.UpdateUserAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(
+                    ", ",
+                    result.Errors.Select(e => e.Description));
+
+                throw new InvalidOperationException(errors);
+            }
+            return _mapper.Map<LabTechnicianReadDto>(user);
         }
 
+   
 
+        private async Task CheckPersonFromToken(int personId)
+        {
+            var id = _currentUserService.BasePersonId;
+
+            if(id != personId)
+            {
+                throw new UnauthorizedAccessException(
+                    "You are not authorized to access this resource.");
+            }
+        }
 
 
     }

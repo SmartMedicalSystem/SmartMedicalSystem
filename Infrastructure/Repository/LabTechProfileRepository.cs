@@ -12,6 +12,7 @@ namespace Infrastructure.Repository
     {
 
         private readonly ApplicationDbContext _context;
+
         public LabTechProfileRepository(ApplicationDbContext context) : base(context)
         {
         }
@@ -21,6 +22,8 @@ namespace Infrastructure.Repository
             return await _context.FindAsync<LabTechnician>(id);
             
         }
+
+
 
       
 

@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.IRepository;
 using System;
 using System.Threading.Tasks;
 
@@ -39,7 +40,8 @@ namespace Domain.IRepository
 
         IPersonGenericRepo PersonGeneric { get; }
 
-        
+        IUserGenericRepo UserGeneric { get; }
+
         /// <summary>
         /// Generic accessor for entities that don't have a dedicated specialized
         /// repository. Returns a shared GenericRepository&lt;T&gt; instance bound to

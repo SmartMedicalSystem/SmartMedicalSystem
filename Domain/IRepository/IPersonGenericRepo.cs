@@ -10,7 +10,6 @@ namespace Domain.IRepository
         Task AddPerson(string ssn, BasePerson person);
         Task UpdateSSNAsync(BasePerson person, string ssn);
 
-        Task<ApplicationUser?> GetByUserIdAsync(string userId);
 
 
 
