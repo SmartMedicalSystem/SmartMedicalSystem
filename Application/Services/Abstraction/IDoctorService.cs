@@ -14,8 +14,17 @@ namespace Application.Services.Abstraction
 
         Task DeleteAsync(int id);   
         Task<PaginatedResult<DoctorReadDto>> GetByDepartmentAsync(int departmentId, PaginationParams pagination);
-        
+
         Task<PaginatedResult<DoctorReadDto>> GetAllAsync(PaginationParams pagination);
         Task DeleteAsync(string ssn);
+
+
+
+
+        Task<PaginatedResult<DoctorForSelectDto>>
+   GetAvailableForNewDepartmentAsync(
+       PaginationParams pagination);
+
+
     }
 }

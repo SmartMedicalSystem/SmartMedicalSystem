@@ -52,6 +52,20 @@ namespace Application.Mapping
     .ForMember(d => d.EncryptedNationalId, opt => opt.MapFrom(s => s.EncryptedNationalId))
     .ForMember(d => d.PhoneNumber, opt => opt.MapFrom(s => s.PhoneNumber));
 
+
+            CreateMap<Doctor, DoctorForSelectDto>()
+           .ForMember(
+               dest => dest.Name,
+               opt => opt.MapFrom(src => src.FirstName + " " + src.LastName)
+           )
+           .ForMember(
+               dest => dest.DepartmentName,
+               opt => opt.MapFrom(src =>
+                   src.Department != null
+                       ? src.Department.Name
+                       : null)
+           );
+
             CreateMap<DoctorDto.DoctorCreateDto, DomainEntities.Doctor>();
             CreateMap<DoctorDto.DoctorUpdateDto, DomainEntities.Doctor>();
 
@@ -94,6 +108,18 @@ namespace Application.Mapping
 
             CreateMap<DomainEntities.LabTechnician, LabTechnicianDto.LabTechnicianReadDto>();
             CreateMap<LabTechnicianDto.LabTechnicianCreateDto, DomainEntities.LabTechnician>();
+
+            CreateMap<LabTechnician, TechnicianBriefDto>()
+             .ForMember(
+                 dest => dest.Name,
+                 opt => opt.MapFrom(src =>
+                     $"{src.FirstName} {src.LastName}".Trim()))
+             .ForMember(
+                 dest => dest.LaboratoryName,
+                 opt => opt.MapFrom(src =>
+                     src.Laboratory != null
+                         ? src.Laboratory.Name
+                         : null));
 
             CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
 

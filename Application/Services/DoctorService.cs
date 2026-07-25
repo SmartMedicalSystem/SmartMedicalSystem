@@ -166,6 +166,19 @@ namespace Application.Services
                 _mapper.Map<IEnumerable<DoctorReadDto>>(page.Items),
                 page.TotalCount, pagination);
         }
-        
+
+        public async Task<PaginatedResult<DoctorForSelectDto>>
+     GetAvailableForNewDepartmentAsync(
+         PaginationParams pagination)
+        {
+            var page =
+                await _uow.Doctors
+                    .GetAvailableForNewDepartmentAsync(pagination);
+
+            return PaginatedResult<DoctorForSelectDto>.Create(
+                _mapper.Map<IEnumerable<DoctorForSelectDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
     }
 }

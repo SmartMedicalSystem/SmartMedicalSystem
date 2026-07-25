@@ -99,5 +99,25 @@ namespace MEDSYstemITI.Controllers
             await _doctorService.DeleteAsync(id);
             return NoContent();
         }
+
+        [HttpGet("available-for-new-department")]
+        public async Task<ActionResult<
+      PaginatedResult<DoctorForSelectDto>>>
+      GetAvailableForNewDepartment(
+          [FromQuery] int pageNumber = 1,
+          [FromQuery] int pageSize = 10)
+        {
+            var pagination = new PaginationParams
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var result =
+                await _doctorService
+                    .GetAvailableForNewDepartmentAsync(pagination);
+
+            return Ok(result);
+        }
     }
 }

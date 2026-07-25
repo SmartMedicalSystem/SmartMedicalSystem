@@ -1,5 +1,6 @@
 using Application.Common;
 using Application.DTOs.Auth;
+using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
@@ -258,7 +259,7 @@ namespace Application.Services
                 pagination);
         }
 
-        public async Task<PaginatedResult<LabTechnicianReadDto>>
+        public async Task<PaginatedResult<TechnicianBriefDto>>
     GetAvailableForLaboratoryAsync(
         int laboratoryId,
         PaginationParams pagination,
@@ -271,14 +272,36 @@ namespace Application.Services
                         pagination,
                         searchTerm);
 
-            return PaginatedResult<LabTechnicianReadDto>.Create(
-                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(
+            return PaginatedResult<TechnicianBriefDto>.Create(
+                _mapper.Map<IEnumerable<TechnicianBriefDto>>(
                     page.Items),
                 page.TotalCount,
                 pagination);
         }
 
+        public async Task<PaginatedResult<TechnicianBriefDto>>
+      GetAvailableForNewLaboratoryAsync(
+          PaginationParams pagination,
+          string? searchTerm = null)
+        {
+            var page =
+                await _uow.LabTechnicians
+                    .GetAvailableForNewLaboratoryAsync(
+                        pagination,
+                        searchTerm);
 
+            var technicians = page.Items.Select(t =>
+                new TechnicianBriefDto
+                {
+                    Id = t.Id,
+                    Name = $"{t.FirstName} {t.LastName}".Trim(),
+                    LaboratoryName = t.Laboratory?.Name
+                });
 
+            return PaginatedResult<TechnicianBriefDto>.Create(
+                technicians,
+                page.TotalCount,
+                pagination);
+        }
     }
 }
