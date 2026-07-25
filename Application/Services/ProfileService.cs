@@ -37,8 +37,8 @@ namespace Application.Services
 
         public async Task<ProfileReadDto> GetByIdAsync(string id)
         {
-            var entity = await _uow.LabTechProfiles.GetByIdAsync(int.Parse(id))
-           ?? throw new NotFoundException("LabTechProfile", id);
+            var entity = await _uow.Profiles.GetByIdAsync(int.Parse(id))
+           ?? throw new NotFoundException("Profile", id);
 
 
             //check if the personId from token matches the entity's personId
@@ -51,7 +51,7 @@ namespace Application.Services
         public async Task<ProfileReadDto> UpdatePublicInfoAsync(int id, ProfileUpdateDto dto)
         {
 
-            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
+            var entity = await _uow.PersonGeneric.GetByIdAsync(id)
                 ?? throw new NotFoundException("LabTechnician", id);
             await CheckPersonFromToken(id);
 
@@ -79,7 +79,7 @@ namespace Application.Services
                 entity.PhotoUrl = updatedPhotoUrl ?? entity.PhotoUrl;
             }
 
-            await _uow.LabTechnicians.UpdateAsync(entity);
+            await _uow.PersonGeneric.UpdateAsync(entity);
 
             return _mapper.Map<ProfileReadDto>(entity);
         }

@@ -27,7 +27,7 @@ namespace Infrastructure.Repository
         private IDepartmentRepo? _departments;
         private IDoctorRepo? _doctors;
         private ILabTechnicianRepo? _labTechnicians;
-        private IProfileRepo? _labTechProfiles;
+        private IProfileRepo? _profileRepo;
         private ILabTestRepo? _labTests;
         private ILabTestElementRepo? _labTestElements;
         private INotificationRepo? _notifications;
@@ -51,10 +51,12 @@ namespace Infrastructure.Repository
 
         private readonly Dictionary<Type, object> _genericRepositories = new();
 
-        public UnitOfWork(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider)
+        public UnitOfWork(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider
+            , UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _dataProtectionProvider = dataProtectionProvider;
+            _userManager = userManager;
         }
 
         public IDepartmentRepo Departments =>
@@ -66,8 +68,8 @@ namespace Infrastructure.Repository
         public ILabTechnicianRepo LabTechnicians =>
             _labTechnicians ??= new LabTechnicianRepository(_context);
 
-        public  IProfileRepo LabTechProfiles =>
-    _labTechProfiles ??= new LabTechProfileRepository(_context);
+        public  IProfileRepo Profiles =>
+    _profileRepo ??= new ProfileRepository(_context);
 
         public ILabTestRepo LabTests =>
             _labTests ??= new LabTestRepository(_context);
@@ -108,8 +110,7 @@ namespace Infrastructure.Repository
 
               _personGeneric ??= new PersonGenericRepo<BasePerson>(_context, new NationalIDEncryptionService(_dataProtectionProvider));
 
-        public IUserGenericRepo UserGeneric =>
-            _userGeneric ??= new UserGenericRepo<ApplicationUser>(_userManager);
+        public IUserGenericRepo UserGeneric =>_userGeneric ??= new UserGenericRepo<ApplicationUser>(_userManager);
 
 
 

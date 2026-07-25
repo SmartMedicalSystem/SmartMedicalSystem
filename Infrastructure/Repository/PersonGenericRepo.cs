@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 
 namespace Infrastructure.Repository
 {
-    public class PersonGenericRepo<T> : GenericRepository<T>, IPersonGenericRepo where T : BasePerson
+    public class PersonGenericRepo<T> : GenericRepository<BasePerson>, IPersonGenericRepo 
     {
         private readonly NationalIDEncryptionService _encryptionService;
         protected readonly ApplicationDbContext _context;
@@ -45,7 +45,7 @@ namespace Infrastructure.Repository
         {
             var encrypted = await _encryptionService.Encrypt(ssn);
             person.EncryptedNationalId = encrypted;
-            _context.Set<T>().Update((T)person);
+            _context.Set<BasePerson>().Update(person);
             await _context.SaveChangesAsync();
         }
 

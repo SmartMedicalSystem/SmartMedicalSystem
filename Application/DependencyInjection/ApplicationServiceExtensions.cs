@@ -5,6 +5,7 @@ using Application.Services.Abstraction.AI;
 using Application.Services.Abstraction.Auth;
 using Application.Services.AI;
 using Application.Services.Auth;
+using Domain.Identity;
 using Domain.IRepository;
 using MEDSYstemITI.Service;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,8 +46,7 @@ namespace Application.DependencyInjection
             services.AddScoped<IPatientResultAIService, PatientResultAIService>();
             services.AddScoped<IRagService, RagService>();
             services.AddScoped<IRagChatService, RagChatService>();
-            services.AddScoped<ICurrentUserService, CurrentUserService>();  
-
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             return services;
         }

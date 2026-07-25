@@ -1,6 +1,8 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Person;
 using Domain.Identity;
 using Domain.IRepository;
+using Domain.Models;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,25 +10,21 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
-    public class LabTechProfileRepository : GenericRepository<LabTechnician>, IProfileRepo
+    public class ProfileRepository : GenericRepository<BasePerson>, IProfileRepo
     {
 
         private readonly ApplicationDbContext _context;
 
-        public LabTechProfileRepository(ApplicationDbContext context) : base(context)
+        public ProfileRepository(ApplicationDbContext context) : base(context)
         {
         }
 
-        public async Task<LabTechnician?> GetByPersonIdAsync(int id)
+ 
+        public async Task<BasePerson?> GetByPersonIdAsync(int id)
         {
-            return await _context.FindAsync<LabTechnician>(id);
+            return await _context.FindAsync<BasePerson>(id);
             
         }
-
-
-
-      
-
 
     
     }

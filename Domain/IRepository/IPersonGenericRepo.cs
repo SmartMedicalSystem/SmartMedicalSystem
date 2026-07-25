@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Domain.IRepository
 {
-    public interface IPersonGenericRepo
+    public interface IPersonGenericRepo : IGenericRepository<BasePerson>
     {
         Task<BasePerson?> FindBySSN(string ssn);
         Task AddPerson(string ssn, BasePerson person);

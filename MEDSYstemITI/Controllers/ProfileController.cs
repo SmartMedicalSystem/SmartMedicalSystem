@@ -1,4 +1,4 @@
-﻿using Application.DTOs.Doctor;
+﻿using Application.DTOs.LabTechnician;
 using Application.DTOs.Profile;
 using Application.DTOs.User;
 using Application.Services;
@@ -8,19 +8,22 @@ using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ModelContextProtocol.Protocol;
+using StackExchange.Redis;
+using System.Security.Claims;
 
 namespace MEDSYstemITI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
-    public class DoctorController : ControllerBase
+    [Authorize]
+    public class ProfileController : ControllerBase
     {
-        private readonly IProfileService _profileService;
+        private readonly IProfileService _labTechProfileService;
 
-        public DoctorController(IProfileService profileService)
+        public ProfileController(IProfileService labTechProfileService)
         {
-            _profileService = profileService;
+            _labTechProfileService = labTechProfileService;
         }
 
 
@@ -30,31 +33,28 @@ namespace MEDSYstemITI.Controllers
         /// No extra permission check beyond [Authorize] - a technician can always read their own data.
         /// </summary>
         [HttpGet("me/{id:int}")]
-        [Authorize(Roles = "Doctor")]
         public async Task<ActionResult<ProfileReadDto>> GetMyProfile(int id)
         {
-            var result = await _profileService.GetByIdAsync(id.ToString());
+            var result = await _labTechProfileService.GetByIdAsync(id.ToString());
             return Ok(result);
         }
 
         /// <summary>Self-service: Save Changes button on Personal + Contact Information sections.</summary>
-        [Authorize(Roles = "Doctor")]
         [HttpPut("me/{id:int}")]
-        public async Task<ActionResult<ProfileReadDto>> UpdateMyProfile(int id, [FromForm] ProfileUpdateDto dto)
+        public async Task<ActionResult<ProfileReadDto>> UpdateMyProfile(int id,[FromForm] ProfileUpdateDto dto)
         {
-            var result = await _profileService
+            var result = await _labTechProfileService
                 .UpdatePublicInfoAsync(id, dto);
 
             return Ok(result);
         }
 
-        [Authorize(Roles = "Doctor")]
         [HttpPut("me/user-info/{id:int}")]
         public async Task<IActionResult> UpdateUserInfo(int id,
-          [FromBody] UserUpdateDto dto)
+          [FromForm] UserUpdateDto dto)
         {
-            await _profileService
-                .UpdateUserInfoAsync(id, dto);
+            await _labTechProfileService
+                .UpdateUserInfoAsync(id,dto);
 
             return NoContent();
         }

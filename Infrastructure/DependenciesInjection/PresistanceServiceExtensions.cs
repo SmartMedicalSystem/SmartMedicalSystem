@@ -207,6 +207,8 @@ namespace Infrastructure.DependenciesInjection
                 // global action filter to log every controller endpoint (resolve from DI)
                 options.Filters.AddService<Infrastructure.Middleware.LoggingActionFilter>();
             });
+            services.AddScoped<IUserGenericRepo, UserGenericRepo<ApplicationUser>>();
+
 
             return services;
         }
