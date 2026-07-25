@@ -102,7 +102,7 @@ namespace Application.Mapping
             CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
 
             CreateMap<PatientResultDto.PatientResultUpdateDto, DomainEntities.PatientResult>();
-
+            CreateMap<Domain.Identity.ApplicationUser, ProfileReadDto>();
             CreateMap<BasePerson, ProfileReadDto>();
             CreateMap<Doctor, ProfileReadDto>();
             CreateMap<LabTechnician, ProfileReadDto>();
