@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.DTOs.Auth;
 using Application.DTOs.LabTechnician;
 using Application.DTOs.Profile;
 using Application.DTOs.User;
@@ -12,6 +13,7 @@ using Domain.IRepository;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -25,13 +27,16 @@ namespace Application.Services
         private readonly IFileStorageService _fileStorageService;
         private readonly ICurrentUserService _currentUserService;
 
+        private readonly ILogger<ProfileService> _logger;
+
         public ProfileService(IUnitOfWork uow, IMapper mapper, IFileStorageService fileStorageService,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService, ILogger<ProfileService> logger)
         {
             _uow = uow;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
             _currentUserService = currentUserService;
+            _logger = logger;
         }
 
 
@@ -41,7 +46,7 @@ namespace Application.Services
            ?? throw new NotFoundException("Profile", id);
 
 
-            //check if the personId from token matches the entity's personId
+            //check if the personId from token matches the entity's personId  // extra security layer to ensure that the user can only access their own profile
             await CheckPersonFromToken(int.Parse(id));
             
 
@@ -53,6 +58,7 @@ namespace Application.Services
 
             var entity = await _uow.PersonGeneric.GetByIdAsync(id)
                 ?? throw new NotFoundException("LabTechnician", id);
+
             await CheckPersonFromToken(id);
 
 
@@ -88,7 +94,13 @@ namespace Application.Services
 
         public async Task<ProfileReadDto> UpdateUserInfoAsync(int id, UserUpdateDto dto)
         {
+
+            //check if the personId from token matches the entity's personId  // extra security layer to ensure that the user can only access their own profile
+            await CheckPersonFromToken(id);
+
+
             var userId = _currentUserService.UserId;
+
 
             if (userId is null)
                 throw new UnauthorizedAccessException(
@@ -106,8 +118,9 @@ namespace Application.Services
             if (!string.IsNullOrWhiteSpace(dto.Email))
                 user.Email = dto.Email;
 
-            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
-                user.PhoneNumber = dto.PhoneNumber;
+
+           
+
 
             var result = await _uow.UserGeneric.UpdateUserAsync(user);
 
@@ -122,7 +135,39 @@ namespace Application.Services
             return _mapper.Map<ProfileReadDto>(user);
         }
 
-   
+        public async Task<UserReadDto> ChangePasswordAsync(int id, ChangePasswordRequestDto request)
+        {
+            //check if the personId from token matches the entity's personId  // extra security layer to ensure that the user can only access their own profile
+            await CheckPersonFromToken(id);
+
+
+            var userId = _currentUserService.UserId.ToString();
+
+
+
+            var result =
+                await _uow.UserGeneric.ChangePasswordAsync(
+                    userId,
+                    request.CurrentPassword,
+                    request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errorDetails = result.Errors.Select(e => new Application.Common.Models.ErrorDetail { Message = e.Description });
+
+             
+
+                throw new ValidationException(
+                    "Password validation failed.",
+                    errorDetails);
+            }
+
+            var user = await _uow.UserGeneric.GetByUserIdAsync(userId);
+
+            return _mapper.Map<UserReadDto>(user);
+        }
+
+
 
         private async Task CheckPersonFromToken(int personId)
         {

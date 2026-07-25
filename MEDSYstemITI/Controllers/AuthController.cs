@@ -1,4 +1,5 @@
 using Application.DTOs.Auth;
+using Application.DTOs.User;
 using Application.Services.Abstraction.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,16 +36,7 @@ namespace MEDSYstemITI.Controllers
 
         //[Authorize]
 
-        [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto request)
-        {
-            var response = await _authService.ChangePasswordAsync(request);
 
-            if (!response.IsSuccess)
-                return BadRequest(response.Message);
-
-            return Ok(response);
-        }
 
         [AllowAnonymous]
         [HttpPost("forget-password")]

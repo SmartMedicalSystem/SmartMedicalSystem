@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Auth;
+using Application.DTOs.User;
 using System.Security.Cryptography;
 
 namespace Application.Services.Abstraction.Auth
@@ -8,7 +9,6 @@ namespace Application.Services.Abstraction.Auth
         Task<AuthResponseDto> CreateUserAsync(CreateUserRequestDto request);
         Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
         Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request);
-        Task<AuthResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);
         Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request);
 
         Task<ResetPasswordResponseDto> ResetPasswordAsync(NewPasswordRequestDto request);

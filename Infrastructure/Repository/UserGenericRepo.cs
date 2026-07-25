@@ -24,10 +24,21 @@ namespace Infrastructure.Repository
             return await _userManager.FindByIdAsync(userId);
         }
 
-        public async Task<IdentityResult> UpdateUserAsync(
-            ApplicationUser user)
+        public async Task<IdentityResult> UpdateUserAsync( ApplicationUser user)
         {
             return await _userManager.UpdateAsync(user);
+        }
+
+
+
+        public async Task<IdentityResult> ChangePasswordAsync( string userId, string currentPassword, string newPassword)
+        {
+         
+
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
         }
     }
 }

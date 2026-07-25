@@ -150,14 +150,11 @@ namespace Infrastructure.Repository
         }
 
 
-        public async Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword)
-        {
-            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
-        }
-
         public async Task<ApplicationUser?> GetByIdAsync(string userId , BasePerson person)
         {
             return await _dbContext.Users.FirstOrDefaultAsync(u => u.Id== person.Id);
         }
+
+       
     }
 }

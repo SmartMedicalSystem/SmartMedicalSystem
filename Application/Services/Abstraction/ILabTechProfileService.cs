@@ -13,5 +13,8 @@ namespace Application.Services.Abstraction
         Task<ProfileReadDto> UpdatePublicInfoAsync(int id, ProfileUpdateDto dto);
 
         Task<ProfileReadDto> UpdateUserInfoAsync(int id, UserUpdateDto dto);
+
+        Task<UserReadDto> ChangePasswordAsync(int id, ChangePasswordRequestDto request);
     }
+
 }

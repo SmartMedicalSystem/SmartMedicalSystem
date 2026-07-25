@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.DTOs.Auth;
+using Application.DTOs.User;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using Domain.Enums;
@@ -315,65 +316,6 @@ public class AuthService : IAuthService
             "Token refreshed successfully");
     }
 
-    public async Task<AuthResponseDto> ChangePasswordAsync(
-        ChangePasswordRequestDto request)
-    {
-        _logger.LogInformation(
-            "Change password attempt for {Email}",
-            request.Email);
-
-        var user =
-            await _memberRepo.FindByUsernameOrEmailAsync(
-                request.Email);
-
-        if (user is null)
-        {
-            throw new NotFoundException(
-                "User not found.",
-                "USER_NOT_FOUND");
-        }
-
-        var valid =
-            await _memberRepo.IsValidPasswordAsync(
-                request.CurrentPassword,
-                user);
-
-        if (valid is null)
-        {
-            _logger.LogWarning(
-                "Change password failed: incorrect current password for {Email}",
-                request.Email);
-
-            throw new UnauthorizedException(
-                "Current password is incorrect.",
-                "INVALID_CURRENT_PASSWORD");
-        }
-
-        var result =
-            await _memberRepo.ChangePasswordAsync(
-                user,
-                request.CurrentPassword,
-                request.NewPassword);
-
-        if (!result.Succeeded)
-        {
-            var errorDetails = result.Errors.Select(e => new Application.Common.Models.ErrorDetail { Message = e.Description });
-
-            _logger.LogWarning(
-                "Change password failed for {Email}",
-                request.Email);
-
-            throw new ValidationException(
-                "Password validation failed.",
-                errorDetails);
-        }
-
-        return new AuthResponseDto
-        {
-            IsSuccess = true,
-            Message = "Password changed successfully."
-        };
-    }
 
     public async Task<AuthResponseDto> ForgetPasswordAsync(ForgetPasswordRequestDto request)
     {

@@ -39,7 +39,6 @@ namespace Domain.IRepository
         Task<string?> GeneratePasswordResetTokenAsync(string email);
         Task<IdentityResult> ResetPasswordAsync(ApplicationUser user, string newPassword);
 
-        Task<IdentityResult> ChangePasswordAsync(ApplicationUser user, string currentPassword, string newPassword);
 
     }
 }

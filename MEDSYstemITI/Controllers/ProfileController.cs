@@ -3,6 +3,7 @@ using Application.DTOs.Profile;
 using Application.DTOs.User;
 using Application.Services;
 using Application.Services.Abstraction;
+using Application.Services.Abstraction.Auth;
 using Application.Services.Auth;
 using Domain.Enums;
 using Domain.Models;
@@ -19,11 +20,11 @@ namespace MEDSYstemITI.Controllers
     [Authorize]
     public class ProfileController : ControllerBase
     {
-        private readonly IProfileService _labTechProfileService;
+        private readonly IProfileService _profileService;
 
-        public ProfileController(IProfileService labTechProfileService)
+        public ProfileController(IProfileService profileService)
         {
-            _labTechProfileService = labTechProfileService;
+            _profileService = profileService;
         }
 
 
@@ -35,7 +36,7 @@ namespace MEDSYstemITI.Controllers
         [HttpGet("me/{id:int}")]
         public async Task<ActionResult<ProfileReadDto>> GetMyProfile(int id)
         {
-            var result = await _labTechProfileService.GetByIdAsync(id.ToString());
+            var result = await _profileService.GetByIdAsync(id.ToString());
             return Ok(result);
         }
 
@@ -43,21 +44,29 @@ namespace MEDSYstemITI.Controllers
         [HttpPut("me/{id:int}")]
         public async Task<ActionResult<ProfileReadDto>> UpdateMyProfile(int id,[FromForm] ProfileUpdateDto dto)
         {
-            var result = await _labTechProfileService
+            var result = await _profileService
                 .UpdatePublicInfoAsync(id, dto);
 
             return Ok(result);
         }
 
         [HttpPut("me/user-info/{id:int}")]
-        public async Task<IActionResult> UpdateUserInfo(int id,
-          [FromForm] UserUpdateDto dto)
+        public async Task<IActionResult> UpdateUserInfo(int id, [FromForm] UserUpdateDto dto)
         {
-            await _labTechProfileService
+            await _profileService
                 .UpdateUserInfoAsync(id,dto);
 
             return NoContent();
         }
 
+        [HttpPost("me/change-password/{id:int}")]
+        public async Task<IActionResult> ChangePassword(int id , [FromBody] ChangePasswordRequestDto request)
+        {
+            var response = await _profileService.ChangePasswordAsync(id, request);
+
+      
+
+            return Ok(response);
+        }
     }
 }

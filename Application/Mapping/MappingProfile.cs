@@ -4,6 +4,7 @@ using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
 using Application.DTOs.LabTest;
 using Application.DTOs.Profile;
+using Application.DTOs.User;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Entities.Person;
@@ -102,10 +103,13 @@ namespace Application.Mapping
             CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
 
             CreateMap<PatientResultDto.PatientResultUpdateDto, DomainEntities.PatientResult>();
+
+            CreateMap<Domain.Identity.ApplicationUser, UserReadDto>();
             CreateMap<Domain.Identity.ApplicationUser, ProfileReadDto>();
             CreateMap<BasePerson, ProfileReadDto>();
             CreateMap<Doctor, ProfileReadDto>();
             CreateMap<LabTechnician, ProfileReadDto>();
+
 
             CreateMap<DomainEntities.PatientResultElement, PatientResultElementDto.PatientResultElementReadDto>();
 
