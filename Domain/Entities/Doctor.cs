@@ -26,7 +26,7 @@ namespace Domain.Entities
             string phoneNumber,
             Gender gender,
             int departmentId)
-            : base(firstName, lastName, DateTime.Today) // use a non-default DOB for materialization; real DOB may be set later
+            : base(firstName, lastName, DateTime.UtcNow.Date) // use a non-default DOB for materialization; real DOB may be set later
         {
             Specialization = Guard.NotNullOrWhiteSpace(specialization, nameof(specialization), 100);
             PhoneNumber = Guard.NotNullOrWhiteSpace(phoneNumber, nameof(phoneNumber), 50);
@@ -59,7 +59,7 @@ namespace Domain.Entities
             : base(
                   Guard.NotNullOrWhiteSpace(fullName, nameof(fullName), 200).Split(' ', 2).First(),
                   Guard.NotNullOrWhiteSpace(fullName, nameof(fullName), 200).Split(' ', 2).ElementAtOrDefault(1) ?? string.Empty,
-                  DateTime.Today)
+                  DateTime.UtcNow.Date)
         {
             Specialization = Guard.NotNullOrWhiteSpace(specialization, nameof(specialization), 100);
             PhoneNumber = Guard.NotNullOrWhiteSpace(phoneNumber, nameof(phoneNumber), 50);

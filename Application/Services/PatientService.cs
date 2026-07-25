@@ -130,7 +130,8 @@ namespace Application.Services
                 Gender = dto.Gender,
                 PhoneNumber = dto.MobileNumber.ToString(),
                 Address = dto.Address,
-                BloodType = dto.BloodType
+                BloodType = dto.BloodType,
+                 Email = dto.Email
             };
             await _personRepo.AddPerson(nationalId, entity);
             return _mapper.Map<PatientReadDto>(entity);

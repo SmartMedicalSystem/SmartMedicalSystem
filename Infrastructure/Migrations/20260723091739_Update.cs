@@ -6,7 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
+<<<<<<<< HEAD:Infrastructure/Migrations/20260723091739_Update.cs
     public partial class Update : Migration
+========
+    public partial class initialCreate : Migration
+>>>>>>>> origin/yara-mohamed/doctor:Infrastructure/Migrations/20260722173345_initialCreate.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
