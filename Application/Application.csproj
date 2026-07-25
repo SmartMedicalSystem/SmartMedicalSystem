@@ -29,6 +29,14 @@
     <PackageReference Include="ModelContextProtocol" Version="1.4.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.2.3" />
+    <Folder Include="Mappings\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>

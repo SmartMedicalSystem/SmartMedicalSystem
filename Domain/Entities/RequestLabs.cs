@@ -1,41 +1,77 @@
 using Domain.Common;
 using Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Domain.Entities
 {
     public class RequestLabs : BaseEntity
     {
-        public int SessionId { get; set; }
-
-        public DateTime RequestedAt { get; set; }
-
-        public LabRequestStatus Status { get; set; }
-
-        public LabRequestPriority Priority { get; set; }
-
-        public DateTime? CompletedAt { get; set; }
-
-        public virtual Session Session { get; set; } = null!;
-
-        public ICollection<LabTest> LabTests { get; set; } = new List<LabTest>();
-
         private RequestLabs() { }
 
-        public RequestLabs(int sessionId, DateTime requestedAt, LabRequestPriority priority = LabRequestPriority.Normal)
+        public RequestLabs(int sessionId, int labTestId)
         {
-            SessionId = Guard.Positive(sessionId, nameof(sessionId));
-            RequestedAt = Guard.NotDefault(requestedAt, nameof(requestedAt));
+            if (sessionId <= 0)
+                throw new ArgumentException(
+                    "Session Id is required.",
+                    nameof(sessionId));
+
+            if (labTestId <= 0)
+                throw new ArgumentException(
+                    "Lab Test Id is required.",
+                    nameof(labTestId));
+
+            SessionId = sessionId;
+            LabTestId = labTestId;
+
+            RequestedAt = DateTime.UtcNow;
             Status = LabRequestStatus.Pending;
-            Priority = priority;
         }
 
-        public void UpdateStatus(LabRequestStatus status)
+        public int SessionId { get; private set; }
+
+        public int LabTestId { get; private set; }
+
+        public DateTime RequestedAt { get; private set; }
+
+        public LabRequestStatus Status { get; private set; }
+
+        public virtual Session Session { get; private set; }
+
+        public virtual LabTest LabTest { get; private set; }
+
+        public void StartProcessing()
         {
-            Status = status;
-            if (status == LabRequestStatus.Completed)
-                CompletedAt = DateTime.UtcNow;
-            else
-                CompletedAt = null;
+            if (Status != LabRequestStatus.Pending)
+            {
+                throw new InvalidOperationException(
+                    "Only pending requests can be started.");
+            }
+
+            Status = LabRequestStatus.InProgress;
+        }
+
+        public void Complete()
+        {
+            if (Status != LabRequestStatus.InProgress)
+            {
+                throw new InvalidOperationException(
+                    "Only in-progress requests can be completed.");
+            }
+
+            Status = LabRequestStatus.Completed;
+        }
+
+        public void Cancel()
+        {
+            if (Status == LabRequestStatus.Completed)
+            {
+                throw new InvalidOperationException(
+                    "Completed requests cannot be cancelled.");
+            }
+
+            Status = LabRequestStatus.Cancelled;
         }
     }
 }

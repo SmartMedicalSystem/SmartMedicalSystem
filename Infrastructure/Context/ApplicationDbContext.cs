@@ -1,3 +1,4 @@
+using Domain.Entities;
 using System.Reflection;
 using Domain.Entities;
 using Domain.Identity;
@@ -22,8 +23,10 @@ namespace Infrastructure.Context
             : base(options)
         {
         }
+        public DbSet<RequestLabs> RequestLabs { get; set; }
 
         public DbSet<BasePerson> BasePersons { get; set; }
+
 
 
         public DbSet<Department> Departments => Set<Department>();
