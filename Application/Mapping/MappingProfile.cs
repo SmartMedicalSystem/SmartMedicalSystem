@@ -49,8 +49,8 @@ namespace Application.Mapping
 
             CreateMap<DomainEntities.Doctor, DoctorDto.DoctorReadDto>()
     .ForMember(d => d.DepartmentName, opt => opt.MapFrom(s => s.Department != null ? s.Department.Name : null))
-    .ForMember(d => d.NationalId, opt => opt.MapFrom(s => s.EncryptedNationalId))
-    .ForMember(d => d.MobileNumber, opt => opt.MapFrom(s => s.PhoneNumber));
+    .ForMember(d => d.EncryptedNationalId, opt => opt.MapFrom(s => s.EncryptedNationalId))
+    .ForMember(d => d.PhoneNumber, opt => opt.MapFrom(s => s.PhoneNumber));
 
             CreateMap<DoctorDto.DoctorCreateDto, DomainEntities.Doctor>();
             CreateMap<DoctorDto.DoctorUpdateDto, DomainEntities.Doctor>();
