@@ -36,5 +36,12 @@ namespace Domain.Entities
 
         // Staff/account fields specific to technicians
         //public string employeeidentitynumber { get; set; } = string.Empty;
+        public void AssignToLaboratory(int laboratoryId)
+        {
+            LaboratoryId = Guard.Positive(
+                laboratoryId,
+                nameof(laboratoryId));
+        }
+       
     }
 }

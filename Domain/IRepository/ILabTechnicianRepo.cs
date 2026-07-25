@@ -30,5 +30,14 @@ namespace Domain.IRepository
         int laboratoryId,
         PaginationParams pagination,
         string? searchTerm = null);
+
+        Task<PaginatedResult<LabTechnician>>
+      GetAvailableForNewLaboratoryAsync(
+          PaginationParams pagination,
+          string? searchTerm = null);
+
+        Task<bool> IsHeadTechnicianAsync(int technicianId);
     }
+
+     
 }

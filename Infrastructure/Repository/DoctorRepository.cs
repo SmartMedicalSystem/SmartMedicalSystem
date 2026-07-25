@@ -149,6 +149,32 @@ namespace Infrastructure.Repository
             return PaginatedResult<Doctor>.Create(items, totalCount, pagination);
         }
 
-       
+        public async Task<PaginatedResult<Doctor>>
+       GetAvailableForNewDepartmentAsync(PaginationParams pagination)
+        {
+            var query = _context.Doctors
+                .Where(d =>
+                    !d.IsDeleted &&
+                    !_context.Departments.Any(dep =>
+                        !dep.IsDeleted &&
+                        dep.HeadDoctorId == d.Id))
+                .Include(d => d.Department)
+                .AsQueryable();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(d => d.FirstName)
+                .ThenBy(d => d.LastName)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return PaginatedResult<Doctor>.Create(
+                items,
+                totalCount,
+                pagination);
+        }
+
     }
 }

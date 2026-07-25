@@ -1,3 +1,4 @@
+using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
 using Domain.Models;
 
@@ -17,9 +18,14 @@ namespace Application.Services.Abstraction
             PaginationParams pagination,
             string? searchTerm = null);
 
-        Task<PaginatedResult<LabTechnicianReadDto>>
+        Task<PaginatedResult<TechnicianBriefDto>>
     GetAvailableForLaboratoryAsync(
         int laboratoryId,
+        PaginationParams pagination,
+        string? searchTerm = null);
+
+        Task<PaginatedResult<TechnicianBriefDto>>
+    GetAvailableForNewLaboratoryAsync(
         PaginationParams pagination,
         string? searchTerm = null);
     }

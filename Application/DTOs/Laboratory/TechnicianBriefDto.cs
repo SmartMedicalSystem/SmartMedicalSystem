@@ -7,8 +7,10 @@ namespace Application.DTOs.Laboratory
     public class TechnicianBriefDto
     {
         public int Id { get; set; }
+
         public string Name { get; set; } = null!;
-        public string Contact { get; set; }
-       
+
+        public string? LaboratoryName { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
 using Application.DTOs.Auth;
+using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
@@ -101,6 +102,29 @@ namespace MEDSYstemITI.Controllers
                 await _labTechnicianService
                     .GetAvailableForLaboratoryAsync(
                         laboratoryId,
+                        pagination,
+                        searchTerm);
+
+            return Ok(result);
+        }
+        [HttpGet("available-for-new-laboratory")]
+        [HasPermission(Permissions.ReadLabTechnician)]
+        public async Task<ActionResult<
+       PaginatedResult<TechnicianBriefDto>>>
+       GetAvailableForNewLaboratory(
+           [FromQuery] int pageNumber = 1,
+           [FromQuery] int pageSize = 10,
+           [FromQuery] string? searchTerm = null)
+        {
+            var pagination = new PaginationParams
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var result =
+                await _labTechnicianService
+                    .GetAvailableForNewLaboratoryAsync(
                         pagination,
                         searchTerm);
 
