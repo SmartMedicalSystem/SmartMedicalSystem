@@ -1,0 +1,17 @@
+﻿using Domain.Entities.Person;
+using Domain.Identity;
+using System.Threading.Tasks;
+
+namespace Domain.IRepository
+{
+    public interface IPersonGenericRepo : IGenericRepository<BasePerson>
+    {
+        Task<BasePerson?> FindBySSN(string ssn);
+        Task AddPerson(string ssn, BasePerson person);
+        Task UpdateSSNAsync(BasePerson person, string ssn);
+
+
+
+
+    }
+}
