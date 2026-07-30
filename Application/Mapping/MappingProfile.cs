@@ -3,6 +3,7 @@ using Application.DTOs.Doctor;
 using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
 using Application.DTOs.LabTest;
+using Application.DTOs.Patient;
 using Application.DTOs.Profile;
 using Application.DTOs.User;
 using AutoMapper;
@@ -69,7 +70,10 @@ namespace Application.Mapping
             CreateMap<DoctorDto.DoctorCreateDto, DomainEntities.Doctor>();
             CreateMap<DoctorDto.DoctorUpdateDto, DomainEntities.Doctor>();
 
-            CreateMap<DomainEntities.Patient, PatientDto.PatientReadDto>();
+          
+            CreateMap<Patient, PatientReadDto>()
+    .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.EncryptedNationalId))
+    .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.PhoneNumber));
             CreateMap<PatientDto.PatientCreateDto, DomainEntities.Patient>();
             CreateMap<PatientDto.PatientUpdateDto, DomainEntities.Patient>();
 
