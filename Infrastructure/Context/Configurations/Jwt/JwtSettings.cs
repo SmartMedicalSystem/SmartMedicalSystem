@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Infrastructure.Context.Configurations.Jwt
+{
+    public class JwtSettings
+    {
+        public string Key { get; set; } = string.Empty;
+        public int ExpireMinutes { get; set; }
+        public int RefreshTokenExpireDays { get; set; }
+        public string Issuer { get; set; } = string.Empty;
+        public string Audience { get; set; } = string.Empty;
+    }
+}
