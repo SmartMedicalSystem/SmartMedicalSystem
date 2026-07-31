@@ -17,7 +17,4 @@
     <Project Path="Testing/Infrastructure/Infrastructure.csproj" Id="389973a6-2b4c-4865-9775-7bbf21dc7cdd" />
     <Project Path="Testing/presentationAPI/presentationAPI.csproj" Id="1b544571-e6b2-4cce-8ce1-d89c3b88e436" />
   </Folder>
-  <Folder Name="/presentationAPI/Filters/">
-    <File Path="MEDSYstemITI/Attributes/LogSensitiveActionFilter.cs" />
-  </Folder>
 </Solution>
