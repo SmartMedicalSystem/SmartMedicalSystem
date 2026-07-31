@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs.Auth;
 
@@ -27,5 +28,7 @@ public class CreateUserRequestDto
     public string Role { get; set; } = string.Empty;
 
     public int PersonId { get; set; }
+
+
 
 }

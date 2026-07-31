@@ -15,5 +15,9 @@ namespace Domain.IRepository
         // Entity-specific reads with Pagination
         Task<PaginatedResult<Doctor>> GetByDepartmentPaginatedAsync(int departmentId, PaginationParams pagination);
         Task<PaginatedResult<Doctor>> GetBySpecializationPaginatedAsync(string specialization, PaginationParams pagination);
+
+        //new by ahmed
+        Task<PaginatedResult<Doctor>> GetAvailableForNewDepartmentAsync(
+    PaginationParams pagination);
     }
 }

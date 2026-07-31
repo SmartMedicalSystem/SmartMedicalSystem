@@ -13,7 +13,7 @@ namespace Application.DTOs.Laboratory
         public LabStatus? Status { get; set; }
         public int? HeadTechnicianId { get; set; }
         public int? DepartmentId { get; set; }
-        public string? Code { get; set; }          // ← NEW
+        public string? Code { get; set; }          
         public string? Specialty { get; set; }
     }
 }

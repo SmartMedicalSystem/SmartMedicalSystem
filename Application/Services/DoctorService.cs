@@ -18,19 +18,23 @@ namespace Application.Services
         private readonly IUnitOfWork _uow;
         private readonly IAuthService? _authService;
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IMapper _mapper;
 
-        public DoctorService(IUnitOfWork uow, IAuthService? authService, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
+
+        public DoctorService(IUnitOfWork uow, IAuthService? authService, 
+            Domain.IRepository.IPersonGenericRepo personRepo, IFileStorageService fileStorageService, IMapper mapper)
         {
             _uow = uow;
             _authService = authService;
             _personRepo = personRepo;
+            _fileStorageService = fileStorageService;
             _mapper = mapper;
         }
 
         // Backwards-compatible overload used by tests and simple constructions
         public DoctorService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo, IMapper mapper)
-            : this(uow, null, personRepo, mapper)
+            : this(uow, null, personRepo, null, mapper)
         {
         }
 
@@ -67,6 +71,9 @@ namespace Application.Services
                     "Department",
                     dto.DepartmentId);
 
+            var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+
+
             var entity = new Doctor
             {
                 FirstName = dto.Name.Split(' ', 2)[0],
@@ -89,7 +96,9 @@ namespace Application.Services
 
                 DepartmentId = dto.DepartmentId,
 
-                EncryptedNationalId = dto.NationalId
+                EncryptedNationalId = dto.NationalId,
+                PhotoUrl = photoUrl
+
             };
             var EncryptedNationalId = dto.NationalId;
             await _uow.PersonGeneric.AddPerson(EncryptedNationalId, entity);
@@ -117,7 +126,6 @@ namespace Application.Services
 
             return _mapper.Map<DoctorReadDto>(entity);
         }
-
 
         public async Task<DoctorReadDto> UpdateAsync(string ssn, DoctorUpdateDto dto)
         {
@@ -165,6 +173,19 @@ namespace Application.Services
                 _mapper.Map<IEnumerable<DoctorReadDto>>(page.Items),
                 page.TotalCount, pagination);
         }
-        
+
+        public async Task<PaginatedResult<DoctorForSelectDto>>
+     GetAvailableForNewDepartmentAsync(
+         PaginationParams pagination)
+        {
+            var page =
+                await _uow.Doctors
+                    .GetAvailableForNewDepartmentAsync(pagination);
+
+            return PaginatedResult<DoctorForSelectDto>.Create(
+                _mapper.Map<IEnumerable<DoctorForSelectDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
     }
 }

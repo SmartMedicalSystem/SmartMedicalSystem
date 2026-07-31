@@ -137,18 +137,71 @@ namespace Infrastructure.Repository
         }
 
         public async Task<PaginatedResult<LabTechnician>>
-    GetAvailableForLaboratoryAsync(
-        int laboratoryId,
+       GetAvailableForLaboratoryAsync(
+           int laboratoryId,
+           PaginationParams pagination,
+           string? searchTerm = null)
+        {
+            var query =
+                _context.LabTechnicians
+                    .Where(t =>
+                        !t.IsDeleted &&
+                        (
+                            t.LaboratoryId == laboratoryId
+                            ||
+                            !_context.Laboratories.Any(l =>
+                                l.HeadTechnicianId == t.Id &&
+                                !l.IsDeleted)
+                        ))
+                    .Include(t => t.Laboratory)
+                    .AsQueryable();
+
+            // Search
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var search =
+                    searchTerm.Trim().ToLower();
+
+                query = query.Where(t =>
+                    (t.FirstName + " " + t.LastName)
+                        .ToLower()
+                        .Contains(search)
+                    ||
+                    t.JobTitle
+                        .ToLower()
+                        .Contains(search));
+            }
+
+            var totalCount =
+                await query.CountAsync();
+
+            var items =
+                await query
+                    .OrderBy(t => t.FirstName)
+                    .ThenBy(t => t.LastName)
+                    .Skip(pagination.CalculateSkip())
+                    .Take(pagination.PageSize)
+                    .ToListAsync();
+
+            return PaginatedResult<LabTechnician>
+                .Create(
+                    items,
+                    totalCount,
+                    pagination);
+        }
+
+        public async Task<PaginatedResult<LabTechnician>>
+    GetAvailableForNewLaboratoryAsync(
         PaginationParams pagination,
         string? searchTerm = null)
         {
             var query = _context.LabTechnicians
                 .Where(t =>
                     !t.IsDeleted &&
-                    (
-                        t.LaboratoryId == null ||
-                        t.LaboratoryId == laboratoryId
-                    ))
+                    !_context.Laboratories.Any(l =>
+                        !l.IsDeleted &&
+                        l.HeadTechnicianId == t.Id))
+                .Include(t => t.Laboratory)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -158,12 +211,7 @@ namespace Infrastructure.Repository
                 query = query.Where(t =>
                     (t.FirstName + " " + t.LastName)
                         .ToLower()
-                        .Contains(search)
-                    ||
-                    t.JobTitle.ToLower().Contains(search)
-                    ||
-                    t.Username.ToLower().Contains(search)
-                );
+                        .Contains(search));
             }
 
             var totalCount = await query.CountAsync();
@@ -177,6 +225,15 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<LabTechnician>
                 .Create(items, totalCount, pagination);
+        }
+
+
+        public async Task<bool> IsHeadTechnicianAsync(int technicianId)
+        {
+            return await _context.Laboratories
+                .AnyAsync(l =>
+                    !l.IsDeleted &&
+                    l.HeadTechnicianId == technicianId);
         }
 
     }

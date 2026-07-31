@@ -3,6 +3,7 @@ using Application.DTOs.Doctor;
 using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
 using Application.DTOs.LabTest;
+using Application.DTOs.Patient;
 using Application.DTOs.Profile;
 using Application.DTOs.User;
 using AutoMapper;
@@ -48,12 +49,31 @@ namespace Application.Mapping
             CreateMap<DeptDto.DepartmentUpdateDto, DomainEntities.Department>();
 
             CreateMap<DomainEntities.Doctor, DoctorDto.DoctorReadDto>()
-                .ForMember(d => d.DepartmentName, opt => opt.MapFrom(s => s.Department != null ? s.Department.Name : null));
+    .ForMember(d => d.DepartmentName, opt => opt.MapFrom(s => s.Department != null ? s.Department.Name : null))
+    .ForMember(d => d.EncryptedNationalId, opt => opt.MapFrom(s => s.EncryptedNationalId))
+    .ForMember(d => d.PhoneNumber, opt => opt.MapFrom(s => s.PhoneNumber));
+
+
+            CreateMap<Doctor, DoctorForSelectDto>()
+           .ForMember(
+               dest => dest.Name,
+               opt => opt.MapFrom(src => src.FirstName + " " + src.LastName)
+           )
+           .ForMember(
+               dest => dest.DepartmentName,
+               opt => opt.MapFrom(src =>
+                   src.Department != null
+                       ? src.Department.Name
+                       : null)
+           );
 
             CreateMap<DoctorDto.DoctorCreateDto, DomainEntities.Doctor>();
             CreateMap<DoctorDto.DoctorUpdateDto, DomainEntities.Doctor>();
 
-            CreateMap<DomainEntities.Patient, PatientDto.PatientReadDto>();
+          
+            CreateMap<Patient, PatientReadDto>()
+    .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.EncryptedNationalId))
+    .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.PhoneNumber));
             CreateMap<PatientDto.PatientCreateDto, DomainEntities.Patient>();
             CreateMap<PatientDto.PatientUpdateDto, DomainEntities.Patient>();
 
@@ -92,6 +112,18 @@ namespace Application.Mapping
 
             CreateMap<DomainEntities.LabTechnician, LabTechnicianDto.LabTechnicianReadDto>();
             CreateMap<LabTechnicianDto.LabTechnicianCreateDto, DomainEntities.LabTechnician>();
+
+            CreateMap<LabTechnician, TechnicianBriefDto>()
+             .ForMember(
+                 dest => dest.Name,
+                 opt => opt.MapFrom(src =>
+                     $"{src.FirstName} {src.LastName}".Trim()))
+             .ForMember(
+                 dest => dest.LaboratoryName,
+                 opt => opt.MapFrom(src =>
+                     src.Laboratory != null
+                         ? src.Laboratory.Name
+                         : null));
 
             CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
 

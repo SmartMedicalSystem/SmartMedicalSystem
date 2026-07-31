@@ -29,6 +29,7 @@ public class TokenService : ITokenService
         string userName,
         string email,
         string role,
+        string photoUrl,
         IEnumerable<string> permissions)
     {
         var claims = new List<Claim>
@@ -57,6 +58,10 @@ public class TokenService : ITokenService
             new(
                 ClaimTypes.Role,
                 role),
+            // PhotoUrl
+            new(
+                CustomClaimTypes.PhotoUrl,
+                photoUrl),
 
             // JWT Standard Claims
             new(

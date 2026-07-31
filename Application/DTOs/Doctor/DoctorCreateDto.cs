@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.DTOs.Doctor
 {
@@ -25,6 +26,8 @@ namespace Application.DTOs.Doctor
         public string NationalId { get; set; }
 
         public int DepartmentId { get; set; }
+
+        public IFormFile ? PhotoUrl { get; set; }
 
     }
 }

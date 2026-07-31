@@ -12,6 +12,7 @@ public interface ITokenService
        string userName,
        string email,
        string role,
+       string? photoUrl,
        IEnumerable<string> permissions);
 
     Task<TokenResponseDto> CreateTokenAsync(

@@ -22,7 +22,15 @@ namespace Infrastructure.DependenciesInjection
                 var options = configuration.GetSection("AI").Get<MedGemmaOptions>() ?? new MedGemmaOptions();
 
                 if (!string.IsNullOrWhiteSpace(options.BaseUrl))
-                    client.BaseAddress = new Uri(options.BaseUrl);
+                {
+                    // Trailing slash is required: see comment in MedGemmaAIClient for why a bare
+                    // "https://openrouter.ai/api/v1" silently drops "/api/v1" once combined with
+                    // any relative path (RFC 3986 §5.3 absolute-path merge behavior in System.Uri).
+                    var baseUrl = options.BaseUrl.EndsWith("/", StringComparison.Ordinal)
+                        ? options.BaseUrl
+                        : options.BaseUrl + "/";
+                    client.BaseAddress = new Uri(baseUrl);
+                }
 
                 client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
             });

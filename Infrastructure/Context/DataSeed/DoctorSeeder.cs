@@ -39,6 +39,7 @@ public static class DoctorSeeder
                 "12 Tahrir Square",
                 "Cairo"),
 
+
             CreateDoctor(
                 "Sara",
                 "Mohamed",
@@ -145,7 +146,9 @@ public static class DoctorSeeder
                 new DateTime(1983, 8, 11),
                 "rania.adel@medsystem.local",
                 "14 El-Galaa Street",
-                "Mansoura")
+                "Mansoura",
+                "/uploads/04a2fe3e-0440-4e51-99f1-dce59d2b59fd.jpg"
+                )
         };
 
         foreach (var doctor in doctors)
@@ -232,6 +235,59 @@ public static class DoctorSeeder
     }
 
     private static Doctor CreateDoctor(
+        string firstName,
+        string lastName,
+        string specialization,
+        string phone,
+        Gender gender,
+        int departmentId,
+        DateTime dateOfBirth,
+        string email,
+        string address,
+        string city,
+        string? photoUrl)
+    {
+        return new Doctor(
+            $"{firstName} {lastName}",
+            specialization,
+            phone,
+            gender,
+            departmentId)
+        {
+            FirstName = firstName,
+            LastName = lastName,
+
+            Email = email,
+
+            PhoneNumber = phone,
+
+            Address = address,
+
+            City = city,
+
+            Country = "Egypt",
+
+            Nationality = "Egyptian",
+
+            Gender = gender,
+
+            DateOfBirth = dateOfBirth,
+
+            EncryptedNationalId =
+                Guid.NewGuid().ToString("N"),
+
+            AllowLogin = true,
+
+            AccountActive = true,
+
+            ReceiveNotifications = true,
+
+            CreatedAt = DateTime.UtcNow,
+            PhotoUrl = photoUrl
+        };
+    }
+
+         private static Doctor CreateDoctor(
         string firstName,
         string lastName,
         string specialization,

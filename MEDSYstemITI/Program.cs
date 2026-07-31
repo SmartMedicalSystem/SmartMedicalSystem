@@ -24,6 +24,7 @@ namespace MEDSYstemITI
             // Serilog Configuration
             // =========================================================
 
+
             var seqServerUrl =
                 builder.Configuration["Serilog:SeqServerUrl"]
                 ?? builder.Configuration["Seq:ServerUrl"]

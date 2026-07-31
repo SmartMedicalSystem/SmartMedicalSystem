@@ -17,17 +17,15 @@ public class AuthService : IAuthService
     private readonly ITokenService _tokenService;
     private readonly IEmailSender _emailSender;
     private readonly ILogger<AuthService> _logger;
+    private readonly IUnitOfWork _uow;
 
-    public AuthService(
-        IMemberRepo memberRepo,
-        ITokenService tokenService,
-        IEmailSender emailSender,
-        ILogger<AuthService> logger)
+    public AuthService(IMemberRepo memberRepo, ITokenService tokenService, IEmailSender emailSender, ILogger<AuthService> logger, IUnitOfWork uow)
     {
         _memberRepo = memberRepo;
         _tokenService = tokenService;
         _emailSender = emailSender;
         _logger = logger;
+        _uow = uow;
     }
 
     public async Task<AuthResponseDto> CreateUserAsync(CreateUserRequestDto request)
@@ -211,6 +209,7 @@ public class AuthService : IAuthService
                 "USERNAME_MISSING");
         }
 
+
         if (string.IsNullOrWhiteSpace(user.Email))
         {
             throw new InternalServerException(
@@ -221,6 +220,11 @@ public class AuthService : IAuthService
         var permissions =
             await _memberRepo.GetPermissionsAsync(role);
 
+
+        var PersonId = user.PersonId;
+        var person = await _uow.PersonGeneric.FindByIdAsync(PersonId);
+
+        var PhotoUrl = person?.PhotoUrl ?? string.Empty;
         var token =
             await _tokenService.CreateTokenAsync
             (
@@ -229,6 +233,7 @@ public class AuthService : IAuthService
                 user.UserName,
                 user.Email,
                 role,
+                PhotoUrl,
                 permissions
              );
 

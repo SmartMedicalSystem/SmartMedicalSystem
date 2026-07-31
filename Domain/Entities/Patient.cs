@@ -13,10 +13,10 @@ namespace Domain.Entities
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
 
         // EF materialization constructor
-        protected Patient() { }
+        public Patient() { }
 
         // Backward-compatible constructor used by data seeders and existing code.
-        public Patient(string firstName, string lastName, int nationalId, DateTime dateOfBirth, Gender gender, int mobileNumber, string address, BloodType bloodType)
+        public Patient(string firstName, string lastName, string nationalId, DateTime dateOfBirth, Gender gender, string mobileNumber, string address, BloodType bloodType)
             : base(firstName, lastName, dateOfBirth)
         {
             Gender = gender;

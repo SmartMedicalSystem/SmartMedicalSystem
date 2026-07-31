@@ -24,12 +24,18 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<LaboratoryReadDto> CreateAsync(LaboratoryCreateDto dto)
+        public async Task<LaboratoryReadDto> CreateAsync(
+    LaboratoryCreateDto dto)
         {
-            // Check unique name
-            var isUnique = await _uow.Laboratories.IsLaboratoryNameUniqueAsync(dto.Name);
+            var isUnique =
+                await _uow.Laboratories
+                    .IsLaboratoryNameUniqueAsync(dto.Name);
+
             if (!isUnique)
-                throw new ArgumentException($"A laboratory named '{dto.Name}' already exists.");
+            {
+                throw new ArgumentException(
+                    $"A laboratory named '{dto.Name}' already exists.");
+            }
 
             var entity = new Laboratory(
                 dto.Name,
@@ -43,11 +49,33 @@ namespace Application.Services
             );
 
             await _uow.Laboratories.AddAsync(entity);
+
             await _uow.SaveChangesAsync();
+
+            // Assign Head Technician to this Laboratory
+            if (dto.HeadTechnicianId.HasValue)
+            {
+                var technician =
+                    await _uow.LabTechnicians
+                        .GetByIdAsync(dto.HeadTechnicianId.Value);
+
+                if (technician is null)
+                {
+                    throw new NotFoundException(
+                        "Lab Technician",
+                        dto.HeadTechnicianId.Value);
+                }
+
+                technician.LaboratoryId = entity.Id;
+
+                await _uow.LabTechnicians
+                    .UpdateAsync(technician);
+
+                await _uow.SaveChangesAsync();
+            }
 
             return _mapper.Map<LaboratoryReadDto>(entity);
         }
-
         public async Task<LaboratoryReadDto> UpdateAsync(int id, LaboratoryUpdateDto dto)
         {
             var entity = await _uow.Laboratories.GetLaboratoryWithDetailsAsync(id)
@@ -66,6 +94,7 @@ namespace Application.Services
                 dto.HeadTechnicianId,
                 dto.DepartmentId
             );
+
 
             await _uow.Laboratories.UpdateAsync(entity);
             await _uow.SaveChangesAsync();

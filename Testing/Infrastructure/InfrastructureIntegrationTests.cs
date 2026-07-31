@@ -44,6 +44,7 @@ namespace Testing.Infrastructure
 
             var provider = BuildServices(connection);
 
+
             using (var scope = provider.CreateScope())
             {
                 var scoped = scope.ServiceProvider;
@@ -90,6 +91,8 @@ namespace Testing.Infrastructure
             connection.Open();
 
             var provider = BuildServices(connection);
+            var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
+
 
             using (var scope = provider.CreateScope())
             {
@@ -99,7 +102,7 @@ namespace Testing.Infrastructure
 
                 // Use UnitOfWork from Infrastructure
                 var dataProtection = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create("tests");
-                var uow = new UnitOfWork(context, dataProtection);
+                var uow = new UnitOfWork(context, dataProtection, userManager);
 
                 var dept = new Domain.Entities.Department("Cardiology","Dr X", 2);
                 var added = await uow.Departments.AddAsync(dept);

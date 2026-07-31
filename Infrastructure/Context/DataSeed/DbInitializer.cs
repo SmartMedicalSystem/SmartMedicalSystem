@@ -200,7 +200,8 @@ public static class DbInitializer
 
             AccountActive = true,
 
-            ReceiveNotifications = true
+            ReceiveNotifications = true,
+            
         };
 
         var result =

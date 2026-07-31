@@ -7,7 +7,7 @@ namespace Domain.Entities
     {
         public string Name { get; private set; } = null!;
 
-        // Head Doctor Name (من الـ Frontend)
+        // Head Doctor Name
         public string HeadDoctor { get; private set; } = null!;
 
         // Floor Number

@@ -34,14 +34,32 @@ namespace Infrastructure.Services.AI
             _options = options.Value;
             _logger = logger;
 
+            // NOTE: BaseAddress must end with '/' and relative paths must NOT start with '/'.
+            // Otherwise System.Uri's RFC 3986 §5.3 "absolute path" merge rule silently
+            // DISCARDS any path segment already present on BaseAddress (e.g. "/api/v1"),
+            // which breaks hosted providers like OpenRouter that live under a sub-path
+            // (it happened to work with Ollama only because "http://localhost:11434" has no path).
             if (_httpClient.BaseAddress is null && !string.IsNullOrWhiteSpace(_options.BaseUrl))
-                _httpClient.BaseAddress = new Uri(_options.BaseUrl);
+                _httpClient.BaseAddress = new Uri(EnsureTrailingSlash(_options.BaseUrl));
 
             _httpClient.Timeout = TimeSpan.FromSeconds(_options.TimeoutSeconds);
 
             if (!string.IsNullOrWhiteSpace(_options.ApiKey))
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _options.ApiKey);
+
+            // Optional but recommended by OpenRouter for analytics/rate-limit attribution.
+            // Harmless no-ops for Ollama/vLLM/other OpenAI-compatible servers.
+            if (!_httpClient.DefaultRequestHeaders.Contains("HTTP-Referer"))
+                _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", "https://smartmedicalsystem.app");
+            if (!_httpClient.DefaultRequestHeaders.Contains("X-Title"))
+                _httpClient.DefaultRequestHeaders.Add("X-Title", "SmartMedicalSystem");
         }
+
+        private static string EnsureTrailingSlash(string url) =>
+            url.EndsWith("/", StringComparison.Ordinal) ? url : url + "/";
+
+        private static string NormalizeRelativePath(string path) =>
+            path.TrimStart('/');
 
         public string ChatModelName => _options.ChatModel;
         public string EmbeddingModelName => _options.EmbeddingModel;
@@ -62,8 +80,18 @@ namespace Infrastructure.Services.AI
 
             try
             {
-                using var response = await _httpClient.PostAsJsonAsync(_options.ChatCompletionsPath, request, JsonOptions, cancellationToken);
-                response.EnsureSuccessStatusCode();
+                using var response = await _httpClient.PostAsJsonAsync(NormalizeRelativePath(_options.ChatCompletionsPath), request, JsonOptions, cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                    _logger.LogError(
+                        "MedGemma chat-completion call failed against {BaseUrl}{Path} with status {StatusCode}: {Body}",
+                        _options.BaseUrl, _options.ChatCompletionsPath, (int)response.StatusCode, errorBody);
+                    throw new InvalidOperationException(
+                        $"AI model call to '{_httpClient.BaseAddress}{NormalizeRelativePath(_options.ChatCompletionsPath)}' " +
+                        $"failed with HTTP {(int)response.StatusCode} {response.StatusCode}: {errorBody}");
+                }
 
                 var payload = await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(JsonOptions, cancellationToken);
                 var content = payload?.Choices?.Count > 0 ? payload.Choices[0].Message?.Content : null;
@@ -73,12 +101,12 @@ namespace Infrastructure.Services.AI
 
                 return content.Trim();
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex) when (ex is not OperationCanceledException and not InvalidOperationException)
             {
                 _logger.LogError(ex, "MedGemma chat-completion call failed against {BaseUrl}{Path}", _options.BaseUrl, _options.ChatCompletionsPath);
-            throw new InvalidOperationException(
+                throw new InvalidOperationException(
                     $"Unable to reach the AI model at '{_options.BaseUrl}{_options.ChatCompletionsPath}'. " +
-                    "Verify the AI:BaseUrl setting and that the model server is running.", ex);
+                    $"Verify the AI:BaseUrl setting and network connectivity. Underlying error: {ex.Message}", ex);
             }
         }
 
@@ -92,8 +120,18 @@ namespace Infrastructure.Services.AI
 
             try
             {
-                using var response = await _httpClient.PostAsJsonAsync(_options.EmbeddingsPath, request, JsonOptions, cancellationToken);
-                response.EnsureSuccessStatusCode();
+                using var response = await _httpClient.PostAsJsonAsync(NormalizeRelativePath(_options.EmbeddingsPath), request, JsonOptions, cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                    _logger.LogError(
+                        "MedGemma embeddings call failed against {BaseUrl}{Path} with status {StatusCode}: {Body}",
+                        _options.BaseUrl, _options.EmbeddingsPath, (int)response.StatusCode, errorBody);
+                    throw new InvalidOperationException(
+                        $"Embedding model call to '{_httpClient.BaseAddress}{NormalizeRelativePath(_options.EmbeddingsPath)}' " +
+                        $"failed with HTTP {(int)response.StatusCode} {response.StatusCode}: {errorBody}");
+                }
 
                 var payload = await response.Content.ReadFromJsonAsync<EmbeddingResponse>(JsonOptions, cancellationToken);
                 var vector = payload?.Data?.Count > 0 ? payload.Data[0].Embedding : null;
@@ -103,12 +141,12 @@ namespace Infrastructure.Services.AI
 
                 return vector;
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex) when (ex is not OperationCanceledException and not InvalidOperationException)
             {
                 _logger.LogError(ex, "MedGemma embeddings call failed against {BaseUrl}{Path}", _options.BaseUrl, _options.EmbeddingsPath);
                 throw new InvalidOperationException(
                     $"Unable to reach the embedding model at '{_options.BaseUrl}{_options.EmbeddingsPath}'. " +
-                    "Verify the AI:EmbeddingModel setting and that the model server is running.", ex);
+                    $"Verify the AI:EmbeddingModel setting and network connectivity. Underlying error: {ex.Message}", ex);
             }
         }
 

@@ -6,7 +6,7 @@ namespace Application.DTOs.Patient
     {
         public int Id { get; set; }
            
-        public int NationalId { get; set; }
+        public string NationalId { get; set; }
         public string FirstName { get; set; } = string.Empty;
 
         public string LastName { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ namespace Application.DTOs.Patient
 
         public Gender Gender { get; set; }
 
-        public int MobileNumber { get; set; }
+        public string MobileNumber { get; set; }
 
         public string Address { get; set; } = string.Empty;
 

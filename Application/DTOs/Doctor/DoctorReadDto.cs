@@ -27,6 +27,7 @@ namespace Application.DTOs.Doctor
         public int DepartmentId { get; set; }
 
         public string? DepartmentName { get; set; }
+        public string? photoUrl;
 
     }
 }

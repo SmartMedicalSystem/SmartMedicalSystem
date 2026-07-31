@@ -3,7 +3,7 @@ using Domain.Identity;
 using Domain.IRepository;
 using Infrastructure.Context;
 using Infrastructure.Services;
-using Microsoft.AspNet.Identity;
+//using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 
 namespace Infrastructure.Repository
 {
-    public class PersonGenericRepo<T> : GenericRepository<BasePerson>, IPersonGenericRepo 
+    public class PersonGenericRepo<T> : GenericRepository<BasePerson>, IPersonGenericRepo
     {
         private readonly NationalIDEncryptionService _encryptionService;
         protected readonly ApplicationDbContext _context;
@@ -38,7 +38,7 @@ namespace Infrastructure.Repository
             await _context.AddAsync(person);
             await _context.SaveChangesAsync();
 
-         
+
         }
 
         public async Task UpdateSSNAsync(BasePerson person, string ssn)
@@ -49,8 +49,13 @@ namespace Infrastructure.Repository
             await _context.SaveChangesAsync();
         }
 
-      
+        public async Task<BasePerson?> FindByIdAsync(int id)
+        {
+            return await _context.BasePersons
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        }
 
+    
     }
 
 }

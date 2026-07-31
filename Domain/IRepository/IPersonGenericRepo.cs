@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Person;
 using Domain.Identity;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace Domain.IRepository
@@ -10,6 +11,7 @@ namespace Domain.IRepository
         Task AddPerson(string ssn, BasePerson person);
         Task UpdateSSNAsync(BasePerson person, string ssn);
 
+        Task<BasePerson?> FindByIdAsync(int id);
 
 
 

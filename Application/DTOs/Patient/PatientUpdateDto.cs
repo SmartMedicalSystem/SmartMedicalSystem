@@ -8,12 +8,12 @@ namespace Application.DTOs.Patient
 
         public string LastName { get; set; } = string.Empty;
 
-        public int NationalId { get; set; }
+        public string NationalId { get; set; }
         public DateTime DateOfBirth { get; set; }
 
         public Gender Gender { get; set; }
 
-        public int MobileNumber { get; set; }
+        public string MobileNumber { get; set; }
 
         public string Address { get; set; } = string.Empty;
 
