@@ -1,12 +1,10 @@
 ﻿using Domain.Enums;
-using System;
 
 namespace Application.DTOs.Profile
 {
     public class ProfileReadDto
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
 
         // Personal Information
         public string FirstName { get; set; } = null!;
@@ -15,12 +13,12 @@ namespace Application.DTOs.Profile
         public Gender Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Nationality { get; set; } = null!;
-        public string NationalId { get; set; } = null!;
-        public string? ProfilePictureUrl { get; set; }
+        public string nationalId { get; set; } = null!;
+        public string? photoUrl { get; set; }
 
         // Professional Information
-        public string EmployeeId { get; set; } = null!;
-        public string AssignedLaboratory { get; set; } = null!;
+        public int? laboratoryId { get; set; }
+        public string? AssignedLaboratory { get; set; }
         public string JobTitle { get; set; } = null!;
         public int YearsOfExperience { get; set; }
         public ProfileStatus Status { get; set; }

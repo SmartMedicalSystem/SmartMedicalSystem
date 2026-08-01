@@ -8,8 +8,12 @@ using Infrastructure.Services;
 using Infrastructure.Services.EmailService;
 using MEDSYstemITI.Hubs;
 using MEDSYstemITI.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using ModelContextProtocol.Server;
+using Microsoft.OpenApi;
+
+
+
 using Serilog;
 using Serilog.Events;
 
@@ -108,7 +112,30 @@ namespace MEDSYstemITI
             // =========================================================
 
             builder.Services.AddOpenApi();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "My API",
+                    Version = "v1"
+                });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "Enter JWT token only (without 'Bearer ').",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT"
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                });
+            });
 
 
 
@@ -198,10 +225,10 @@ namespace MEDSYstemITI
 
             //if (app.Environment.IsDevelopment())
             //{
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
-                app.MapOpenApi();
+            app.MapOpenApi();
             //}
 
             app.UseStaticFiles();

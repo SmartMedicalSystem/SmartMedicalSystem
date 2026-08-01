@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260730140125_initial")]
+    [Migration("20260801181026_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -481,6 +481,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<bool>("ReceiveNotifications")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

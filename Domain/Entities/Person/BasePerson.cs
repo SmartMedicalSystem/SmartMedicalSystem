@@ -1,5 +1,4 @@
 using Domain.Common;
-using Domain.Entities;
 using Domain.Enums;
 using Domain.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -80,7 +79,7 @@ public abstract class BasePerson : BaseEntity
     public bool AccountActive { get; set; }
 
     public bool ReceiveNotifications { get; set; }
-
+    public ProfileStatus Status { get; set; } = ProfileStatus.Active;
     public string? PhotoUrl { get; set; }
 
     protected BasePerson() { }

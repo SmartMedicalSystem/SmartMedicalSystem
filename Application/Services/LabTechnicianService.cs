@@ -43,7 +43,6 @@ namespace Application.Services
             entity.DateOfBirth = dto.DateOfBirth;
             entity.Nationality = dto.Nationality;
 
-            entity.LaboratoryId = dto.LaboratoryId;
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;
             entity.WorkShift = dto.WorkShift;
@@ -132,21 +131,21 @@ namespace Application.Services
             await _uow.PersonGeneric.AddPerson(EncryptedNationalId, entity);
 
             var user = await _authService.CreateUserAsync(new CreateUserRequestDto
-             {
-                 FirstName = entity.FirstName,
-                 LastName = entity.LastName,
-                 Email = entity.Email,
-                 PhoneNumber = entity.PhoneNumber,
-                 Username = entity.Username,
-                 Password = dto.Password,
-                 Role = Roles.LabTechnician.ToString(),
-                 PersonId = entity.Id
-             });
+            {
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                PhoneNumber = entity.PhoneNumber,
+                Username = entity.Username,
+                Password = dto.Password,
+                Role = Roles.LabTechnician.ToString(),
+                PersonId = entity.Id
+            });
 
             return _mapper.Map<LabTechnicianReadDto>(entity);
         }
 
-        public async Task<LabTechnicianReadDto> UpdateAsync(   string nationalId, LabTechnicianUpdateDto dto)
+        public async Task<LabTechnicianReadDto> UpdateAsync(string nationalId, LabTechnicianUpdateDto dto)
         {
             var entity = await _uow.LabTechnicians.GetByNationalIdAsync(nationalId)
                 ?? throw new NotFoundException("LabTechnician", nationalId);
@@ -176,7 +175,6 @@ namespace Application.Services
             entity.EncryptedNationalId = dto.NationalId;
 
             // Employment Information
-            entity.LaboratoryId = dto.LaboratoryId;
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;
             entity.WorkShift = dto.WorkShift;

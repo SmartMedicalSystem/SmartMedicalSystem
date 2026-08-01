@@ -18,7 +18,7 @@ namespace Domain.Entities
             PhoneNumber = Guard.NotNullOrWhiteSpace(contact, nameof(contact), 50);
         }
 
-   
+
         // Compatibility fields used by services
         public string Username { get; set; } = string.Empty;
 
@@ -42,6 +42,6 @@ namespace Domain.Entities
                 laboratoryId,
                 nameof(laboratoryId));
         }
-       
+
     }
 }

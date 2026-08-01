@@ -479,6 +479,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("ReceiveNotifications")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
