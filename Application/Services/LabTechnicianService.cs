@@ -2,6 +2,7 @@ using Application.Common;
 using Application.DTOs.Auth;
 using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
+using Application.DTOs.User;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using AutoMapper;
@@ -18,16 +19,16 @@ namespace Application.Services
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
-        private readonly IAuthService _authService;
+        private readonly IUserService _userService;
 
         public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo,
-            IMapper mapper, IFileStorageService fileStorageService, IAuthService authService)
+            IMapper mapper, IFileStorageService fileStorageService, IUserService userService)
         {
             _uow = uow;
             _personRepo = personRepo;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
-            _authService = authService;
+            _userService = userService;
         }
 
         // Compatibility overloads for id-based operations
@@ -131,7 +132,7 @@ namespace Application.Services
 
             await _uow.PersonGeneric.AddPerson(EncryptedNationalId, entity);
 
-            var user = await _authService.CreateUserAsync(new CreateUserRequestDto
+            var user = await _userService.CreateUserAsync(new CreateUserRequestDto
              {
                  FirstName = entity.FirstName,
                  LastName = entity.LastName,

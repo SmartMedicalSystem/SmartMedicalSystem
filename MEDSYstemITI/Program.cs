@@ -198,10 +198,10 @@ namespace MEDSYstemITI
 
             //if (app.Environment.IsDevelopment())
             //{
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
-                app.MapOpenApi();
+            app.MapOpenApi();
             //}
 
             app.UseStaticFiles();

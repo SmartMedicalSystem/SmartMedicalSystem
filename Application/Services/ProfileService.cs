@@ -25,12 +25,12 @@ namespace Application.Services
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly IUserService _currentUserService;
 
         private readonly ILogger<ProfileService> _logger;
 
         public ProfileService(IUnitOfWork uow, IMapper mapper, IFileStorageService fileStorageService,
-            ICurrentUserService currentUserService, ILogger<ProfileService> logger)
+            IUserService currentUserService, ILogger<ProfileService> logger)
         {
             _uow = uow;
             _mapper = mapper;

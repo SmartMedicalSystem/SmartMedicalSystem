@@ -28,116 +28,6 @@ public class AuthService : IAuthService
         _uow = uow;
     }
 
-    public async Task<AuthResponseDto> CreateUserAsync(CreateUserRequestDto request)
-    {
-        _logger.LogInformation(
-            "Admin is attempting to create user {Username} with role {Role}",
-            request.Username,
-            request.Role);
-
-        if (string.IsNullOrWhiteSpace(request.Role))
-        {
-            _logger.LogWarning(
-                "Registration failed: role is missing for {Username}",
-                request.Username);
-
-            throw new ValidationException(
-                "Role is required.",
-                new[] { new Application.Common.Models.ErrorDetail { Field = "role", Message = "ROLE_REQUIRED" } });
-        }
-
-        if (!Enum.TryParse<Roles>(
-                request.Role,
-                true,
-                out var requestedRole))
-        {
-            _logger.LogWarning(
-                "Creating user failed: invalid role {Role}",
-                request.Role);
-
-            throw new ValidationException(
-                "Invalid role.",
-                new[] { new Application.Common.Models.ErrorDetail { Field = "role", Message = "INVALID_ROLE" } });
-        }
-
-        if (await _memberRepo.IsValidUsernameAsync(request.Username) != null)
-        {
-            _logger.LogWarning(
-                "Creating user failed: username exists {Username}",
-                request.Username);
-
-            throw new ConflictException(
-                "Username already exists.",
-                "USERNAME_ALREADY_EXISTS");
-        }
-
-        if (await _memberRepo.IsValidEmailAsync(request.Email) != null)
-        {
-            _logger.LogWarning(
-                "Creating user failed: email exists {Email}",
-                request.Email);
-
-            throw new ConflictException(
-                "Email already exists.",
-                "EMAIL_ALREADY_EXISTS");
-        }
-
-        var user = new ApplicationUser
-        {
-            FullName = $"{request.FirstName} {request.LastName}",
-            UserName = request.Username,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
-            EmailConfirmed = true,
-            PersonId = request.PersonId,
-        };
-
-
-        var result = await _memberRepo.RegisterAsync(
-            user,
-            request.Password);
-
-        if (!result.Succeeded)
-        {
-            var errorDetails = result.Errors.Select(e => new Application.Common.Models.ErrorDetail { Message = e.Description });
-
-            _logger.LogWarning(
-                "Registration failed for {Username}: {Errors}",
-                request.Username,
-                string.Join(", ", result.Errors.Select(e => e.Description)));
-
-            throw new ValidationException(
-                "Password validation failed.",
-                errorDetails);
-        }
-
-        var roleAdded = await _memberRepo.AddRoleAsync(
-            user,
-            requestedRole.ToString());
-
-        if (!roleAdded)
-        {
-            _logger.LogError(
-                "User {Username} was created but role {Role} could not be assigned",
-                user.UserName,
-                requestedRole);
-
-            throw new InternalServerException(
-                "User was created but role assignment failed.",
-                "ROLE_ASSIGNMENT_FAILED");
-        }
-
-        _logger.LogInformation(
-            "User registered successfully {Username} with role {Role}",
-            user.UserName,
-            requestedRole);
-
-        return await CreateAuthResponseAsync(
-            user,
-            requestedRole.ToString(),
-            "User registered successfully");
-    }
-
     //login method
     public async Task<AuthResponseDto> LoginAsync( LoginRequestDto request)
     {
@@ -200,7 +90,7 @@ public class AuthService : IAuthService
             "Login successful");
     }
 
-    private async Task<AuthResponseDto> CreateAuthResponseAsync(ApplicationUser user,string role, string message)
+    public async Task<AuthResponseDto> CreateAuthResponseAsync(ApplicationUser user,string role, string message)
     {
         if (string.IsNullOrWhiteSpace(user.UserName))
         {
@@ -263,8 +153,7 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<AuthResponseDto> RefreshTokenAsync(
-        RefreshTokenRequestDto request)
+    public async Task<AuthResponseDto> RefreshTokenAsync( RefreshTokenRequestDto request)
     {
         _logger.LogInformation(
             "Refresh token attempt");

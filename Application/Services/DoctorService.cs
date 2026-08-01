@@ -1,6 +1,7 @@
 using Application.Common;
 using Application.DTOs.Auth;
 using Application.DTOs.Doctor;
+using Application.DTOs.User;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.Auth;
 using AutoMapper;
@@ -16,17 +17,17 @@ namespace Application.Services
     public class DoctorService : IDoctorService
     {
         private readonly IUnitOfWork _uow;
-        private readonly IAuthService? _authService;
+        private readonly IUserService? _userService;
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IFileStorageService _fileStorageService;
         private readonly IMapper _mapper;
 
 
-        public DoctorService(IUnitOfWork uow, IAuthService? authService, 
+        public DoctorService(IUnitOfWork uow, IUserService? userService, 
             Domain.IRepository.IPersonGenericRepo personRepo, IFileStorageService fileStorageService, IMapper mapper)
         {
             _uow = uow;
-            _authService = authService;
+            _userService = userService;
             _personRepo = personRepo;
             _fileStorageService = fileStorageService;
             _mapper = mapper;
@@ -103,7 +104,7 @@ namespace Application.Services
             var EncryptedNationalId = dto.NationalId;
             await _uow.PersonGeneric.AddPerson(EncryptedNationalId, entity);
 
-            var user = await _authService.CreateUserAsync(
+            var user = await _userService.CreateUserAsync(
                 new CreateUserRequestDto
                 {
                     FirstName = entity.FirstName,
