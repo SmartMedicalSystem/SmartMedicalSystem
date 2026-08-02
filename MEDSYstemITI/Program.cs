@@ -76,10 +76,6 @@ namespace MEDSYstemITI
             // =========================================================
 
             builder.Services.AddControllers()
-                .AddFluentValidationAutoValidation(options =>
-                {
-                    options.DisableDataAnnotationsValidation = true;
-                })
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = context =>
@@ -113,6 +109,12 @@ namespace MEDSYstemITI
                         return new BadRequestObjectResult(response);
                     };
                 });
+
+            // Configure FluentValidation auto-validation on the service collection (extension expects IServiceCollection)
+            builder.Services.AddFluentValidationAutoValidation(options =>
+            {
+                options.DisableDataAnnotationsValidation = true;
+            });
 
             builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequestDtoValidator>();
 
