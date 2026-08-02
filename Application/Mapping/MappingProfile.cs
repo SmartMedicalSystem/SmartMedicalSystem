@@ -1,8 +1,6 @@
-using Application.DTOs.Department;
 using Application.DTOs.Doctor;
 using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
-using Application.DTOs.LabTest;
 using Application.DTOs.Patient;
 using Application.DTOs.Profile;
 using Application.DTOs.User;
@@ -44,6 +42,9 @@ namespace Application.Mapping
     {
         public MappingProfile()
         {
+            // Convert DateOnly -> DateTime when mapping entity fields (e.g. JoiningDate)
+            CreateMap<DateOnly, DateTime>().ConvertUsing(d => d.ToDateTime(new TimeOnly(0, 0)));
+
             CreateMap<DomainEntities.Department, DeptDto.DepartmentReadDto>();
             CreateMap<DeptDto.DepartmentCreateDto, DomainEntities.Department>();
             CreateMap<DeptDto.DepartmentUpdateDto, DomainEntities.Department>();
@@ -70,7 +71,7 @@ namespace Application.Mapping
             CreateMap<DoctorDto.DoctorCreateDto, DomainEntities.Doctor>();
             CreateMap<DoctorDto.DoctorUpdateDto, DomainEntities.Doctor>();
 
-          
+
             CreateMap<Patient, PatientReadDto>()
     .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.EncryptedNationalId))
     .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.PhoneNumber));
@@ -110,7 +111,7 @@ namespace Application.Mapping
 
 
 
-            CreateMap<DomainEntities.LabTechnician, LabTechnicianDto.LabTechnicianReadDto>();
+
             CreateMap<LabTechnicianDto.LabTechnicianCreateDto, DomainEntities.LabTechnician>();
 
             CreateMap<LabTechnician, TechnicianBriefDto>()
@@ -127,9 +128,33 @@ namespace Application.Mapping
 
             CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
 
+            CreateMap<LabTechnician, LabTechnicianReadDto>()
+    .ForMember(
+        dest => dest.NationalId,
+        opt => opt.MapFrom(src => src.EncryptedNationalId))
+    .ForMember(
+        dest => dest.AssignedLaboratory,
+        opt => opt.MapFrom(src =>
+            src.Laboratory != null
+                ? src.Laboratory.Name
+                : null));
 
-            CreateMap<LabTechnician, LabTechnicianReadDto>().ForMember(dest => dest.NationalId, 
-                opt => opt.MapFrom(src => src.EncryptedNationalId));
+            CreateMap<LabTechnicianDto.LabTechnicianCreateDto, DomainEntities.LabTechnician>();
+
+            CreateMap<LabTechnician, TechnicianBriefDto>()
+                .ForMember(
+                    dest => dest.Name,
+                    opt => opt.MapFrom(src =>
+                        $"{src.FirstName} {src.LastName}".Trim()))
+                .ForMember(
+                    dest => dest.LaboratoryName,
+                    opt => opt.MapFrom(src =>
+                        src.Laboratory != null
+                            ? src.Laboratory.Name
+                            : null));
+
+            CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
+
 
             CreateMap<DomainEntities.PatientResult, PatientResultDto.PatientResultReadDto>();
             CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
@@ -137,10 +162,30 @@ namespace Application.Mapping
             CreateMap<PatientResultDto.PatientResultUpdateDto, DomainEntities.PatientResult>();
 
             CreateMap<Domain.Identity.ApplicationUser, UserReadDto>();
-            CreateMap<Domain.Identity.ApplicationUser, ProfileReadDto>();
-            CreateMap<BasePerson, ProfileReadDto>();
-            CreateMap<Doctor, ProfileReadDto>();
-            CreateMap<LabTechnician, ProfileReadDto>();
+            CreateMap<Domain.Identity.ApplicationUser, ProfileReadDto>()
+                .ForMember(d => d.nationalId, opt => opt.MapFrom(s => s.Person != null ? s.Person.EncryptedNationalId : null))
+                .ForMember(d => d.laboratoryId, opt => opt.MapFrom(s => (s.Person as DomainEntities.LabTechnician) != null ? ((DomainEntities.LabTechnician)s.Person).LaboratoryId : (int?)null))
+                .ForMember(d => d.AssignedLaboratory, opt => opt.MapFrom(s =>
+                    (s.Person as DomainEntities.LabTechnician) != null
+                        ? (((DomainEntities.LabTechnician)s.Person).Laboratory != null
+                            ? ((DomainEntities.LabTechnician)s.Person).Laboratory.Name
+                            : null)
+                        : null));
+
+            CreateMap<BasePerson, ProfileReadDto>()
+                .ForMember(d => d.nationalId, opt => opt.MapFrom(s => s.EncryptedNationalId))
+                .ForMember(d => d.laboratoryId, opt => opt.MapFrom(s => (int?)null))
+                .ForMember(d => d.AssignedLaboratory, opt => opt.MapFrom(s => (string?)null));
+
+            CreateMap<Doctor, ProfileReadDto>()
+                .ForMember(d => d.nationalId, opt => opt.MapFrom(s => s.EncryptedNationalId))
+                .ForMember(d => d.laboratoryId, opt => opt.MapFrom(s => (int?)null))
+                .ForMember(d => d.AssignedLaboratory, opt => opt.MapFrom(s => (string?)null));
+
+            CreateMap<LabTechnician, ProfileReadDto>()
+                .ForMember(d => d.nationalId, opt => opt.MapFrom(s => s.EncryptedNationalId))
+                .ForMember(d => d.laboratoryId, opt => opt.MapFrom(s => s.LaboratoryId))
+                .ForMember(d => d.AssignedLaboratory, opt => opt.MapFrom(s => s.Laboratory != null ? s.Laboratory.Name : null));
 
 
             CreateMap<DomainEntities.PatientResultElement, PatientResultElementDto.PatientResultElementReadDto>();

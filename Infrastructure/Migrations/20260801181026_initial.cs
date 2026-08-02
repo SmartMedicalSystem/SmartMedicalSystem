@@ -60,6 +60,7 @@ namespace Infrastructure.Migrations
                     AllowLogin = table.Column<bool>(type: "bit", nullable: false),
                     AccountActive = table.Column<bool>(type: "bit", nullable: false),
                     ReceiveNotifications = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     PhotoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),

@@ -1,22 +1,10 @@
 ﻿using Application.Common;
-using Application.DTOs.Auth;
-using Application.DTOs.LabTechnician;
 using Application.DTOs.Profile;
 using Application.DTOs.User;
 using Application.Services.Abstraction;
 using AutoMapper;
-using Domain.Common;
-using Domain.Entities.Person;
-using Domain.Enums;
-using Domain.Identity;
 using Domain.IRepository;
-using Domain.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -43,14 +31,15 @@ namespace Application.Services
         public async Task<ProfileReadDto> GetByIdAsync(string id)
         {
             var entity = await _uow.Profiles.GetByIdAsync(int.Parse(id))
-           ?? throw new NotFoundException("Profile", id);
+    ?? throw new NotFoundException("Profile", id);
 
+            Console.WriteLine($"Entity Status = {entity.Status}");
 
-            //check if the personId from token matches the entity's personId  // extra security layer to ensure that the user can only access their own profile
-            await CheckPersonFromToken(int.Parse(id));
-            
+            var dto = _mapper.Map<ProfileReadDto>(entity);
 
-            return _mapper.Map<ProfileReadDto>(entity);
+            Console.WriteLine($"DTO Status = {dto.Status}");
+
+            return dto;
         }
 
         public async Task<ProfileReadDto> UpdatePublicInfoAsync(int id, ProfileUpdateDto dto)
@@ -119,7 +108,7 @@ namespace Application.Services
                 user.Email = dto.Email;
 
 
-           
+
 
 
             var result = await _uow.UserGeneric.UpdateUserAsync(user);
@@ -155,7 +144,7 @@ namespace Application.Services
             {
                 var errorDetails = result.Errors.Select(e => new Application.Common.Models.ErrorDetail { Message = e.Description });
 
-             
+
 
                 throw new ValidationException(
                     "Password validation failed.",
@@ -173,13 +162,13 @@ namespace Application.Services
         {
             var id = _currentUserService.BasePersonId;
 
-            if(id != personId)
+            if (id != personId)
             {
                 throw new UnauthorizedAccessException(
                     "You are not authorized to access this resource.");
             }
         }
 
-     
+
     }
 }

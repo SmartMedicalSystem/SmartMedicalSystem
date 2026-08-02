@@ -20,10 +20,7 @@ namespace Application.DTOs.LabTechnician
         public string NationalId { get; set; } = null!;
 
         // Employment
-
-        
-
-        public int LaboratoryId { get; set; }
+        public string? AssignedLaboratory { get; set; }
 
         public string JobTitle { get; set; } = null!;
 
