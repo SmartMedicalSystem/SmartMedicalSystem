@@ -8,6 +8,9 @@ using Infrastructure.Services;
 using Infrastructure.Services.EmailService;
 using MEDSYstemITI.Hubs;
 using MEDSYstemITI.Middleware;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Application.Validators.User;
 using Microsoft.AspNetCore.Mvc;
 using ModelContextProtocol.Server;
 using Serilog;
@@ -69,6 +72,10 @@ namespace MEDSYstemITI
             // =========================================================
 
             builder.Services.AddControllers()
+                .AddFluentValidationAutoValidation(options =>
+                {
+                    options.DisableDataAnnotationsValidation = true;
+                })
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = context =>
@@ -102,6 +109,8 @@ namespace MEDSYstemITI
                         return new BadRequestObjectResult(response);
                     };
                 });
+
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequestDtoValidator>();
 
             // =========================================================
             // OpenAPI / Swagger
