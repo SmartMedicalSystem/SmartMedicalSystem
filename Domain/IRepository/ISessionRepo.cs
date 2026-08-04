@@ -12,6 +12,7 @@ namespace Domain.IRepository
         Task<IEnumerable<Session>> GetByDoctorAsync(int doctorId);
         Task<IEnumerable<Session>> GetByDepartmentAsync(int departmentId);
         Task<Session?> GetWithDetailsAsync(int id);
+        Task<Session?> GetWithDoctorUserAsync(int sessionId);
 
         // Entity-specific reads with Pagination
         Task<PaginatedResult<Session>> GetByPatientPaginatedAsync(int patientId, PaginationParams pagination);
