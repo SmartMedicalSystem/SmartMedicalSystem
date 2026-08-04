@@ -17,13 +17,12 @@ namespace Application.Services
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
         private readonly IPatientResultAIService? _patientResultAIService;
-        private readonly INotificationService _notificationService;
-        public PatientResultService(IUnitOfWork uow, IMapper mapper, IPatientResultAIService? patientResultAIService = null, INotificationService notificationService = null    )
+
+        public PatientResultService(IUnitOfWork uow, IMapper mapper, IPatientResultAIService? patientResultAIService = null)
         {
             _uow = uow;
             _mapper = mapper;
             _patientResultAIService = patientResultAIService;
-            _notificationService = notificationService;
         }
 
         public Task<PatientResultAIAnalysisDto> GenerateAIAnalysisAsync(int id, CancellationToken cancellationToken = default)
@@ -35,27 +34,14 @@ namespace Application.Services
 
         public async Task<PatientResultReadDto> CreateAsync(PatientResultCreateDto dto)
         {
-            _ = await _uow.Patients.GetByIdAsync(dto.PatientId)
-    ?? throw new NotFoundException("Patient", dto.PatientId);
+            _ = await _uow.Patients.GetByIdAsync(dto.PatientId) ?? throw new NotFoundException("Patient", dto.PatientId);
+            _ = await _uow.Sessions.GetByIdAsync(dto.SessionId) ?? throw new NotFoundException("Session", dto.SessionId);
+            _ = await _uow.LabTests.GetByIdAsync(dto.LabTestId) ?? throw new NotFoundException("LabTest", dto.LabTestId);
 
-            var session = await _uow.Sessions.GetWithDoctorUserAsync(dto.SessionId)
-                ?? throw new NotFoundException("Session", dto.SessionId);
-
-            _ = await _uow.LabTests.GetByIdAsync(dto.LabTestId)
-                ?? throw new NotFoundException("LabTest", dto.LabTestId);
             var entity = new Domain.Entities.PatientResult(
                 dto.PatientId, dto.SessionId, dto.LabTestId, dto.Summary, dto.AIClassifiedReport, dto.AISuggestion);
 
             await _uow.PatientResults.AddAsync(entity);
-            await _uow.SaveChangesAsync();
-
-            if (session.Doctor.User != null)
-            {
-                await _notificationService.SendToUserAsync(
-                    session.Doctor.User.Id,
-                    "Lab Result Ready",
-                    $"The laboratory result for patient {session.Patient.FullName} is now available.");
-            }
             return _mapper.Map<PatientResultReadDto>(entity);
         }
 

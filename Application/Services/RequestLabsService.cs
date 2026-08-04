@@ -14,46 +14,34 @@ namespace Application.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly INotificationService _notificationService;
 
-        public RequestLabsService(IUnitOfWork uow, IMapper mapper, INotificationService notificationService)
+        public RequestLabsService(IUnitOfWork uow, IMapper mapper)
         {
             _uow = uow;
             _mapper = mapper;
-            _notificationService = notificationService;
         }
 
         public async Task<RequestLabsReadDto> CreateAsync(RequestLabsCreateDto dto)
         {
-            var session = await _uow.Sessions.GetByIdAsync(dto.SessionId)
+            _ = await _uow.Sessions.GetByIdAsync(dto.SessionId)
                 ?? throw new NotFoundException("Session", dto.SessionId);
 
             if (dto.LabTestIds is null || dto.LabTestIds.Count == 0)
-                throw new ArgumentException("At least one lab test must be requested.");
+                throw new System.ArgumentException("At least one lab test must be requested.");
 
-            var entity = new Domain.Entities.RequestLabs(
-                dto.SessionId,
-                dto.RequestedAt,
-                dto.Priority);
+            var entity = new Domain.Entities.RequestLabs(dto.SessionId, dto.RequestedAt, dto.Priority);
 
             foreach (var labTestId in dto.LabTestIds.Distinct())
             {
                 var labTest = await _uow.LabTests.GetByIdAsync(labTestId)
                     ?? throw new NotFoundException("LabTest", labTestId);
-
                 entity.LabTests.Add(labTest);
             }
 
             await _uow.RequestLabs.AddAsync(entity);
-            await _uow.SaveChangesAsync();
-
-            await _notificationService.SendToRoleAsync(
-                "LabTechnician",
-                "New Laboratory Request",
-                $"A new laboratory request has been created for session #{session.Id}.");
-
             return _mapper.Map<RequestLabsReadDto>(entity);
         }
+
         public async Task<RequestLabsReadDto> UpdateStatusAsync(int id, RequestLabsUpdateStatusDto dto)
         {
             var entity = await _uow.RequestLabs.GetByIdAsync(id)

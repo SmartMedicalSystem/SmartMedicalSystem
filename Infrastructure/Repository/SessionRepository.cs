@@ -42,14 +42,7 @@ namespace Infrastructure.Repository
                 .OrderByDescending(s => s.SessionDate)
                 .ToListAsync();
         }
-        public async Task<Session?> GetWithDoctorUserAsync(int sessionId)
-        {
-            return await _context.Sessions
-                .Include(s => s.Doctor)
-                    .ThenInclude(d => d.User)
-                .Include(s => s.Patient)
-                .FirstOrDefaultAsync(s => s.Id == sessionId);
-        }
+
         /// <summary>
         /// Retrieves all sessions conducted by a specific doctor using filtering by foreign key.
         /// </summary>

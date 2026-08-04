@@ -34,21 +34,22 @@ namespace MEDSYstemITI.Service
                 message);
         }
 
-        public async Task SendToUserAsync(int userId, string title, string message)
+        public async Task SendToUserAsync(int userId, string message)
         {
+            // Save notification in database
             var notification = new Notification(
                 userId,
                 message,
                 DateTime.UtcNow);
 
             await _uow.Notifications.AddAsync(notification);
-            await _uow.SaveChangesAsync();
 
+            // Send notification via SignalR
             await _hub.Clients.User(userId.ToString())
                 .SendAsync(
                     "ReceiveNotification",
-                    title,
-                    message);
+                    notification.Message,
+                    notification.SentAt);
         }
     }
 }

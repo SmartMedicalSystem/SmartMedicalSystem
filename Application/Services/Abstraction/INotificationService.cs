@@ -10,6 +10,6 @@ namespace Domain.IRepository
 
         Task SendToRoleAsync(string role, string title, string message);
 
-        Task SendToUserAsync(int userId, string title, string message);
+        Task SendToUserAsync(int userId, string message);
     }
 }
