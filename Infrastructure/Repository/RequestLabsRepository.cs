@@ -29,6 +29,12 @@ namespace Infrastructure.Repository
         {
             return await _context.RequestLabs
                 .Where(rl => !rl.IsDeleted)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests)
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }
@@ -41,6 +47,12 @@ namespace Infrastructure.Repository
         {
             return await _context.RequestLabs
                 .Where(rl => rl.SessionId == sessionId && !rl.IsDeleted)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests)
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }
@@ -53,6 +65,12 @@ namespace Infrastructure.Repository
         {
             return await _context.RequestLabs
                 .Where(rl => rl.Status == status && !rl.IsDeleted)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests)
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }
@@ -60,16 +78,22 @@ namespace Infrastructure.Repository
         /// <summary>
         /// Retrieves a lab request with all its related lab tests.
         /// Uses INCLUDE and ThenInclude to perform JOINs with many-to-many LabTests collection.
-        /// 
+        ///
         /// Query Structure:
         /// - INCLUDE LabTests (many-to-many relationship)
-        /// 
+        ///
         /// This shows how to load all tests associated with a lab request.
         /// </summary>
         public async Task<RequestLabs?> GetWithLabTestsAsync(int id)
         {
             return await _context.RequestLabs
                 .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted)) // JOIN with LabTests and filter active ones
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests)
                 .Where(rl => rl.Id == id && !rl.IsDeleted)
                 .FirstOrDefaultAsync();
         }
@@ -96,14 +120,22 @@ namespace Infrastructure.Repository
         /// <summary>
         /// Retrieves lab requests for a specific session in paginated format.
         /// </summary>
-        public async Task<PaginatedResult<RequestLabs>> GetBySessionPaginatedAsync(int sessionId, PaginationParams pagination)
+        public async Task<PaginatedResult<RequestLabs>> GetBySessionPaginatedAsync(
+     int sessionId,
+     PaginationParams pagination)
         {
-            var totalCount = await _context.RequestLabs
+            var query = _context.RequestLabs
                 .Where(rl => rl.SessionId == sessionId && !rl.IsDeleted)
-                .CountAsync();
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests);
 
-            var items = await _context.RequestLabs
-                .Where(rl => rl.SessionId == sessionId && !rl.IsDeleted)
+            var totalCount = await query.CountAsync();
+
+            var items = await query
                 .OrderByDescending(rl => rl.RequestedAt)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
@@ -135,7 +167,7 @@ namespace Infrastructure.Repository
         {
             var query = _context.RequestLabs
                 .Include(rl => rl.Session).ThenInclude(s => s.Patient)
-                .Include(rl => rl.Session).ThenInclude(s => s.Doctor)
+                .Include(rl => rl.Session).ThenInclude(s => s.Doctor).ThenInclude(d=>d.Department)
                 .Include(rl => rl.LabTests)
                 .Where(rl => !rl.IsDeleted)
                 .AsQueryable();

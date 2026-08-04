@@ -2,7 +2,9 @@ using Application.DTOs.Doctor;
 using Application.DTOs.Laboratory;
 using Application.DTOs.LabTechnician;
 using Application.DTOs.Patient;
+using Application.DTOs.PatientResultElement;
 using Application.DTOs.Profile;
+using Application.DTOs.RequestLabs;
 using Application.DTOs.User;
 using AutoMapper;
 using Domain.Entities;
@@ -95,8 +97,30 @@ namespace Application.Mapping
 
 
 
-            CreateMap<DomainEntities.RequestLabs, RequestLabsDto.RequestLabsReadDto>()
-                .ForMember(d => d.LabTestIds, opt => opt.MapFrom(s => s.LabTests.Select(lt => lt.Id).ToList()));
+            CreateMap<RequestLabs, RequestLabsReadDto>()
+    .ForMember(d => d.PatientId,
+        o => o.MapFrom(s => s.Session.Patient.Id))
+
+    .ForMember(d => d.PatientName,
+        o => o.MapFrom(s => s.Session.Patient.FirstName + " " + s.Session.Patient.LastName))
+
+    .ForMember(d => d.PatientSSN,
+        o => o.MapFrom(s => s.Session.Patient.EncryptedNationalId))
+
+    .ForMember(d => d.PatientAge,
+        o => o.MapFrom(s => s.Session.Patient.Age))
+
+    .ForMember(d => d.DoctorId,
+        o => o.MapFrom(s => s.Session.Doctor.Id))
+
+    .ForMember(d => d.DoctorName,
+        o => o.MapFrom(s => s.Session.Doctor.FirstName + " " + s.Session.Doctor.LastName))
+
+    .ForMember(d => d.DoctorDepartment,
+        o => o.MapFrom(s => s.Session.Doctor.Department.Name))
+
+    .ForMember(d => d.LabTestIds,
+        o => o.MapFrom(s => s.LabTests.Select(x => x.Id).ToList()));
 
             CreateMap<RequestLabsDto.RequestLabsCreateDto, DomainEntities.RequestLabs>();
             CreateMap<RequestLabsDto.RequestLabsUpdateStatusDto, DomainEntities.RequestLabs>();
@@ -188,7 +212,9 @@ namespace Application.Mapping
                 .ForMember(d => d.AssignedLaboratory, opt => opt.MapFrom(s => s.Laboratory != null ? s.Laboratory.Name : null));
 
 
-            CreateMap<DomainEntities.PatientResultElement, PatientResultElementDto.PatientResultElementReadDto>();
+            CreateMap<PatientResultElement, PatientResultElementReadDto>()
+    .ForMember(d => d.TestElementName,
+        o => o.MapFrom(s => s.TestElement.ElementName));
 
 
             CreateMap<DomainEntities.LabTestElement, LabTestElementDto.LabTestElementReadDto>();
