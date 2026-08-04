@@ -16,7 +16,7 @@ namespace Application.Services
         private readonly IMapper _mapper;
         private readonly INotificationService _notificationService;
 
-        public RequestLabsService(IUnitOfWork uow, IMapper mapper , INotificationService notificationService)
+        public RequestLabsService(IUnitOfWork uow, IMapper mapper, INotificationService notificationService)
         {
             _uow = uow;
             _mapper = mapper;
