@@ -37,7 +37,8 @@ namespace Application.Services
         public async Task<PatientResultReadDto> CreateAsync(PatientResultCreateDto dto)
         {
             _ = await _uow.Patients.GetByIdAsync(dto.PatientId) ?? throw new NotFoundException("Patient", dto.PatientId);
-            var session = await _uow.Sessions.GetByIdAsync(dto.SessionId) ?? throw new NotFoundException("Session", dto.SessionId);
+            // load session with related Doctor navigation so we can notify the doctor
+            var session = await _uow.Sessions.GetWithDetailsAsync(dto.SessionId) ?? throw new NotFoundException("Session", dto.SessionId);
             _ = await _uow.LabTests.GetByIdAsync(dto.LabTestId) ?? throw new NotFoundException("LabTest", dto.LabTestId);
 
             var entity = new Domain.Entities.PatientResult(
