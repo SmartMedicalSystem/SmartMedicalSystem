@@ -170,6 +170,20 @@ namespace Infrastructure.DependenciesInjection
                         catch { }
 
                         return Task.CompletedTask;
+                    },
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/notificationHub"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
                     }
                 };
             });
@@ -201,7 +215,7 @@ namespace Infrastructure.DependenciesInjection
 
 
             services.AddScoped<Infrastructure.Middleware.LoggingActionFilter>();
-            
+
             services.AddControllers(options =>
             {
                 // global action filter to log every controller endpoint (resolve from DI)
