@@ -41,7 +41,7 @@ namespace MEDSYstemITI.Controllers
         [HasPermission(Permissions.CreateLabReport)]
         public async Task<ActionResult<PatientResultReadDto>> Create([FromBody] PatientResultCreateDto dto)
         {
-            var result = await _patientResultService.CreateAsync(dto);
+            var result = await _patientResultService.CreateAsync(dto);  
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
