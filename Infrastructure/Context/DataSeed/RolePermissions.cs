@@ -55,34 +55,38 @@ public static class RolePermissions
             },
 
             {
-                Roles.Doctor,
-                new[]
-                {
-                    Permissions.ReadLabReport,
-                    Permissions.CreateLabReport,
-                    Permissions.UpdateLabReport,
+    Roles.Doctor,
+    new[]
+    {
+        // Doctor Permissions
+        Permissions.ReadDoctor,
+        Permissions.UpdateDoctor,
 
-                    Permissions.ReadAiReport,
+        Permissions.ReadLabReport,
+        Permissions.CreateLabReport,
+        Permissions.UpdateLabReport,
 
-                    Permissions.ReadDashboard,
+        Permissions.ReadAiReport,
 
-                    Permissions.RequestLabTest,
+        Permissions.ReadDashboard,
 
-                    Permissions.ReadPatient,
-                    Permissions.CreatePatient,
-                    Permissions.UpdatePatient,
+        Permissions.RequestLabTest,
 
-                    Permissions.ReadSession,
-                    Permissions.CreateSession,
-                    Permissions.UpdateSession,
+        Permissions.ReadPatient,
+        Permissions.CreatePatient,
+        Permissions.UpdatePatient,
 
-                    Permissions.ReadLabTest,
-                    Permissions.ReadTestElement,
+        Permissions.ReadSession,
+        Permissions.CreateSession,
+        Permissions.UpdateSession,
 
-                    Permissions.ReadNotification,
-                    Permissions.CreateNotification
-                }
-            },
+        Permissions.ReadLabTest,
+        Permissions.ReadTestElement,
+
+        Permissions.ReadNotification,
+        Permissions.CreateNotification
+    }
+},
 
             {
                 Roles.LabTechnician,

@@ -17,12 +17,12 @@ namespace MEDSYstemITI.Controllers
     public class DoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
-      
+
         public DoctorsController(IDoctorService doctorService)
         {
             _doctorService = doctorService;
         }
-        
+
 
 
         [HttpGet("by-department/{departmentId:int}")]
