@@ -26,6 +26,12 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(500);
 
+
+            //builder.Property(r => r.Status)
+            //    .HasConversion<string>()
+            //    .HasMaxLength(20)
+            //    .IsRequired();
+
             // =========================
             // Laboratory Relationship
             // Laboratory 1 ---> N LabTests

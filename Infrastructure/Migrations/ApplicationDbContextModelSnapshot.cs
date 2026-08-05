@@ -492,6 +492,38 @@ namespace Infrastructure.Migrations
                     b.UseTptMappingStrategy();
                 });
 
+            modelBuilder.Entity("Domain.Entities.RequestLabTest", b =>
+                {
+                    b.Property<int>("RequestLabId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LabTestId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("RequestLabId", "LabTestId");
+
+                    b.HasIndex("LabTestId");
+
+                    b.ToTable("RequestLabTests", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.RequestLabs", b =>
                 {
                     b.Property<int>("Id")
@@ -760,21 +792,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("LabTestRequestLabs", b =>
-                {
-                    b.Property<int>("LabTestsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RequestLabsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("LabTestsId", "RequestLabsId");
-
-                    b.HasIndex("RequestLabsId");
-
-                    b.ToTable("RequestLabsLabTests", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -1072,6 +1089,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("patientResult");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RequestLabTest", b =>
+                {
+                    b.HasOne("Domain.Entities.LabTest", "LabTest")
+                        .WithMany("RequestLabTests")
+                        .HasForeignKey("LabTestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.RequestLabs", "RequestLab")
+                        .WithMany("RequestLabTests")
+                        .HasForeignKey("RequestLabId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LabTest");
+
+                    b.Navigation("RequestLab");
+                });
+
             modelBuilder.Entity("Domain.Entities.RequestLabs", b =>
                 {
                     b.HasOne("Domain.Entities.Session", "Session")
@@ -1138,21 +1174,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LabTestRequestLabs", b =>
-                {
-                    b.HasOne("Domain.Entities.LabTest", null)
-                        .WithMany()
-                        .HasForeignKey("LabTestsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.RequestLabs", null)
-                        .WithMany()
-                        .HasForeignKey("RequestLabsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -1244,6 +1265,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.LabTest", b =>
                 {
                     b.Navigation("LabTestElements");
+
+                    b.Navigation("RequestLabTests");
                 });
 
             modelBuilder.Entity("Domain.Entities.Laboratory", b =>
@@ -1261,6 +1284,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Person.BasePerson", b =>
                 {
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RequestLabs", b =>
+                {
+                    b.Navigation("RequestLabTests");
                 });
 
             modelBuilder.Entity("Domain.Entities.TestElement", b =>

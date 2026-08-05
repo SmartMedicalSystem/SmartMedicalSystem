@@ -34,6 +34,7 @@ namespace Application.DependencyInjection
             services.AddScoped<INotificationService , NotificationService>();
             services.AddScoped<INotificationAppService, NotificationAppService>();
             services.AddScoped<ILabTechnicianService, LabTechnicianService>();
+            services.AddScoped<IRequestLabTestService, RequestLabTestService>();
             services.AddScoped<IPatientResultService, PatientResultService>();
             services.AddScoped<IPatientResultElementService, PatientResultElementService>();
             services.AddScoped<IAuthService, AuthService>();

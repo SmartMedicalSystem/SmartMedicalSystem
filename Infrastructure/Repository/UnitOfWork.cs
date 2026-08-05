@@ -36,6 +36,7 @@ namespace Infrastructure.Repository
         private IPatientResultElementRepo? _patientResultElements;
         private IPatientRagDocumentRepo? _patientRagDocuments;
         private IRequestLabsRepo? _requestLabs;
+        private IRequestLabTestRepo? _requestLabTests;
         private ISessionRepo? _sessions;
         private ITestElementRepo? _testElements;
         private IPersonGenericRepo? _personGeneric;
@@ -95,6 +96,9 @@ namespace Infrastructure.Repository
 
         public IRequestLabsRepo RequestLabs =>
             _requestLabs ??= new RequestLabsRepository(_context);
+
+        public IRequestLabTestRepo RequestLabTests =>
+            _requestLabTests ??= new RequestLabTestRepository(_context);
 
         public ISessionRepo Sessions =>
             _sessions ??= new SessionRepository(_context);

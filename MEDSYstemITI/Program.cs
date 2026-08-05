@@ -173,15 +173,14 @@ namespace MEDSYstemITI
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(
-                    "DefaultCorsPolicy",
-                    policy =>
-                    {
-                        policy
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowAnyOrigin();
-                    });
+                options.AddPolicy("DefaultCorsPolicy", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
             });
 
             // =========================================================

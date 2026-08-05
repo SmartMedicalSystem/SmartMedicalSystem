@@ -1,4 +1,6 @@
+using Domain.Entities;
 using Domain.Enums;
+using Application.DTOs.RequestLabTests;
 
 namespace Application.DTOs.RequestLabs
 {
@@ -25,6 +27,7 @@ namespace Application.DTOs.RequestLabs
 
         // Requested lab tests details
         public List<Application.DTOs.LabTest.LabTestReadDto> LabTests { get; set; } = new();
+        public ICollection<RequestLabTestReadDto> RequestLabTests { get; set; } = new List<RequestLabTestReadDto>();
         public List<int> LabTestIds { get; set; }
     }
 }

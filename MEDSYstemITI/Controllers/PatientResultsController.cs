@@ -21,7 +21,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet("by-patient/{patientId:int}")]
-        [HasPermission(Permissions.ReadLabReport)]
+        //[HasPermission(Permissions.ReadLabReport)]
         public async Task<ActionResult<PaginatedResult<PatientResultReadDto>>> GetByPatient(
             int patientId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -38,7 +38,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPost]
-        [HasPermission(Permissions.CreateLabReport)]
+        //[HasPermission(Permissions.CreateLabReport)]
         public async Task<ActionResult<PatientResultReadDto>> Create([FromBody] PatientResultCreateDto dto)
         {
             var result = await _patientResultService.CreateAsync(dto);  
@@ -46,7 +46,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [HasPermission(Permissions.UpdateLabReport)]
+        //[HasPermission(Permissions.UpdateLabReport)]
         public async Task<ActionResult<PatientResultReadDto>> Update(int id, [FromBody] PatientResultUpdateDto dto)
         {
             var result = await _patientResultService.UpdateAsync(id, dto);

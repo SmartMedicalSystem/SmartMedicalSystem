@@ -14,7 +14,7 @@ namespace Application.DTOs.Doctor
 
         public string Email { get; set; } = string.Empty;
 
-        public int MobileNumber { get; set; }
+        public string MobileNumber { get; set; } = string.Empty;
 
         public string Address { get; set; } = string.Empty;
 
@@ -23,5 +23,11 @@ namespace Application.DTOs.Doctor
         public string NationalId { get; set; }
 
         public int DepartmentId { get; set; }
+
+        public string City { get; set; } = string.Empty;
+
+        public string Country { get; set; } = string.Empty;
+
+        public string? PostalCode { get; set; } 
     }
 }

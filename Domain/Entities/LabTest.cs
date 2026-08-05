@@ -1,19 +1,27 @@
 using System.Collections.Generic;
+using Domain.Enums;
 using Domain.Common;
 
 namespace Domain.Entities
 {
     public class LabTest : BaseEntity
     {
-        public string TestName { get;  set; } = null!;
+        public string TestName { get; set; } = null!;
 
-        public string Description { get;  set; } = null!;
+        //public LabTestStatus Status { get; set; } = LabTestStatus.Pending;
+
+        public string Description { get; set; } = null!;
         //ahmed realation with laboratory
 
         public int? LaboratoryId { get; private set; }  // ← NEW: FK to Laboratory
         public Laboratory? Laboratory { get; set; }
 
+
+
         public ICollection<LabTestElement> LabTestElements { get; } = new List<LabTestElement>();
+
+        // Relationship to RequestLabs via explicit join entity
+        public ICollection<RequestLabTest> RequestLabTests { get; set; } = new List<RequestLabTest>();
 
         private LabTest() { }
 
@@ -39,5 +47,12 @@ namespace Domain.Entities
         {
             LaboratoryId = null;
         }
+
+
+        //public void UpdateStatus(LabTestStatus status)
+        //{
+        //    Status = status;
+        //}
+
     }
 }

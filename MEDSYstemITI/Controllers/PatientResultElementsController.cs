@@ -21,7 +21,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpGet("by-patient-result/{patientResultId:int}")]
-        [HasPermission(Permissions.ReadLabReport)]
+        //[HasPermission(Permissions.ReadLabReport)]
         public async Task<ActionResult<PaginatedResult<PatientResultElementReadDto>>> GetByPatientResult(
             int patientResultId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -31,7 +31,7 @@ namespace MEDSYstemITI.Controllers
 
         /// <summary>Lab technician records a test element's measured value for a patient result.</summary>
         [HttpPost]
-        [HasPermission(Permissions.CreateLabReport)]
+        //[HasPermission(Permissions.CreateLabReport)]
         public async Task<ActionResult<PatientResultElementReadDto>> Create([FromBody] PatientResultElementCreateDto dto)
         {
             var result = await _patientResultElementService.CreateAsync(dto);
@@ -39,7 +39,7 @@ namespace MEDSYstemITI.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [HasPermission(Permissions.UpdateLabReport)]
+        //[HasPermission(Permissions.UpdateLabReport)]
         public async Task<ActionResult<PatientResultElementReadDto>> Update(int id, [FromBody] PatientResultElementUpdateDto dto)
         {
             var result = await _patientResultElementService.UpdateAsync(id, dto);

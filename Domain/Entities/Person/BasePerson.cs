@@ -107,7 +107,7 @@ public abstract class BasePerson : BaseEntity
                 nameof(dateOfBirth));
     }
 
-    public void UpdateProfile(
+    public  void UpdateProfile(
         string firstName,
         string lastName,
         DateTime dateOfBirth)
@@ -128,5 +128,38 @@ public abstract class BasePerson : BaseEntity
                     dateOfBirth,
                     nameof(dateOfBirth)),
                 nameof(dateOfBirth));
+    }
+
+
+
+    public virtual void UpdateInfo(
+        string phoneNumber,
+        string? alternativePhone,
+        string? email,
+        string address,
+        string city,
+        string country,
+        string? postalCode,
+        BloodType bloodType)
+    {
+        PhoneNumber = Guard.NotNullOrWhiteSpace(
+            phoneNumber,
+            nameof(phoneNumber),
+            20);
+        AlternativePhone = alternativePhone;
+        Email = email;
+        Address = Guard.NotNullOrWhiteSpace(
+            address,
+            nameof(address),
+            200);
+        City = Guard.NotNullOrWhiteSpace(
+            city,
+            nameof(city),
+            100);
+        Country = Guard.NotNullOrWhiteSpace(
+            country,
+            nameof(country),
+            100);
+        PostalCode = postalCode;
     }
 }

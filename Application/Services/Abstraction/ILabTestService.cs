@@ -1,4 +1,5 @@
 using Application.DTOs.LabTest;
+using Application.DTOs.RequestLabs;
 using Domain.Models;
 using System.Threading.Tasks;
 
@@ -8,6 +9,14 @@ namespace Application.Services.Abstraction
     {
         Task<LabTestReadDto> CreateAsync(LabTestCreateDto dto);
         Task<LabTestReadDto> UpdateAsync(int id, LabTestUpdateDto dto);
+
+        //Task<LabTestReadDto> UpdateStatusAsync(int id, LabTestUpdateStatusDto dto);
+
+        //Task<IEnumerable<LabTestReadDto>> GetPendingTestsAsync();
+
+        //Task<PaginatedResult<LabTestReadDto>> GetByStatusAsync(
+        //     Domain.Enums.LabTestStatus status,
+        //     PaginationParams pagination);
         Task<LabTestReadDto> GetByIdAsync(int id);
         Task<PaginatedResult<LabTestReadDto>> GetAllAsync(PaginationParams pagination);
         Task DeleteAsync(int id);

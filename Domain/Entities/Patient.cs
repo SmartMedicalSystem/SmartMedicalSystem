@@ -27,7 +27,13 @@ namespace Domain.Entities
         }
 
         // Domain fields expected by services/migrations
-      
+
+
+        public override void UpdateInfo(string phoneNumber, string? alternativePhone, string? email, string address, string city, string country, string? postalCode,BloodType bloodType)
+        {
+            base.UpdateInfo(phoneNumber, alternativePhone, email, address, city, country, postalCode , bloodType);
+         
+        }
 
         public Patient(string firstName, string lastName, DateTime dateOfBirth)
             : base(firstName, lastName, dateOfBirth)
