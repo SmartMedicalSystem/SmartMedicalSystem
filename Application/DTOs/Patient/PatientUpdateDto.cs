@@ -18,5 +18,17 @@ namespace Application.DTOs.Patient
         public string Address { get; set; } = string.Empty;
 
         public BloodType BloodType { get; set; }
+
+
+        public string? AlternativePhone { get; set; }
+
+        public string? Email { get; set; }
+
+        public string City { get; set; } = string.Empty;
+
+        public string Country { get; set; } = string.Empty;
+
+        public string? PostalCode { get; set; }
+
     }
 }

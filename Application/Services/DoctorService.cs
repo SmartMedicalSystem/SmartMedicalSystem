@@ -45,7 +45,7 @@ namespace Application.Services
             var entity = await _uow.Doctors.GetByIdAsync(id)
                 ?? throw new NotFoundException("Doctor", id);
 
-            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.Email, dto.MobileNumber, dto.Address);
+            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Gender, dto.Email, dto.MobileNumber, dto.Address , dto.City, dto.Country, dto.PostalCode );
             await _uow.Doctors.UpdateAsync(entity);
             return _mapper.Map<DoctorReadDto>(entity);
         }
@@ -136,7 +136,7 @@ namespace Application.Services
             if (person is not Domain.Entities.Doctor entity)
                 throw new NotFoundException("Doctor", ssn);
 
-            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Contact, dto.Gender, dto.Email, dto.MobileNumber, dto.Address);
+            entity.UpdateProfile(dto.Name, dto.Specialization, dto.Gender, dto.Email, dto.MobileNumber, dto.Address, dto.City, dto.Country, dto.PostalCode);
 
             // Persist changes and update encrypted SSN if NationalId changed
             await _personRepo.UpdateSSNAsync(entity, dto.NationalId.ToString());

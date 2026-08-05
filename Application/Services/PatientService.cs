@@ -106,6 +106,8 @@ namespace Application.Services
                 ?? throw new NotFoundException("Patient", id);
 
             entity.UpdateProfile(dto.FirstName, dto.LastName, dto.DateOfBirth);
+            entity.UpdateInfo(dto.MobileNumber, dto.AlternativePhone, dto.Email, dto.Address, dto.City, dto.Country, dto.PostalCode, dto.BloodType);
+
             await _uow.Patients.UpdateAsync(entity);
             return _mapper.Map<PatientReadDto>(entity);
         }
@@ -143,6 +145,7 @@ namespace Application.Services
                 ?? throw new NotFoundException("Patient", ssn);
 
             entity.UpdateProfile(dto.FirstName, dto.LastName, dto.DateOfBirth);
+            entity.UpdateInfo(dto.MobileNumber, dto.AlternativePhone, dto.Email, dto.Address, dto.City, dto.Country, dto.PostalCode, dto.BloodType);
             await _uow.Patients.UpdateAsync(entity);
             return _mapper.Map<PatientReadDto>(entity);
         }
