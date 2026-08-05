@@ -86,6 +86,7 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<IPatientResultElementRepo, PatientResultElementRepository>();
             services.AddScoped<IPatientRagDocumentRepo, PatientRagDocumentRepository>();
             services.AddScoped<IRequestLabsRepo, RequestLabsRepository>();
+            services.AddScoped<IRequestLabTestRepo, RequestLabTestRepository>();
             services.AddScoped<ISessionRepo, SessionRepository>();
             services.AddScoped<ITestElementRepo, TestElementRepository>();
             services.AddScoped<IMemberRepo, MemberRepository>();

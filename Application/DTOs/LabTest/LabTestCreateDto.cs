@@ -5,6 +5,6 @@ namespace Application.DTOs.LabTest
     {
         public string TestName { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public LabTestStatus Status { get; set; } = LabTestStatus.Pending;
+        //public LabTestStatus Status { get; set; } = LabTestStatus.Pending;
     }
 }

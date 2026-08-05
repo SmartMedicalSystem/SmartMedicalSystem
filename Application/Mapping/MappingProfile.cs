@@ -97,30 +97,57 @@ namespace Application.Mapping
 
 
 
-            CreateMap<RequestLabs, RequestLabsReadDto>()
-    .ForMember(d => d.PatientId,
-        o => o.MapFrom(s => s.Session.Patient.Id))
+                CreateMap<RequestLabs, RequestLabsReadDto>()
+        .ForMember(d => d.PatientId,
+            o => o.MapFrom(s => s.Session.Patient.Id))
 
-    .ForMember(d => d.PatientName,
-        o => o.MapFrom(s => s.Session.Patient.FirstName + " " + s.Session.Patient.LastName))
+        .ForMember(d => d.PatientName,
+            o => o.MapFrom(s => s.Session.Patient.FirstName + " " + s.Session.Patient.LastName))
 
-    .ForMember(d => d.PatientSSN,
-        o => o.MapFrom(s => s.Session.Patient.EncryptedNationalId))
+        .ForMember(d => d.PatientSSN,
+            o => o.MapFrom(s => s.Session.Patient.EncryptedNationalId))
 
-    .ForMember(d => d.PatientAge,
-        o => o.MapFrom(s => s.Session.Patient.Age))
+        .ForMember(d => d.PatientAge,
+            o => o.MapFrom(s => s.Session.Patient.Age))
 
-    .ForMember(d => d.DoctorId,
-        o => o.MapFrom(s => s.Session.Doctor.Id))
+        .ForMember(d => d.DoctorId,
+            o => o.MapFrom(s => s.Session.Doctor.Id))
 
-    .ForMember(d => d.DoctorName,
-        o => o.MapFrom(s => s.Session.Doctor.FirstName + " " + s.Session.Doctor.LastName))
+        .ForMember(d => d.DoctorName,
+            o => o.MapFrom(s => s.Session.Doctor.FirstName + " " + s.Session.Doctor.LastName))
 
-    .ForMember(d => d.DoctorDepartment,
-        o => o.MapFrom(s => s.Session.Doctor.Department.Name))
+        .ForMember(d => d.DoctorDepartment,
+            o => o.MapFrom(s => s.Session.Doctor.Department.Name))
 
+    //.ForMember(d => d.LabTestIds,
+    //    o => o.MapFrom(s => s.RequestLabTests.Select(x => x.LabTest.Id).ToList()))
+
+    //.ForMember(d => d.RequestLabTests, o => o.MapFrom(s => s.RequestLabTests));
+    // Full LabTest objects
+    .ForMember(d => d.LabTests,
+        o => o.MapFrom(s => s.RequestLabTests.Select(x => x.LabTest)))
+
+    // Only IDs
     .ForMember(d => d.LabTestIds,
-        o => o.MapFrom(s => s.LabTests.Select(x => x.Id).ToList()));
+        o => o.MapFrom(s => s.RequestLabTests.Select(x => x.LabTestId).ToList()))
+
+    // Join entity DTOs (contains Status, etc.)
+    .ForMember(d => d.RequestLabTests,
+        o => o.MapFrom(s => s.RequestLabTests));
+
+
+            // RequestLabTest mappings
+            CreateMap<DomainEntities.RequestLabTest, Application.DTOs.RequestLabTests.RequestLabTestReadDto>()
+                .ForMember(d => d.LabTestId, o => o.MapFrom(s => s.LabTestId))
+                .ForMember(d => d.LabTestName, o => o.MapFrom(s => s.LabTest.TestName))
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()))
+                .ForMember(d => d.CreatedAt, o => o.MapFrom(s => s.CreatedAt))
+                .ForMember(d => d.UpdatedAt, o => o.MapFrom(s => s.UpdatedAt));
+
+            CreateMap<DomainEntities.RequestLabTest, Application.DTOs.RequestLabTests.RequestLabTestSummaryDto>()
+                .ForMember(d => d.LabTestId, o => o.MapFrom(s => s.LabTestId))
+                .ForMember(d => d.LabTestName, o => o.MapFrom(s => s.LabTest.TestName))
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
 
             CreateMap<RequestLabsDto.RequestLabsCreateDto, DomainEntities.RequestLabs>();
             CreateMap<RequestLabsDto.RequestLabsUpdateStatusDto, DomainEntities.RequestLabs>();

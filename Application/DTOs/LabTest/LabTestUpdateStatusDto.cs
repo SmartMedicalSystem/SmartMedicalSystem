@@ -6,6 +6,6 @@ namespace Application.DTOs.LabTest
 {
     public class LabTestUpdateStatusDto
     {
-        public Domain.Enums.LabTestStatus Status { get; set; }
+        //public Domain.Enums.LabTestStatus Status { get; set; }
     }
 }

@@ -77,37 +77,37 @@ namespace Application.Services
                 pagination);
         }
 
-        public async Task<LabTestReadDto> UpdateStatusAsync(int id, LabTestUpdateStatusDto dto)
-        {
-            var entity = _uow.LabTests.GetByIdAsync(id).Result
-                ?? throw new NotFoundException("LabTest", id);
-            entity.UpdateStatus(dto.Status);
+        //public async Task<LabTestReadDto> UpdateStatusAsync(int id, LabTestUpdateStatusDto dto)
+        //{
+        //    var entity = _uow.LabTests.GetByIdAsync(id).Result
+        //        ?? throw new NotFoundException("LabTest", id);
+        //    entity.UpdateStatus(dto.Status);
 
-            await _uow.LabTests.UpdateAsync(entity);
+        //    await _uow.LabTests.UpdateAsync(entity);
 
-            var updatedEntity = await _uow.LabTests.GetWithElementsAsync(id)
-                ?? throw new NotFoundException("LabTest", id);
+        //    var updatedEntity = await _uow.LabTests.GetWithElementsAsync(id)
+        //        ?? throw new NotFoundException("LabTest", id);
 
-            return _mapper.Map<LabTestReadDto>(updatedEntity);
-        }
+        //    return _mapper.Map<LabTestReadDto>(updatedEntity);
+        //}
 
 
 
-        public async Task<PaginatedResult<LabTestReadDto>> GetByStatusAsync(
-            Domain.Enums.LabTestStatus status,
-            PaginationParams pagination)
-        {
-            var page = await _uow.LabTests.GetByStatusPaginatedAsync(status, pagination);
-            return PaginatedResult<LabTestReadDto>.Create(
-                _mapper.Map<IEnumerable<LabTestReadDto>>(page.Items),
-                page.TotalCount,
-                pagination);
-        }
+        //public async Task<PaginatedResult<LabTestReadDto>> GetByStatusAsync(
+        //    Domain.Enums.LabTestStatus status,
+        //    PaginationParams pagination)
+        //{
+        //    var page = await _uow.LabTests.GetByStatusPaginatedAsync(status, pagination);
+        //    return PaginatedResult<LabTestReadDto>.Create(
+        //        _mapper.Map<IEnumerable<LabTestReadDto>>(page.Items),
+        //        page.TotalCount,
+        //        pagination);
+        //}
 
-        public async Task<IEnumerable<LabTestReadDto>> GetPendingTestsAsync()
-        {
-            var labTests = await _uow.LabTests.GetByStatusAsync(Domain.Enums.LabTestStatus.Pending);
-            return _mapper.Map<IEnumerable<LabTestReadDto>>(labTests);
-        }
+        //public async Task<IEnumerable<LabTestReadDto>> GetPendingTestsAsync()
+        //{
+        //    var labTests = await _uow.LabTests.GetByStatusAsync(Domain.Enums.LabTestStatus.Pending);
+        //    return _mapper.Map<IEnumerable<LabTestReadDto>>(labTests);
+        //}
     }
 }

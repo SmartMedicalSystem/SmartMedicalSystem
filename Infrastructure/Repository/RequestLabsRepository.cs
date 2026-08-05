@@ -4,6 +4,7 @@ using Domain.IRepository;
 using Domain.Models;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +36,8 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest)
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }
@@ -54,7 +56,8 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest)
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }
@@ -73,7 +76,8 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest)
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }        /// <summary>
@@ -95,7 +99,9 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest)
+
                 .FirstOrDefaultAsync();
         }
         /// <summary>
@@ -111,7 +117,8 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted));
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest);
 
             var totalCount = await query.CountAsync();
 
@@ -138,7 +145,8 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted));
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest);
 
             var totalCount = await query.CountAsync();
 
@@ -166,7 +174,8 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted));
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest);
 
             var totalCount = await query.CountAsync();
 
@@ -195,7 +204,8 @@ namespace Infrastructure.Repository
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
+                .Include(rl => rl.RequestLabTests)
+                    .ThenInclude(rlt => rlt.LabTest)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -217,7 +227,7 @@ namespace Infrastructure.Repository
                 query = query.Where(rl => rl.Priority == priority.Value);
 
             if (labTestId.HasValue)
-                query = query.Where(rl => rl.LabTests.Any(lt => lt.Id == labTestId.Value));
+                query = query.Where(rl => rl.RequestLabTests.Any(rlt => rlt.LabTestId == labTestId.Value));
 
             if (doctorId.HasValue)
                 query = query.Where(rl => rl.Session.DoctorId == doctorId.Value);

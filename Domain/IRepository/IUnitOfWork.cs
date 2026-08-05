@@ -34,6 +34,7 @@ namespace Domain.IRepository
 
         IPatientRagDocumentRepo PatientRagDocuments { get; }
         IRequestLabsRepo RequestLabs { get; }
+        IRequestLabTestRepo RequestLabTests { get; }
         ISessionRepo Sessions { get; }
         ITestElementRepo TestElements { get; }
 

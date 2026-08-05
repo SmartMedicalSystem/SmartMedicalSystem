@@ -77,34 +77,34 @@ namespace MEDSYstemITI.Controllers
 
 
 
-        [HttpGet("Pending")]
-        [HasPermission(Permissions.ReadLabTest)]
-        public async Task<ActionResult<PaginatedResult<LabTestReadDto>>> GetPendingLabTests(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var pagination = new PaginationParams(pageNumber, pageSize);
-            var result = await _labTestService.GetByStatusAsync(LabTestStatus.Pending, pagination);
-            return Ok(result);
-        }
+        //[HttpGet("Pending")]
+        //[HasPermission(Permissions.ReadLabTest)]
+        //public async Task<ActionResult<PaginatedResult<LabTestReadDto>>> GetPendingLabTests(
+        //    [FromQuery] int pageNumber = 1,
+        //    [FromQuery] int pageSize = 10)
+        //{
+        //    var pagination = new PaginationParams(pageNumber, pageSize);
+        //    var result = await _labTestService.GetByStatusAsync(LabTestStatus.Pending, pagination);
+        //    return Ok(result);
+        //}
 
-        [HttpGet("Completed")]
-        [HasPermission(Permissions.ReadLabTest)]
-        public async Task<ActionResult<PaginatedResult<LabTestReadDto>>> GetCompletedLabTests(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var pagination = new PaginationParams(pageNumber, pageSize);
-            var result = await _labTestService.GetByStatusAsync(LabTestStatus.Completed, pagination);
-            return Ok(result);
-        }
+        //[HttpGet("Completed")]
+        //[HasPermission(Permissions.ReadLabTest)]
+        //public async Task<ActionResult<PaginatedResult<LabTestReadDto>>> GetCompletedLabTests(
+        //    [FromQuery] int pageNumber = 1,
+        //    [FromQuery] int pageSize = 10)
+        //{
+        //    var pagination = new PaginationParams(pageNumber, pageSize);
+        //    var result = await _labTestService.GetByStatusAsync(LabTestStatus.Completed, pagination);
+        //    return Ok(result);
+        //}
 
-        [HttpPut("{id:int}/status")]
-        [HasPermission(Permissions.UpdateLabTest)]
-        public async Task<ActionResult<LabTestReadDto>> UpdateStatus(int id, [FromBody] LabTestUpdateStatusDto dto)
-        {
-            var result = await _labTestService.UpdateStatusAsync(id, dto);
-            return Ok(result);
-        }
+        //[HttpPut("{id:int}/status")]
+        //[HasPermission(Permissions.UpdateLabTest)]
+        //public async Task<ActionResult<LabTestReadDto>> UpdateStatus(int id, [FromBody] LabTestUpdateStatusDto dto)
+        //{
+        //    var result = await _labTestService.UpdateStatusAsync(id, dto);
+        //    return Ok(result);
+        //}
     }
 }

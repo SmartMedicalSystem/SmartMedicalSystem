@@ -8,7 +8,7 @@ namespace Domain.Entities
     {
         public string TestName { get; set; } = null!;
 
-        public LabTestStatus Status { get; set; } = LabTestStatus.Pending;
+        //public LabTestStatus Status { get; set; } = LabTestStatus.Pending;
 
         public string Description { get; set; } = null!;
         //ahmed realation with laboratory
@@ -19,6 +19,9 @@ namespace Domain.Entities
 
 
         public ICollection<LabTestElement> LabTestElements { get; } = new List<LabTestElement>();
+
+        // Relationship to RequestLabs via explicit join entity
+        public ICollection<RequestLabTest> RequestLabTests { get; set; } = new List<RequestLabTest>();
 
         private LabTest() { }
 
@@ -46,10 +49,10 @@ namespace Domain.Entities
         }
 
 
-        public void UpdateStatus(LabTestStatus status)
-        {
-            Status = status;
-        }
+        //public void UpdateStatus(LabTestStatus status)
+        //{
+        //    Status = status;
+        //}
 
     }
 }

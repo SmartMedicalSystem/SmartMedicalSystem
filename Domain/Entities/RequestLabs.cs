@@ -17,7 +17,7 @@ namespace Domain.Entities
 
         public virtual Session Session { get; set; } = null!;
 
-        public ICollection<LabTest> LabTests { get; set; } = new List<LabTest>();
+        public ICollection<RequestLabTest> RequestLabTests { get; set; } = new List<RequestLabTest>();
 
         private RequestLabs() { }
 

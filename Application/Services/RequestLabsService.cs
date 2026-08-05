@@ -46,20 +46,26 @@ namespace Application.Services
                 var labTest = await _uow.LabTests.GetByIdAsync(labTestId)
                     ?? throw new NotFoundException("LabTest", labTestId);
 
-                entity.LabTests.Add(labTest);
+                // Add explicit join entity linking this request to the lab test
+                entity.RequestLabTests.Add(new Domain.Entities.RequestLabTest
+                {
+                    LabTest = labTest,
+                    LabTestId = labTest.Id,
+                    CreatedAt = System.DateTime.UtcNow
+                });
             }
 
             await _uow.RequestLabs.AddAsync(entity);
 
             // Notify lab technicians belonging to the laboratories of requested tests
-            var labIds = entity.LabTests
-                .Select(lt => lt.LaboratoryId)
+            var labIds = entity.RequestLabTests
+                .Select(rlt => rlt.LabTest.LaboratoryId)
                 .Where(id => id.HasValue)
                 .Select(id => id!.Value)
                 .Distinct();
 
-            var testNames = entity.LabTests
-                .Select(lt => lt.TestName)
+            var testNames = entity.RequestLabTests
+                .Select(rlt => rlt.LabTest.TestName)
                 .ToList();
 
             foreach (var labId in labIds)
@@ -120,6 +126,18 @@ namespace Application.Services
         {
             var entity = await _uow.RequestLabs.GetWithLabTestsAsync(id)
                 ?? throw new NotFoundException("RequestLabs", id);
+
+            // If the request has lab-test join records, and all of them are completed,
+            // mark the parent RequestLabs as Completed.
+            var rlt = entity.RequestLabTests;
+            if (rlt != null && rlt.Any() && rlt.All(x => x.Status == Domain.Enums.RequestLabTestStatus.Completed))
+            {
+                if (entity.Status != Domain.Enums.LabRequestStatus.Completed)
+                {
+                    entity.UpdateStatus(Domain.Enums.LabRequestStatus.Completed);
+                    await _uow.RequestLabs.UpdateAsync(entity);
+                }
+            }
 
             return _mapper.Map<RequestLabsReadDto>(entity);
         }
@@ -191,6 +209,37 @@ namespace Application.Services
                 _mapper.Map<IEnumerable<RequestLabsReadDto>>(page.Items),
                 page.TotalCount,
                 pagination);
+        }
+
+        public async Task<RequestLabsReadDto> CheckIf_RequestLabTestsCompleted(int requestLabId)
+        {
+            var requestLab = await _uow.RequestLabs.GetWithLabTestsAsync(requestLabId)
+                ?? throw new NotFoundException("RequestLabs", requestLabId);
+
+            foreach (var requestLabTest in requestLab.RequestLabTests)
+            {
+                if (requestLabTest.Status != Domain.Enums.RequestLabTestStatus.Completed)
+                {
+                  var  reqLab = _mapper.Map<RequestLabsReadDto>(requestLab);
+                    return reqLab;
+
+                }
+            }
+            //var reqLabCompleted = await UpdateStatusAsync(requestLabId,Domain.Enums.LabRequestStatus.Completed);
+
+
+            var entity = await _uow.RequestLabs.GetByIdAsync(requestLabId)
+               ?? throw new NotFoundException("RequestLabs", requestLabId);
+
+            entity.UpdateStatus(Domain.Enums.LabRequestStatus.Completed);
+
+            await _uow.RequestLabs.UpdateAsync(entity);
+
+            var updatedRequest = await _uow.RequestLabs.GetWithLabTestsAsync(requestLabId)
+                ?? throw new NotFoundException("RequestLabs", requestLabId);
+
+            return _mapper.Map<RequestLabsReadDto>(updatedRequest);
+
         }
     }
 }

@@ -26,10 +26,11 @@ namespace Infrastructure.Data.Configurations
                 .HasForeignKey(r => r.SessionId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Per clarification: one RequestLabs groups all the tests requested in a session -> many-to-many with LabTest.
-            builder.HasMany(r => r.LabTests)
-                .WithMany()
-                .UsingEntity(j => j.ToTable("RequestLabsLabTests"));
+            // Per clarification: one RequestLabs groups all the tests requested in a session -> use explicit join entity RequestLabTest.
+            builder.HasMany(r => r.RequestLabTests)
+                .WithOne(rt => rt.RequestLab)
+                .HasForeignKey(rt => rt.RequestLabId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasQueryFilter(r => !r.IsDeleted);
         }

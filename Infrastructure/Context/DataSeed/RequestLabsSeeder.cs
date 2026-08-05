@@ -80,9 +80,45 @@ public static class RequestLabsSeeder
         {
             var request = CreateRequest(session.Id, requestedAt, status);
 
-            foreach (var test in tests)
+            for (int i = 0; i < tests.Length; i++)
             {
-                request.LabTests.Add(test);
+                var test = tests[i];
+
+                // Determine sensible RequestLabTest status based on overall request status
+                RequestLabTestStatus rltStatus;
+                DateTime createdAt = requestedAt.AddMinutes(-5 * (i + 1));
+                DateTime? updatedAt = null;
+
+                if (status == LabRequestStatus.Completed)
+                {
+                    rltStatus = RequestLabTestStatus.Completed;
+                    updatedAt = requestedAt.AddMinutes(10);
+                }
+                else if (status == LabRequestStatus.InProgress)
+                {
+                    // first test in the request is in-progress, others pending
+                    rltStatus = i == 0 ? RequestLabTestStatus.InProgress : RequestLabTestStatus.Pending;
+                    if (rltStatus == RequestLabTestStatus.InProgress)
+                        updatedAt = requestedAt.AddMinutes(2);
+                }
+                else if (status == LabRequestStatus.Pending)
+                {
+                    rltStatus = RequestLabTestStatus.Pending;
+                }
+                else
+                {
+                    rltStatus = RequestLabTestStatus.Cancelled;
+                    updatedAt = requestedAt.AddMinutes(1);
+                }
+
+                request.RequestLabTests.Add(new RequestLabTest
+                {
+                    LabTest = test,
+                    LabTestId = test.Id,
+                    Status = rltStatus,
+                    CreatedAt = createdAt,
+                    UpdatedAt = updatedAt
+                });
             }
 
             requests.Add(request);

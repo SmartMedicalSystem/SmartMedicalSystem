@@ -27,10 +27,10 @@ namespace Infrastructure.Data.Configurations
                 .HasMaxLength(500);
 
 
-            builder.Property(r => r.Status)
-                .HasConversion<string>()
-                .HasMaxLength(20)
-                .IsRequired();
+            //builder.Property(r => r.Status)
+            //    .HasConversion<string>()
+            //    .HasMaxLength(20)
+            //    .IsRequired();
 
             // =========================
             // Laboratory Relationship

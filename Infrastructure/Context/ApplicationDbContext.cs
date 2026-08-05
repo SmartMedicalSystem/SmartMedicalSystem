@@ -30,6 +30,7 @@ namespace Infrastructure.Context
         public DbSet<Doctor> Doctors => Set<Doctor>();
         public DbSet<LabTechnician> LabTechnicians => Set<LabTechnician>();
         public DbSet<LabTest> LabTests => Set<LabTest>();
+        public DbSet<RequestLabTest> RequestLabTests => Set<RequestLabTest>();
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<Patient> Patients => Set<Patient>();
         public DbSet<PatientResult> PatientResults => Set<PatientResult>();
