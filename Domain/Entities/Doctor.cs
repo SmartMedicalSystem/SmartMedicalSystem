@@ -72,7 +72,7 @@ namespace Domain.Entities
         // Extended profile update to include contact details and address (mobile handled via BasePerson)
 
         /// <summary>Updates the mutable profile fields of the doctor, re-validating each one.</summary>
-        public void UpdateProfile(string name, string specialization, Gender gender,
+        public void UpdateProfile(int DepartmentId, string name,DateTime DateOfBirth, string specialization, Gender gender,
             string email, string mobileNumber, string address , string city, string country, string? postalCode )
         {
             var cleanName = Guard.NotNullOrWhiteSpace(name, nameof(name), 200);
