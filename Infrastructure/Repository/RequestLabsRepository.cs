@@ -28,13 +28,14 @@ namespace Infrastructure.Repository
         public override async Task<IEnumerable<RequestLabs>> GetAllAsync()
         {
             return await _context.RequestLabs
+                .AsNoTracking()
                 .Where(rl => !rl.IsDeleted)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Patient)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests)
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }
@@ -46,13 +47,14 @@ namespace Infrastructure.Repository
         public async Task<IEnumerable<RequestLabs>> GetBySessionAsync(int sessionId)
         {
             return await _context.RequestLabs
+                .AsNoTracking()
                 .Where(rl => rl.SessionId == sessionId && !rl.IsDeleted)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Patient)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests)
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
         }
@@ -64,51 +66,56 @@ namespace Infrastructure.Repository
         public async Task<IEnumerable<RequestLabs>> GetByStatusAsync(LabRequestStatus status)
         {
             return await _context.RequestLabs
+                .AsNoTracking()
                 .Where(rl => rl.Status == status && !rl.IsDeleted)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Patient)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests)
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
                 .OrderByDescending(rl => rl.RequestedAt)
                 .ToListAsync();
-        }
-
-        /// <summary>
-        /// Retrieves a lab request with all its related lab tests.
-        /// Uses INCLUDE and ThenInclude to perform JOINs with many-to-many LabTests collection.
-        ///
-        /// Query Structure:
-        /// - INCLUDE LabTests (many-to-many relationship)
-        ///
-        /// This shows how to load all tests associated with a lab request.
-        /// </summary>
+        }        /// <summary>
+                 /// Retrieves a lab request with all its related lab tests.
+                 /// Uses INCLUDE and ThenInclude to perform JOINs with many-to-many LabTests collection.
+                 ///
+                 /// Query Structure:
+                 /// - INCLUDE LabTests (many-to-many relationship)
+                 ///
+                 /// This shows how to load all tests associated with a lab request.
+                 /// </summary>
         public async Task<RequestLabs?> GetWithLabTestsAsync(int id)
         {
             return await _context.RequestLabs
-                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted)) // JOIN with LabTests and filter active ones
+                .AsNoTracking()
+                .Where(rl => rl.Id == id && !rl.IsDeleted)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Patient)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests)
-                .Where(rl => rl.Id == id && !rl.IsDeleted)
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
                 .FirstOrDefaultAsync();
         }
-
         /// <summary>
         /// Retrieves a paginated list of all active lab requests.
         /// </summary>
         public override async Task<PaginatedResult<RequestLabs>> GetAllPaginatedAsync(PaginationParams pagination)
         {
-            var totalCount = await _context.RequestLabs
+            var query = _context.RequestLabs
+                .AsNoTracking()
                 .Where(rl => !rl.IsDeleted)
-                .CountAsync();
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted));
 
-            var items = await _context.RequestLabs
-                .Where(rl => !rl.IsDeleted)
+            var totalCount = await query.CountAsync();
+
+            var items = await query
                 .OrderByDescending(rl => rl.RequestedAt)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
@@ -116,22 +123,22 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<RequestLabs>.Create(items, totalCount, pagination);
         }
-
         /// <summary>
         /// Retrieves lab requests for a specific session in paginated format.
         /// </summary>
         public async Task<PaginatedResult<RequestLabs>> GetBySessionPaginatedAsync(
-     int sessionId,
-     PaginationParams pagination)
+            int sessionId,
+            PaginationParams pagination)
         {
             var query = _context.RequestLabs
+                .AsNoTracking()
                 .Where(rl => rl.SessionId == sessionId && !rl.IsDeleted)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Patient)
                 .Include(rl => rl.Session)
                     .ThenInclude(s => s.Doctor)
                         .ThenInclude(d => d.Department)
-                .Include(rl => rl.LabTests);
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted));
 
             var totalCount = await query.CountAsync();
 
@@ -147,14 +154,23 @@ namespace Infrastructure.Repository
         /// <summary>
         /// Retrieves lab requests with a specific status in paginated format.
         /// </summary>
-        public async Task<PaginatedResult<RequestLabs>> GetByStatusPaginatedAsync(LabRequestStatus status, PaginationParams pagination)
+        public async Task<PaginatedResult<RequestLabs>> GetByStatusPaginatedAsync(
+            LabRequestStatus status,
+            PaginationParams pagination)
         {
-            var totalCount = await _context.RequestLabs
+            var query = _context.RequestLabs
+                .AsNoTracking()
                 .Where(rl => rl.Status == status && !rl.IsDeleted)
-                .CountAsync();
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted));
 
-            var items = await _context.RequestLabs
-                .Where(rl => rl.Status == status && !rl.IsDeleted)
+            var totalCount = await query.CountAsync();
+
+            var items = await query
                 .OrderByDescending(rl => rl.RequestedAt)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
@@ -163,20 +179,35 @@ namespace Infrastructure.Repository
             return PaginatedResult<RequestLabs>.Create(items, totalCount, pagination);
         }
 
-        public async Task<PaginatedResult<RequestLabs>> QueryPaginatedAsync(PaginationParams pagination, string? search = null, LabRequestStatus? status = null, LabRequestPriority? priority = null, int? labTestId = null, int? doctorId = null)
+        public async Task<PaginatedResult<RequestLabs>> QueryPaginatedAsync(
+            PaginationParams pagination,
+            string? search = null,
+            LabRequestStatus? status = null,
+            LabRequestPriority? priority = null,
+            int? labTestId = null,
+            int? doctorId = null)
         {
             var query = _context.RequestLabs
-                .Include(rl => rl.Session).ThenInclude(s => s.Patient)
-                .Include(rl => rl.Session).ThenInclude(s => s.Doctor).ThenInclude(d=>d.Department)
-                .Include(rl => rl.LabTests)
+                .AsNoTracking()
                 .Where(rl => !rl.IsDeleted)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Patient)
+                .Include(rl => rl.Session)
+                    .ThenInclude(s => s.Doctor)
+                        .ThenInclude(d => d.Department)
+                .Include(rl => rl.LabTests.Where(lt => !lt.IsDeleted))
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var s = search.Trim();
-                query = query.Where(rl => rl.Session.Patient.FirstName.Contains(s) || rl.Session.Patient.LastName.Contains(s) || rl.Session.Patient.EncryptedNationalId.Contains(s)
-                    || rl.Session.Doctor.FirstName.Contains(s) || rl.Session.Doctor.LastName.Contains(s));
+
+                query = query.Where(rl =>
+                    rl.Session.Patient.FirstName.Contains(s) ||
+                    rl.Session.Patient.LastName.Contains(s) ||
+                    rl.Session.Patient.EncryptedNationalId.Contains(s) ||
+                    rl.Session.Doctor.FirstName.Contains(s) ||
+                    rl.Session.Doctor.LastName.Contains(s));
             }
 
             if (status.HasValue)
@@ -201,19 +232,25 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<RequestLabs>.Create(items, totalCount, pagination);
         }
-
         public async Task<Domain.Models.RequestLabsStatistics> GetStatisticsAsync()
         {
             var today = DateTime.UtcNow.Date;
-            var total = await _context.RequestLabs.Where(rl => !rl.IsDeleted).CountAsync();
-            var pending = await _context.RequestLabs.Where(rl => !rl.IsDeleted && rl.Status == LabRequestStatus.Pending).CountAsync();
-            var completedToday = await _context.RequestLabs.Where(rl => !rl.IsDeleted && rl.Status == LabRequestStatus.Completed && rl.CompletedAt.HasValue && rl.CompletedAt.Value.Date == today).CountAsync();
 
             return new Domain.Models.RequestLabsStatistics
             {
-                TotalRequests = total,
-                PendingRequests = pending,
-                CompletedToday = completedToday
+                TotalRequests = await _context.RequestLabs
+                    .CountAsync(rl => !rl.IsDeleted),
+
+                PendingRequests = await _context.RequestLabs
+                    .CountAsync(rl => !rl.IsDeleted &&
+                                      rl.Status == LabRequestStatus.Pending),
+
+                CompletedToday = await _context.RequestLabs
+                    .CountAsync(rl =>
+                        !rl.IsDeleted &&
+                        rl.Status == LabRequestStatus.Completed &&
+                        rl.CompletedAt.HasValue &&
+                        rl.CompletedAt.Value.Date == today)
             };
         }
     }
