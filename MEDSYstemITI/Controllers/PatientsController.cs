@@ -1,4 +1,5 @@
 using Application.DTOs.Patient;
+using Application.DTOs.Patients;
 using Application.Services.Abstraction;
 using Application.Services.Auth;
 using Domain.Enums;
@@ -24,9 +25,9 @@ namespace MEDSYstemITI.Controllers
         [HttpGet]
         [HasPermission(Permissions.ReadPatient)]
         public async Task<ActionResult<PaginatedResult<PatientReadDto>>> GetAll(
-            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    [FromQuery] PatientFilterDto filter)
         {
-            var result = await _patientService.GetAllAsync(new PaginationParams(pageNumber, pageSize));
+            var result = await _patientService.GetAllAsync(filter);
             return Ok(result);
         }
 

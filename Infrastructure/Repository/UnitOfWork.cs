@@ -51,13 +51,14 @@ namespace Infrastructure.Repository
         // ===============
 
         private readonly Dictionary<Type, object> _genericRepositories = new();
-
+        private readonly NationalIDEncryptionService _encryptionService;
         public UnitOfWork(ApplicationDbContext context, IDataProtectionProvider dataProtectionProvider
-            , UserManager<ApplicationUser> userManager)
+            , UserManager<ApplicationUser> userManager , NationalIDEncryptionService encryptionService  )
         {
             _context = context;
             _dataProtectionProvider = dataProtectionProvider;
             _userManager = userManager;
+            _encryptionService = encryptionService;
         }
 
         public IDepartmentRepo Departments =>
@@ -82,7 +83,7 @@ namespace Infrastructure.Repository
             _notifications ??= new NotificationRepository(_context);
 
         public IPatientRepo Patients =>
-            _patients ??= new PatientRepository(_context);
+            _patients ??= new PatientRepository(_context, _encryptionService);
 
         public IPatientResultRepo PatientResults =>
             _patientResults ??= new PatientResultRepository(_context);

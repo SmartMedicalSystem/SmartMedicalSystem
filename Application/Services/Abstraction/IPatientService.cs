@@ -1,5 +1,6 @@
 using Application.DTOs.AI;
 using Application.DTOs.Patient;
+using Application.DTOs.Patients;
 using Domain.Models;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Application.Services.Abstraction
     {
         Task<PatientReadDto> CreateAsync(PatientCreateDto dto);
         Task<PatientReadDto> UpdateAsync(string ssn, PatientUpdateDto dto);
-        Task<PaginatedResult<PatientReadDto>> GetAllAsync(PaginationParams pagination);
+        Task<PaginatedResult<PatientReadDto>> GetAllAsync(PatientFilterDto pagination);
         Task<PatientReadDto> GetByIdAsync(int id);
         Task<PatientReadDto> UpdateAsync(int id, PatientUpdateDto dto);
 

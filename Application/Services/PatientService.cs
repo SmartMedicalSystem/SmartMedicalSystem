@@ -1,6 +1,7 @@
 using Application.Common;
 using Application.DTOs.AI;
 using Application.DTOs.Patient;
+using Application.DTOs.Patients;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.AI;
 using Application.Services.AI;
@@ -150,12 +151,16 @@ namespace Application.Services
             return _mapper.Map<PatientReadDto>(entity);
         }
 
-        public async Task<PaginatedResult<PatientReadDto>> GetAllAsync(PaginationParams pagination)
+        public async Task<PaginatedResult<PatientReadDto>> GetAllAsync(PatientFilterDto filter)
         {
-            var page = await _uow.Patients.GetAllActivePaginatedAsync(pagination);
+            // filter نفسه من نوع PatientFilterParams أصلاً (بالوراثة)، فبيتبعت
+            // مباشرة للـ Repository من غير أي mapping يدوي.
+            var page = await _uow.Patients.GetFilteredPaginatedAsync(filter);
+
             return PaginatedResult<PatientReadDto>.Create(
                 _mapper.Map<IEnumerable<PatientReadDto>>(page.Items),
-                page.TotalCount, pagination);
+                page.TotalCount,
+                filter);
         }
 
         public async Task DeleteAsync(string ssn)
