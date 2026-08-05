@@ -169,5 +169,28 @@ namespace Application.Services
                 CompletedToday = stats.CompletedToday
             };
         }
+
+
+        public async Task<PaginatedResult<RequestLabsReadDto>> GetPendingRequestsAsync(PaginationParams pagination)
+        {
+            var page = await _uow.RequestLabs.GetByStatusPaginatedAsync(Domain.Enums.LabRequestStatus.Pending, pagination);
+            return PaginatedResult<RequestLabsReadDto>.Create(
+                _mapper.Map<IEnumerable<RequestLabsReadDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
+
+
+
+        public async Task<PaginatedResult<RequestLabsReadDto>> GetByStatusAsync(
+            Domain.Enums.LabRequestStatus status,
+            PaginationParams pagination)
+        {
+            var page = await _uow.RequestLabs.GetByStatusPaginatedAsync(status, pagination);
+            return PaginatedResult<RequestLabsReadDto>.Create(
+                _mapper.Map<IEnumerable<RequestLabsReadDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
     }
 }

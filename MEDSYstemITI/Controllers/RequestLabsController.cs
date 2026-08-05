@@ -55,6 +55,30 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("pending")]
+        [HasPermission(Permissions.ReadLabReport)]
+        public async Task<ActionResult<PaginatedResult<RequestLabsReadDto>>> GetpendingRequests([FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+           
+            PaginationParams paginationParams = new PaginationParams(pageNumber, pageSize); // Default pagination parameters
+            var result = await _requestLabsService.GetPendingRequestsAsync(paginationParams);
+            return Ok(result);
+        }
+
+        [HttpGet("completed")]
+        [HasPermission(Permissions.ReadLabReport)]
+        public async Task<ActionResult<PaginatedResult<RequestLabsReadDto>>> GetCompletedRequests([FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            PaginationParams paginationParams = new PaginationParams(pageNumber, pageSize); // Default pagination parameters
+            var result = await _requestLabsService.GetByStatusAsync(LabRequestStatus.Completed, paginationParams);
+            return Ok(result);
+        }
+
+
+
         [HttpGet("laboratory")]
         [HasPermission(Permissions.ReadLabReport)]
         public async Task<ActionResult<PaginatedResult<RequestLabsReadDto>>> GetLaboratory(

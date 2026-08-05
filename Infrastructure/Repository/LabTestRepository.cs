@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
 using Infrastructure.Context;
@@ -106,6 +107,31 @@ namespace Infrastructure.Repository
             var totalCount = await query.CountAsync();
 
             var items = await query
+                .OrderBy(lt => lt.TestName)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return PaginatedResult<LabTest>.Create(items, totalCount, pagination);
+        }
+
+        public async Task<IEnumerable<LabTest>> GetByStatusAsync(LabTestStatus status)
+        {
+            return await  _context.LabTests
+                .AsNoTracking()
+                .Where(lt => lt.Status == status && !lt.IsDeleted)  
+                .ToListAsync();
+
+        }
+
+        public async Task<PaginatedResult<LabTest>> GetByStatusPaginatedAsync(LabTestStatus status, PaginationParams pagination)
+        {
+            var totalCount = await _context.LabTests
+                .Where(lt => lt.Status == status && !lt.IsDeleted)
+                .CountAsync();
+
+            var items = await _context.LabTests
+                .Where(lt => lt.Status == status && !lt.IsDeleted)
                 .OrderBy(lt => lt.TestName)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
