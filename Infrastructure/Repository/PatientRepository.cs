@@ -1,7 +1,9 @@
 using Domain.Entities;
+using Domain.Filters;
 using Domain.IRepository;
 using Domain.Models;
 using Infrastructure.Context;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +17,14 @@ namespace Infrastructure.Repository
     /// </summary>
     public class PatientRepository : GenericRepository<Patient>, IPatientRepo
     {
-        public PatientRepository(ApplicationDbContext context) : base(context)
+        private readonly NationalIDEncryptionService _encryptionService;
+
+        public PatientRepository(ApplicationDbContext context, NationalIDEncryptionService encryptionService)
+            : base(context)
         {
+            _encryptionService = encryptionService;
         }
+
 
         /// <summary>
         /// Retrieves a patient by ID, excluding soft-deleted records.
@@ -38,6 +45,79 @@ namespace Infrastructure.Repository
                 .Where(p => !p.IsDeleted)
                 .OrderBy(p => p.Id)
                 .ToListAsync();
+        }
+
+        public async Task<PaginatedResult<Patient>> GetFilteredPaginatedAsync(PatientFilterParams filter)
+        {
+            // الفلاتر اللي ممكن تتطبق على مستوى الـ SQL عادي (مش محتاجة فك تشفير)
+            IQueryable<Patient> query = _context.Patients.Where(p => !p.IsDeleted);
+
+            if (filter.Gender.HasValue)
+                query = query.Where(p => p.Gender == filter.Gender.Value);
+
+            if (filter.MinAge.HasValue)
+                query = query.Where(p => p.Age >= filter.MinAge.Value);
+
+            if (filter.MaxAge.HasValue)
+                query = query.Where(p => p.Age <= filter.MaxAge.Value);
+
+            // لو مفيش Search، كمّل بنفس منطق SQL العادي (أسرع، مفيش داعي نجيب كل حاجة للميموري)
+            if (string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var sqlTotalCount = await query.CountAsync();
+
+                var sqlItems = await query
+                    .OrderByDescending(p => p.Id)
+                    .Skip(filter.CalculateSkip())
+                    .Take(filter.PageSize)
+                    .ToListAsync();
+
+                return PaginatedResult<Patient>.Create(sqlItems, sqlTotalCount, filter);
+            }
+
+            // فيه Search: الـ NationalId مشفّر فمينفعش نستخدم LIKE/Contains عليه في
+            // الـ SQL مباشرة - لازم نجيب الداتا (بعد فلاتر Gender/Age) ونفك
+            // التشفير في الميموري عشان نقدر نقارن.
+            var search = filter.Search.Trim().ToLower();
+
+            var candidates = await query.ToListAsync();
+
+            var filtered = candidates.Where(p =>
+    p.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+    p.LastName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+    $"{p.FirstName} {p.LastName}".Contains(search, StringComparison.OrdinalIgnoreCase) ||
+
+    // لو القيمة مخزنة بدون تشفير
+    p.EncryptedNationalId.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+
+    // ولو كانت مشفرة
+    DecryptedNationalIdContains(p, search)
+).ToList();
+
+            var totalCount = filtered.Count;
+
+            var items = filtered
+                .OrderByDescending(p => p.Id)
+                .Skip(filter.CalculateSkip())
+                .Take(filter.PageSize)
+                .ToList();
+
+            return PaginatedResult<Patient>.Create(items, totalCount, filter);
+        }
+
+        private bool DecryptedNationalIdContains(Patient patient, string search)
+        {
+            try
+            {
+                var decrypted = _encryptionService.Decrypt(patient.EncryptedNationalId);
+
+                return decrypted.Contains(search, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                // غالبًا القيمة مش متشفرة
+                return false;
+            }
         }
 
         /// <summary>
