@@ -5,6 +5,7 @@ using FluentAssertions;
 using Infrastructure.Context;
 using Infrastructure.DataSeed;
 using Infrastructure.Repository;
+using Infrastructure.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -102,7 +103,8 @@ namespace Testing.Infrastructure
 
                 // Use UnitOfWork from Infrastructure
                 var dataProtection = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create("tests");
-                var uow = new UnitOfWork(context, dataProtection, userManager);
+                var encryptionService = new NationalIDEncryptionService(dataProtection);
+                var uow = new UnitOfWork(context, dataProtection, userManager, encryptionService);
 
                 var dept = new Domain.Entities.Department("Cardiology","Dr X", 2);
                 var added = await uow.Departments.AddAsync(dept);

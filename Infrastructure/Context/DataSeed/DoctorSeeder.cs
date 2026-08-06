@@ -11,18 +11,35 @@ public static class DoctorSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context,UserManager<ApplicationUser> userManager)
     {
-        var departmentIds =
-            await context.Departments
-                .ToDictionaryAsync(
-                    d => d.Name,
-                    d => d.Id);
+        var departmentList = await context.Departments
+            .Select(d => new { d.Name, d.Id })
+            .ToListAsync();
+
+        var departmentIds = departmentList
+            .ToDictionary(d => (d.Name ?? string.Empty).Trim(), d => d.Id, StringComparer.OrdinalIgnoreCase);
 
         if (departmentIds.Count == 0)
             return;
 
         int DepartmentId(string name)
         {
-            return departmentIds[name];
+            var key = (name ?? string.Empty).Trim();
+            if (!departmentIds.TryGetValue(key, out var id))
+            {
+                // Try tolerant matches: starts-with or contains (case-insensitive)
+                var tolerant = departmentIds.Keys
+                    .FirstOrDefault(k => k.StartsWith(key, StringComparison.OrdinalIgnoreCase)
+                                         || k.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                if (tolerant != null && departmentIds.TryGetValue(tolerant, out var tolerantId))
+                {
+                    return tolerantId;
+                }
+
+                throw new InvalidOperationException($"Department '{name}' not found. Available: {string.Join(", ", departmentIds.Keys)}");
+            }
+
+            return id;
         }
 
         var doctors = new List<Doctor>
