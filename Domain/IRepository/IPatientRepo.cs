@@ -8,12 +8,12 @@ namespace Domain.IRepository
 {
     public interface IPatientRepo : IGenericRepository<Patient>
     {
-        // Entity-specific reads
         Task<IEnumerable<Patient>> GetAllWithSessionsAsync();
 
-        Task<PaginatedResult<Patient>> GetFilteredPaginatedAsync(PatientFilterParams filter);
+        Task<PaginatedResult<Patient>> GetFilteredPaginatedAsync(
+            PatientFilterParams filter);
 
-        // Entity-specific reads with Pagination
-        Task<PaginatedResult<Patient>> GetAllWithSessionsPaginatedAsync(PaginationParams pagination);
+        Task<PaginatedResult<Patient>> GetAllWithSessionsPaginatedAsync(
+            PaginationParams pagination);
     }
 }

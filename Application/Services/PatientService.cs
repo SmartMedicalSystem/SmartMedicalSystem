@@ -23,6 +23,7 @@ namespace Application.Services
         private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
         private readonly IMapper _mapper;
         private readonly IPatientResultAIService? _patientResultAIService;
+
         private readonly IMedicalAIClient? _aiClient;
         private readonly IRagService? _ragService;
 
@@ -173,9 +174,10 @@ namespace Application.Services
 
         public async Task<PatientReadDto> GetBySSNAsync(string ssn)
         {
-
-            var entity = await _personRepo.FindBySSN(ssn) as Domain.Entities.Patient
+            var entity = await _personRepo.FindBySSN(ssn)
+                as Domain.Entities.Patient
                 ?? throw new NotFoundException("Patient", ssn);
+
             return _mapper.Map<PatientReadDto>(entity);
         }
 

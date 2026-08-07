@@ -70,17 +70,24 @@ namespace Application.Mapping
                        : null)
            );
 
-            CreateMap<DoctorDto.DoctorCreateDto, DomainEntities.Doctor>();
-            CreateMap<DoctorDto.DoctorUpdateDto, DomainEntities.Doctor>();
-
-
             CreateMap<Patient, PatientReadDto>()
-    .ForMember(dest => dest.NationalId, opt => opt.MapFrom(src => src.EncryptedNationalId))
-    .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.PhoneNumber));
+    .ForMember(
+        dest => dest.NationalId,
+        opt => opt.MapFrom(src => src.DecryptedNationalId))
+    .ForMember(
+        dest => dest.MobileNumber,
+        opt => opt.MapFrom(src => src.PhoneNumber));
+
+            CreateMap<PatientDto.PatientCreateDto, Domain.Entities.Patient>();
+            CreateMap<PatientDto.PatientUpdateDto, Domain.Entities.Patient>();
+
             CreateMap<PatientDto.PatientCreateDto, DomainEntities.Patient>();
+
             CreateMap<PatientDto.PatientUpdateDto, DomainEntities.Patient>();
 
+            CreateMap<PatientDto.PatientCreateDto, DomainEntities.Patient>();
 
+            CreateMap<PatientDto.PatientUpdateDto, DomainEntities.Patient>();
             CreateMap<DomainEntities.LabTest, LabTestDto.LabTestReadDto>();
             CreateMap<LabTestDto.LabTestCreateDto, DomainEntities.LabTest>();
             CreateMap<LabTestDto.LabTestUpdateDto, DomainEntities.LabTest>();

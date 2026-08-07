@@ -1,21 +1,37 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 
-namespace Infrastructure.Services;
-public class NationalIDEncryptionService
+namespace Infrastructure.Services
 {
-    private readonly IDataProtector _dataProtector;
+    public class NationalIDEncryptionService
+    {
+        private readonly IDataProtector _dataProtector;
 
-    public NationalIDEncryptionService(IDataProtectionProvider dataProtectionProvidor)
-    {
-        _dataProtector = dataProtectionProvidor.CreateProtector("Secure SSN");
-    }
-    public async Task<string> Encrypt(string ssn)
-    {
-        return  _dataProtector.Protect(ssn);
+        public NationalIDEncryptionService(
+            IDataProtectionProvider dataProtectionProvider)
+        {
+            _dataProtector =
+                dataProtectionProvider.CreateProtector("Secure SSN");
+        }
 
-    }
-    public string Decrypt(string encryptedSsn)
-    {
-        return _dataProtector.Unprotect(encryptedSsn);
+        public Task<string> Encrypt(string nationalId)
+        {
+            if (string.IsNullOrWhiteSpace(nationalId))
+            {
+                throw new ArgumentException(
+                    "National ID cannot be empty.",
+                    nameof(nationalId));
+            }
+
+            return Task.FromResult(
+                _dataProtector.Protect(nationalId));
+        }
+
+        public string Decrypt(string encryptedNationalId)
+        {
+            if (string.IsNullOrWhiteSpace(encryptedNationalId))
+                return string.Empty;
+
+            return _dataProtector.Unprotect(encryptedNationalId);
+        }
     }
 }

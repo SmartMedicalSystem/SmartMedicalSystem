@@ -24,10 +24,30 @@ namespace Infrastructure.Repository
 
         public async Task<BasePerson?> FindBySSN(string ssn)
         {
-            return await _context.BasePersons
-               .FirstOrDefaultAsync(x =>
-                   !x.IsDeleted &&
-                   x.EncryptedNationalId == ssn);
+            var people = await _context.BasePersons
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+
+            foreach (var person in people)
+            {
+                try
+                {
+                    var decrypted = _encryptionService.Decrypt(
+                        person.EncryptedNationalId);
+
+                    if (decrypted == ssn)
+                    {
+                        person.DecryptedNationalId = decrypted;
+                        return person;
+                    }
+                }
+                catch (CryptographicException)
+                {
+                    
+                }
+            }
+
+            return null;
         }
 
         public async Task AddPerson(string ssn, BasePerson person)

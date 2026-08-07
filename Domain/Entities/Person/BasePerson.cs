@@ -7,6 +7,8 @@ namespace Domain.Entities.Person;
 public abstract class BasePerson : BaseEntity
 {
     public string EncryptedNationalId { get; set; } = string.Empty;
+    [NotMapped]
+    public string DecryptedNationalId { get; set; } = string.Empty;
 
     public string FirstName { get; set; } = string.Empty;
 

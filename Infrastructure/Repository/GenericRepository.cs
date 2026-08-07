@@ -22,7 +22,8 @@ namespace Infrastructure.Repository
     /// SoftDelete/Exists/GetAllActive*) are reused as-is, so the exact original
     /// behavior is preserved everywhere.
     /// </summary>
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T>
+    where T : BaseEntity
     {
         protected readonly ApplicationDbContext _context;
         protected readonly DbSet<T> _dbSet;
@@ -32,6 +33,9 @@ namespace Infrastructure.Repository
             _context = context;
             _dbSet = context.Set<T>();
         }
+
+    // باقي methods
+
 
         /// <summary>
         /// Adds a new entity to the database.

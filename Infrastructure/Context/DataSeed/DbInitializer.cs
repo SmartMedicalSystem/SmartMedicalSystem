@@ -33,41 +33,41 @@ public static class DbInitializer
         var connection =
             context.Database.GetDbConnection();
 
-        await connection.OpenAsync();
+        //await connection.OpenAsync();
 
-        await using var lockCmd =
-            connection.CreateCommand();
+        //await using var lockCmd =
+        //    connection.CreateCommand();
 
-        lockCmd.CommandText =
-            "EXEC sp_getapplock " +
-            "@Resource = 'MEDSYstemITI_MigrateAndSeed', " +
-            "@LockMode = 'Exclusive', " +
-            "@LockOwner = 'Session', " +
-            "@LockTimeout = 60000;";
+        //lockCmd.CommandText =
+        //    "EXEC sp_getapplock " +
+        //    "@Resource = 'MEDSYstemITI_MigrateAndSeed', " +
+        //    "@LockMode = 'Exclusive', " +
+        //    "@LockOwner = 'Session', " +
+        //    "@LockTimeout = 60000;";
 
-        await lockCmd.ExecuteNonQueryAsync();
+        //await lockCmd.ExecuteNonQueryAsync();
 
-        try
-        {
-            await context.Database.MigrateAsync();
+        //try
+        //{
+        //    await context.Database.MigrateAsync();
 
-            await RunSeedPipelineAsync(
-                context,
-                roleManager,
-                userManager);
-        }
-        finally
-        {
-            await using var unlockCmd =
-                connection.CreateCommand();
+        //    await RunSeedPipelineAsync(
+        //        context,
+        //        roleManager,
+        //        userManager);
+        //}
+        //finally
+        //{
+        //    await using var unlockCmd =
+        //        connection.CreateCommand();
 
-            unlockCmd.CommandText =
-                "EXEC sp_releaseapplock " +
-                "@Resource = 'MEDSYstemITI_MigrateAndSeed', " +
-                "@LockOwner = 'Session';";
+        //    unlockCmd.CommandText =
+        //        "EXEC sp_releaseapplock " +
+        //        "@Resource = 'MEDSYstemITI_MigrateAndSeed', " +
+        //        "@LockOwner = 'Session';";
 
-            await unlockCmd.ExecuteNonQueryAsync();
-        }
+        //    await unlockCmd.ExecuteNonQueryAsync();
+        //}
     }
 
     private static async Task RunSeedPipelineAsync(
