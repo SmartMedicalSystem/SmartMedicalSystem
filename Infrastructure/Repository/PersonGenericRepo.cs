@@ -30,6 +30,14 @@ namespace Infrastructure.Repository
 
             foreach (var person in people)
             {
+                // Case 1: value is stored as plain text
+                if (person.EncryptedNationalId == ssn)
+                {
+                    person.DecryptedNationalId = ssn;
+                    return person;
+                }
+
+                // Case 2: value is encrypted
                 try
                 {
                     var decrypted = _encryptionService.Decrypt(
@@ -43,7 +51,7 @@ namespace Infrastructure.Repository
                 }
                 catch (CryptographicException)
                 {
-                    
+                    // Ignore records that cannot be decrypted
                 }
             }
 

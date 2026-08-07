@@ -81,6 +81,9 @@ namespace Application.Mapping
             CreateMap<PatientDto.PatientCreateDto, Domain.Entities.Patient>();
             CreateMap<PatientDto.PatientUpdateDto, Domain.Entities.Patient>();
 
+            CreateMap<PatientDto.PatientCreateDto, Domain.Entities.Patient>();
+            CreateMap<PatientDto.PatientUpdateDto, Domain.Entities.Patient>();
+
             CreateMap<PatientDto.PatientCreateDto, DomainEntities.Patient>();
 
             CreateMap<PatientDto.PatientUpdateDto, DomainEntities.Patient>();
