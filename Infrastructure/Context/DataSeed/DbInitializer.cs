@@ -201,7 +201,7 @@ public static class DbInitializer
             AccountActive = true,
 
             ReceiveNotifications = true,
-            
+
         };
 
         var result =
