@@ -9,14 +9,19 @@ namespace Infrastructure.DataSeed;
 
 public static class DoctorSeeder
 {
-    public static async Task SeedAsync(ApplicationDbContext context,UserManager<ApplicationUser> userManager)
+    public static async Task SeedAsync(
+        ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager)
     {
         var departmentList = await context.Departments
             .Select(d => new { d.Name, d.Id })
             .ToListAsync();
 
         var departmentIds = departmentList
-            .ToDictionary(d => (d.Name ?? string.Empty).Trim(), d => d.Id, StringComparer.OrdinalIgnoreCase);
+            .ToDictionary(
+                d => (d.Name ?? string.Empty).Trim(),
+                d => d.Id,
+                StringComparer.OrdinalIgnoreCase);
 
         if (departmentIds.Count == 0)
             return;
@@ -24,19 +29,30 @@ public static class DoctorSeeder
         int DepartmentId(string name)
         {
             var key = (name ?? string.Empty).Trim();
+
             if (!departmentIds.TryGetValue(key, out var id))
             {
-                // Try tolerant matches: starts-with or contains (case-insensitive)
                 var tolerant = departmentIds.Keys
-                    .FirstOrDefault(k => k.StartsWith(key, StringComparison.OrdinalIgnoreCase)
-                                         || k.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0);
+                    .FirstOrDefault(k =>
+                        k.StartsWith(
+                            key,
+                            StringComparison.OrdinalIgnoreCase)
+                        ||
+                        k.IndexOf(
+                            key,
+                            StringComparison.OrdinalIgnoreCase) >= 0);
 
-                if (tolerant != null && departmentIds.TryGetValue(tolerant, out var tolerantId))
+                if (tolerant != null &&
+                    departmentIds.TryGetValue(
+                        tolerant,
+                        out var tolerantId))
                 {
                     return tolerantId;
                 }
 
-                throw new InvalidOperationException($"Department '{name}' not found. Available: {string.Join(", ", departmentIds.Keys)}");
+                throw new InvalidOperationException(
+                    $"Department '{name}' not found. " +
+                    $"Available: {string.Join(", ", departmentIds.Keys)}");
             }
 
             return id;
@@ -55,7 +71,6 @@ public static class DoctorSeeder
                 "ahmed.hassan@medsystem.local",
                 "12 Tahrir Square",
                 "Cairo"),
-
 
             CreateDoctor(
                 "Sara",
@@ -164,8 +179,20 @@ public static class DoctorSeeder
                 "rania.adel@medsystem.local",
                 "14 El-Galaa Street",
                 "Mansoura",
-                "/uploads/04a2fe3e-0440-4e51-99f1-dce59d2b59fd.jpg"
-                )
+                "/uploads/04a2fe3e-0440-4e51-99f1-dce59d2b59fd.jpg"),
+
+            CreateDoctor(
+                "Mohamed",
+                "SaiedHassan",
+                "Cardiology",
+                "01000000002",
+                Gender.Male,
+                DepartmentId("Cardiology"),
+                new DateTime(1998, 1, 1),
+                "mohamedsaiedhassan308@gmail.com",
+                "Cairo, Egypt",
+                "Cairo",
+                null)
         };
 
         foreach (var doctor in doctors)
@@ -184,8 +211,7 @@ public static class DoctorSeeder
         await context.SaveChangesAsync();
 
         var savedDoctors =
-            await context.Doctors
-                .ToListAsync();
+            await context.Doctors.ToListAsync();
 
         foreach (var doctor in savedDoctors)
         {
@@ -207,8 +233,9 @@ public static class DoctorSeeder
             }
 
             var username =
-                $"dr.{doctor.FirstName.ToLowerInvariant()}." +
-                $"{doctor.LastName.ToLowerInvariant()}";
+                $"dr{doctor.FirstName}{doctor.LastName}"
+                    .Replace(" ", "")
+                    .ToLowerInvariant();
 
             var user = new ApplicationUser
             {
@@ -224,7 +251,9 @@ public static class DoctorSeeder
                 PersonId = doctor.Id,
 
                 AllowLogin = true,
+
                 AccountActive = true,
+
                 ReceiveNotifications = true
             };
 
@@ -262,7 +291,7 @@ public static class DoctorSeeder
         string email,
         string address,
         string city,
-        string? photoUrl)
+        string? photoUrl = null)
     {
         return new Doctor(
             $"{firstName} {lastName}",
@@ -273,85 +302,21 @@ public static class DoctorSeeder
         {
             FirstName = firstName,
             LastName = lastName,
-
             Email = email,
-
             PhoneNumber = phone,
-
             Address = address,
-
             City = city,
-
             Country = "Egypt",
-
             Nationality = "Egyptian",
-
             Gender = gender,
-
             DateOfBirth = dateOfBirth,
-
             EncryptedNationalId =
                 Guid.NewGuid().ToString("N"),
-
             AllowLogin = true,
-
             AccountActive = true,
-
             ReceiveNotifications = true,
-
             CreatedAt = DateTime.UtcNow,
             PhotoUrl = photoUrl
-        };
-    }
-
-         private static Doctor CreateDoctor(
-        string firstName,
-        string lastName,
-        string specialization,
-        string phone,
-        Gender gender,
-        int departmentId,
-        DateTime dateOfBirth,
-        string email,
-        string address,
-        string city)
-    {
-        return new Doctor(
-            $"{firstName} {lastName}",
-            specialization,
-            phone,
-            gender,
-            departmentId)
-        {
-            FirstName = firstName,
-            LastName = lastName,
-
-            Email = email,
-
-            PhoneNumber = phone,
-
-            Address = address,
-
-            City = city,
-
-            Country = "Egypt",
-
-            Nationality = "Egyptian",
-
-            Gender = gender,
-
-            DateOfBirth = dateOfBirth,
-
-            EncryptedNationalId =
-                Guid.NewGuid().ToString("N"),
-
-            AllowLogin = true,
-
-            AccountActive = true,
-
-            ReceiveNotifications = true,
-
-            CreatedAt = DateTime.UtcNow
         };
     }
 }
