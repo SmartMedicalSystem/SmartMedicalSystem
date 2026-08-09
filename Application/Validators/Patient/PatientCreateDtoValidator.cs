@@ -25,9 +25,8 @@ public class PatientCreateDtoValidator : AbstractValidator<PatientCreateDto>
 
         RuleFor(x => x.DateOfBirth)
             .NotEmpty().WithMessage("Date of birth is required.")
-            .LessThan(DateTime.Today).WithMessage("Date of birth must be in the past.")
-            .Must(ValidationRules.BeAtLeast18YearsOld).WithMessage("The patient must be at least 18 years old.");
-
+            .LessThan(DateTime.Today).WithMessage("Date of birth must be in the past.");
+            
         RuleFor(x => x.Gender)
             .IsInEnum().WithMessage("Gender must be a valid value.");
 
