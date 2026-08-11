@@ -33,19 +33,25 @@ namespace Application.Services
         public RequestLabsService(
             IUnitOfWork uow,
             IMapper mapper)
-            : this(uow, mapper, null, null)
+            : this(uow, mapper, null!, null!)
         {
         }
 
         public async Task<RequestLabsReadDto> CreateAsync(
             RequestLabsCreateDto dto)
         {
+            // ============================
+            // Validate Session
+            // ============================
             var session =
                 await _uow.Sessions.GetByIdAsync(dto.SessionId)
                 ?? throw new NotFoundException(
                     "Session",
                     dto.SessionId);
 
+            // ============================
+            // Validate Lab Tests
+            // ============================
             if (dto.LabTestIds is null ||
                 dto.LabTestIds.Count == 0)
             {
@@ -53,11 +59,17 @@ namespace Application.Services
                     "At least one lab test must be requested.");
             }
 
+            // ============================
+            // Create RequestLabs
+            // ============================
             var entity = new Domain.Entities.RequestLabs(
                 dto.SessionId,
                 dto.RequestedAt,
                 dto.Priority);
 
+            // ============================
+            // Add Requested Lab Tests
+            // ============================
             foreach (var labTestId in dto.LabTestIds.Distinct())
             {
                 var labTest =
@@ -71,61 +83,82 @@ namespace Application.Services
                     {
                         LabTest = labTest,
                         LabTestId = labTest.Id,
-                        CreatedAt = System.DateTime.UtcNow
+                        CreatedAt = DateTime.UtcNow
                     });
             }
 
+            // ============================
+            // Save RequestLab
+            // ============================
             await _uow.RequestLabs.AddAsync(entity);
+            await _uow.SaveChangesAsync();
 
-            // Get laboratories related to requested tests
+            // ============================
+            // Get Laboratories
+            // related to requested tests
+            // ============================
             var labIds = entity.RequestLabTests
-                .Select(rlt => rlt.LabTest.LaboratoryId)
+                .Select(x => x.LabTest.LaboratoryId)
                 .Where(id => id.HasValue)
                 .Select(id => id!.Value)
-                .Distinct();
-
-            var testNames = entity.RequestLabTests
-                .Select(rlt => rlt.LabTest.TestName)
+                .Distinct()
                 .ToList();
 
+            // ============================
+            // Test names for notification
+            // ============================
+            var testNames = entity.RequestLabTests
+                .Select(x => x.LabTest.TestName)
+                .ToList();
+
+            // ============================
+            // Notify Lab Technicians
+            // ============================
             foreach (var labId in labIds)
             {
                 var techsPage =
                     await _uow.LabTechnicians
                         .GetByLaboratoryIdAsync(
                             labId,
-                            new Domain.Models.PaginationParams(
-                                1,
-                                20));
+                            new PaginationParams(1, 100));
 
                 foreach (var tech in techsPage.Items)
                 {
                     try
                     {
+                        // ----------------------------
+                        // Technician notifications off
+                        // ----------------------------
                         if (!tech.ReceiveNotifications)
                             continue;
 
-                        var user =
-                            await _uow.UserGeneric
-                                .GetByUserIdAsync(
-                                    tech.Id.ToString());
+                        // ----------------------------
+                        // Get ApplicationUser
+                        // through BasePerson.User
+                        // ----------------------------
+                        var user = tech.User;
 
-                        if (user == null ||
-                            !user.ReceiveNotifications)
-                        {
+                        if (user == null)
                             continue;
-                        }
 
-                        // Notification message
+                        // ----------------------------
+                        // User notifications off
+                        // ----------------------------
+                        if (!user.ReceiveNotifications)
+                            continue;
+
+                        // ============================
+                        // Notification Message
+                        // ============================
                         var message =
                             $"New lab request #{entity.Id} " +
                             $"(session #{entity.SessionId})\n" +
                             $"Tests: {string.Join(", ", testNames)}\n" +
                             $"RequestedAt: {entity.RequestedAt:u}";
 
-                        // ==========================================
-                        // Send In-App Notification
-                        // ==========================================
+                        // ============================
+                        // In-App Notification
+                        // ============================
                         if (_notificationService != null)
                         {
                             await _notificationService.SendToUserAsync(
@@ -135,10 +168,11 @@ namespace Application.Services
                                 requestLabsId: entity.Id);
                         }
 
-                        // ==========================================
-                        // Send Email
-                        // ==========================================
-                        if (!string.IsNullOrWhiteSpace(tech.Email))
+                        // ============================
+                        // Email Notification
+                        // ============================
+                        if (_emailSender != null &&
+                            !string.IsNullOrWhiteSpace(tech.Email))
                         {
                             var emailMessage =
                                 new Application.DTOs.Email.Message(
@@ -181,19 +215,23 @@ namespace Application.Services
                                         </p>
                                     ");
 
-                            await _emailSender
-                                .SendEmailAsync(emailMessage);
+                            await _emailSender.SendEmailAsync(
+                                emailMessage);
                         }
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(
-                            $"Notification/Email failed: {ex}");
+                            $"Notification/Email failed " +
+                            $"for technician {tech.Id}: {ex}");
                     }
                 }
             }
 
-            // Reload entity with all navigation properties
+            // ============================
+            // Reload entity with navigation
+            // properties
+            // ============================
             var createdRequest =
                 await _uow.RequestLabs
                     .GetWithLabTestsAsync(entity.Id)
@@ -205,6 +243,9 @@ namespace Application.Services
                 createdRequest);
         }
 
+        // ==========================================
+        // Update Status
+        // ==========================================
         public async Task<RequestLabsReadDto> UpdateStatusAsync(
             int id,
             RequestLabsUpdateStatusDto dto)
@@ -218,6 +259,7 @@ namespace Application.Services
             entity.UpdateStatus(dto.Status);
 
             await _uow.RequestLabs.UpdateAsync(entity);
+            await _uow.SaveChangesAsync();
 
             var updatedRequest =
                 await _uow.RequestLabs
@@ -230,6 +272,9 @@ namespace Application.Services
                 updatedRequest);
         }
 
+        // ==========================================
+        // Get By Id
+        // ==========================================
         public async Task<RequestLabsReadDto> GetByIdAsync(
             int id)
         {
@@ -258,6 +303,8 @@ namespace Application.Services
 
                     await _uow.RequestLabs
                         .UpdateAsync(entity);
+
+                    await _uow.SaveChangesAsync();
                 }
             }
 
@@ -265,6 +312,9 @@ namespace Application.Services
                 entity);
         }
 
+        // ==========================================
+        // Get By Session
+        // ==========================================
         public async Task<PaginatedResult<RequestLabsReadDto>>
             GetBySessionAsync(
                 int sessionId,
@@ -283,6 +333,9 @@ namespace Application.Services
                 pagination);
         }
 
+        // ==========================================
+        // Query
+        // ==========================================
         public async Task<PaginatedResult<RequestLabsReadDto>>
             QueryAsync(
                 PaginationParams pagination,
@@ -309,6 +362,9 @@ namespace Application.Services
                 pagination);
         }
 
+        // ==========================================
+        // Statistics
+        // ==========================================
         public async Task<RequestLabsStatisticsDto>
             GetStatisticsAsync()
         {
@@ -324,6 +380,9 @@ namespace Application.Services
             };
         }
 
+        // ==========================================
+        // Get Pending Requests
+        // ==========================================
         public async Task<PaginatedResult<RequestLabsReadDto>>
             GetPendingRequestsAsync(
                 PaginationParams pagination)
@@ -341,6 +400,9 @@ namespace Application.Services
                 pagination);
         }
 
+        // ==========================================
+        // Get By Status
+        // ==========================================
         public async Task<PaginatedResult<RequestLabsReadDto>>
             GetByStatusAsync(
                 Domain.Enums.LabRequestStatus status,
@@ -359,10 +421,12 @@ namespace Application.Services
                 pagination);
         }
 
-        
-            public async Task<RequestLabsReadDto>
-    CheckIf_RequestLabTestsCompleted(
-        int requestLabId)
+        // ==========================================
+        // Check RequestLabTests Completion
+        // ==========================================
+        public async Task<RequestLabsReadDto>
+            CheckIf_RequestLabTestsCompleted(
+                int requestLabId)
         {
             var requestLab =
                 await _uow.RequestLabs
@@ -397,6 +461,8 @@ namespace Application.Services
 
                 await _uow.RequestLabs
                     .UpdateAsync(requestLab);
+
+                await _uow.SaveChangesAsync();
             }
 
             var updatedRequest =
