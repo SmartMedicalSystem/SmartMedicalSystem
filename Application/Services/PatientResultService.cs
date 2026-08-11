@@ -4,6 +4,7 @@ using Application.DTOs.PatientResult;
 using Application.Services.Abstraction;
 using Application.Services.Abstraction.AI;
 using AutoMapper;
+using Domain.Enums;
 using Domain.IRepository;
 using Domain.Models;
 using System.Collections.Generic;
@@ -106,7 +107,9 @@ namespace Application.Services
                         {
                             await _notificationService.SendToUserAsync(
                                 user.Id,
-                                message);
+                                message,
+                                NotificationType.LabResultReady,
+                                patientResultId: entity.Id);
                         }
 
                         // ==========================================

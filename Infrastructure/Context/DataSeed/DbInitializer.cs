@@ -131,7 +131,7 @@ public static class DbInitializer
         await PatientResultSeeder.SeedAsync(
             context);
 
-        // 14. Notifications
+        //14.Notifications
         await NotificationSeeder.SeedAsync(
             context,
             userManager);
