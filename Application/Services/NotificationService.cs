@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Domain.IRepository;
 using MEDSYstemITI.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -18,7 +19,9 @@ namespace MEDSYstemITI.Service
             _uow = uow;
         }
 
-        public async Task BroadcastAsync(string title, string message)
+        public async Task BroadcastAsync(
+            string title,
+            string message)
         {
             await _hub.Clients.All.SendAsync(
                 "ReceiveNotification",
@@ -26,7 +29,10 @@ namespace MEDSYstemITI.Service
                 message);
         }
 
-        public async Task SendToRoleAsync(string role, string title, string message)
+        public async Task SendToRoleAsync(
+            string role,
+            string title,
+            string message)
         {
             await _hub.Clients.Group(role).SendAsync(
                 "ReceiveNotification",
@@ -34,22 +40,31 @@ namespace MEDSYstemITI.Service
                 message);
         }
 
-        public async Task SendToUserAsync(int userId, string message)
+        public async Task SendToUserAsync(
+    int userId,
+    string message,
+    NotificationType type,
+    int? requestLabsId = null,
+    int? patientResultId = null)
         {
-            // Save notification in database
             var notification = new Notification(
                 userId,
                 message,
-                DateTime.UtcNow);
+                type,
+                requestLabsId,
+                patientResultId);
 
             await _uow.Notifications.AddAsync(notification);
 
-            // Send notification via SignalR
+            await _uow.SaveChangesAsync();
+
             await _hub.Clients.User(userId.ToString())
                 .SendAsync(
                     "ReceiveNotification",
                     notification.Message,
-                    notification.SentAt);
+                    notification.Type.ToString(),
+                    notification.RequestLabsId,
+                    notification.PatientResultId);
         }
     }
 }

@@ -80,7 +80,7 @@ namespace Infrastructure.DependenciesInjection
             services.AddScoped<ILabTechnicianRepo, LabTechnicianRepository>();
             services.AddScoped<ILabTestRepo, LabTestRepository>();
             services.AddScoped<ILabTestElementRepo, LabTestElementRepository>();
-            services.AddScoped<INotificationRepo, NotificationRepository>();
+            //services.AddScoped<INotificationRepo, NotificationRepository>();
             services.AddScoped<IPatientRepo, PatientRepository>();
             services.AddScoped<IPatientResultRepo, PatientResultRepository>();
             services.AddScoped<IPatientResultElementRepo, PatientResultElementRepository>();

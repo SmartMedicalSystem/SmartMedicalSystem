@@ -1,3 +1,4 @@
+
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Identity;
@@ -9,7 +10,9 @@ namespace Infrastructure.DataSeed;
 
 public static class LabTechnicianSeeder
 {
-    public static async Task SeedAsync(    ApplicationDbContext context,UserManager<ApplicationUser> userManager)
+    public static async Task SeedAsync(
+        ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager)
     {
         var laboratoryIds =
             await context.Laboratories
@@ -154,7 +157,22 @@ public static class LabTechnicianSeeder
                 3,
                 Gender.Female,
                 new DateTime(1998, 6, 22),
-                "Aswan")
+                "Aswan"),
+            CreateTechnician(
+    "Mohamed",
+    "48289",
+    "01000000001",
+    "mohamed48289@gmail.com",
+    "mohamed48289",
+    LaboratoryId("LAB-PATH"),
+    "Lab Technician",
+    EmploymentStatus.FullTime,
+    WorkShift.Morning,
+    new DateOnly(2026, 1, 1),
+    1,
+    Gender.Male,
+    new DateTime(1998, 1, 1),
+    "Cairo")
         };
 
         foreach (var technician in technicians)
@@ -237,6 +255,8 @@ public static class LabTechnicianSeeder
                 user,
                 Roles.LabTechnician.ToString());
         }
+
+        
     }
 
     private static LabTechnician CreateTechnician(
