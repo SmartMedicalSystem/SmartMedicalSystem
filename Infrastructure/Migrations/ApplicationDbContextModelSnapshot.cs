@@ -901,7 +901,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.Entities.Person.BasePerson");
 
-                    b.ToTable("AdminPersons", (string)null);
+                    b.ToTable("AdminPersons");
                 });
 
             modelBuilder.Entity("Domain.Entities.Doctor", b =>
