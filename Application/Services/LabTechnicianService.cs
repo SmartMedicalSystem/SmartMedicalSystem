@@ -1,0 +1,307 @@
+using Application.Common;
+using Application.DTOs.Auth;
+using Application.DTOs.Laboratory;
+using Application.DTOs.LabTechnician;
+using Application.DTOs.User;
+using Application.Services.Abstraction;
+using Application.Services.Abstraction.Auth;
+using AutoMapper;
+using Domain.Entities;
+using Domain.Enums;
+using Domain.IRepository;
+using Domain.Models;
+
+namespace Application.Services
+{
+    public class LabTechnicianService : ILabTechnicianService
+    {
+        private readonly IUnitOfWork _uow;
+        private readonly Domain.IRepository.IPersonGenericRepo _personRepo;
+        private readonly IMapper _mapper;
+        private readonly IFileStorageService _fileStorageService;
+        private readonly IUserService _userService;
+
+        public LabTechnicianService(IUnitOfWork uow, Domain.IRepository.IPersonGenericRepo personRepo,
+            IMapper mapper, IFileStorageService fileStorageService, IUserService userService)
+        {
+            _uow = uow;
+            _personRepo = personRepo;
+            _mapper = mapper;
+            _fileStorageService = fileStorageService;
+            _userService = userService;
+        }
+
+        // Compatibility overloads for id-based operations
+        public async Task<LabTechnicianReadDto> UpdateAsync(int id, LabTechnicianUpdateDto dto)
+        {
+            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
+                ?? throw new NotFoundException("LabTechnician", id);
+
+            // Update fields similar to SSN-based update
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.Gender = dto.Gender;
+            entity.DateOfBirth = dto.DateOfBirth;
+            entity.Nationality = dto.Nationality;
+
+            entity.JobTitle = dto.JobTitle;
+            entity.EmploymentStatus = dto.EmploymentStatus;
+            entity.AssignToLaboratory(dto.AssignedLaboratory != null ? int.Parse(dto.AssignedLaboratory) : entity.LaboratoryId);
+            entity.WorkShift = dto.WorkShift;
+            entity.JoiningDate = dto.JoiningDate;
+            entity.YearsOfExperience = dto.YearsOfExperience;
+
+            entity.PhoneNumber = dto.PhoneNumber;
+            entity.AlternativePhone = dto.AlternativePhone;
+            entity.Email = dto.Email;
+            entity.Address = dto.Address;
+            entity.City = dto.City;
+            entity.Country = dto.Country;
+            entity.PostalCode = dto.PostalCode;
+
+            entity.Username = dto.Username;
+            entity.AllowLogin = dto.AllowLogin;
+            entity.AccountActive = dto.AccountActive;
+            entity.ReceiveNotifications = dto.ReceiveNotifications;
+            // If a new photo file was provided, save it and update URL; otherwise keep existing
+            if (dto.PhotoUrl != null)
+            {
+                var updatedPhotoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+                entity.PhotoUrl = updatedPhotoUrl ?? entity.PhotoUrl;
+            }
+
+            await _uow.LabTechnicians.UpdateAsync(entity);
+            return _mapper.Map<LabTechnicianReadDto>(entity);
+        }
+
+        public async Task<LabTechnicianReadDto> GetByIdAsync(int id)
+        {
+            var entity = await _uow.LabTechnicians.GetByIdAsync(id)
+                ?? throw new NotFoundException("LabTechnician", id);
+            return _mapper.Map<LabTechnicianReadDto>(entity);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _uow.LabTechnicians.SoftDeleteAsync(id);
+        }
+
+        public async Task<LabTechnicianReadDto> CreateAsync(LabTechnicianCreateDto dto)
+        {
+            //if (await _uow.LabTechnicians.GetByEmployeeIdAsync(dto.EmployeeId) is not null)
+            //throw new Exception("Employee ID already exists.");
+
+            if (await _uow.LabTechnicians.GetByNationalIdAsync(dto.NationalId) is not null)
+                throw new Exception("National ID already exists.");
+
+            var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+
+            var entity = new LabTechnician
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Gender = dto.Gender,
+                DateOfBirth = dto.DateOfBirth,
+                Nationality = dto.Nationality,
+                EncryptedNationalId = dto.NationalId,
+
+                //employeeidentitynumber = dto.employeeidentitynumber,
+                LaboratoryId = dto.LaboratoryId,
+                JobTitle = dto.JobTitle,
+                EmploymentStatus = dto.EmploymentStatus,
+                WorkShift = dto.WorkShift,
+                JoiningDate = dto.JoiningDate,
+                YearsOfExperience = dto.YearsOfExperience,
+
+                PhoneNumber = dto.PhoneNumber,
+                AlternativePhone = dto.AlternativePhone,
+                Email = dto.Email,
+                Address = dto.Address,
+                City = dto.City,
+                Country = dto.Country,
+                PostalCode = dto.PostalCode,
+                PhotoUrl = photoUrl,
+
+                Username = dto.Username,
+                AllowLogin = dto.AllowLogin,
+                AccountActive = dto.AccountActive,
+                ReceiveNotifications = dto.ReceiveNotifications,
+
+            };
+            var EncryptedNationalId = dto.NationalId;
+
+            await _uow.PersonGeneric.AddPerson(EncryptedNationalId, entity);
+
+            var user = await _userService.CreateUserAsync(new CreateUserRequestDto
+             {
+                 FirstName = entity.FirstName,
+                 LastName = entity.LastName,
+                 Email = entity.Email,
+                 PhoneNumber = entity.PhoneNumber,
+                 Username = entity.Username,
+                 Password = dto.Password,
+                 Role = Roles.LabTechnician.ToString(),
+                 PersonId = entity.Id
+             });
+
+            return _mapper.Map<LabTechnicianReadDto>(entity);
+        }
+
+        public async Task<LabTechnicianReadDto> UpdateAsync(string nationalId, LabTechnicianUpdateDto dto)
+        {
+            var entity = await _uow.LabTechnicians.GetByNationalIdAsync(nationalId)
+                ?? throw new NotFoundException("LabTechnician", nationalId);
+
+            // Update photo if a new one was provided
+            if (dto.PhotoUrl != null)
+            {
+                var photoUrl = await _fileStorageService.SaveImageAsync(dto.PhotoUrl);
+                entity.PhotoUrl = photoUrl ?? entity.PhotoUrl;
+            }
+
+            // Check if the new National ID already exists
+            var national = await _uow.LabTechnicians
+                .GetByNationalIdAsync(dto.NationalId);
+
+            if (national != null && national.Id != entity.Id)
+                throw new Exception("National ID already exists.");
+
+            // Personal Information
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.Gender = dto.Gender;
+            entity.DateOfBirth = dto.DateOfBirth;
+            entity.Nationality = dto.Nationality;
+
+            // National ID
+            entity.EncryptedNationalId = dto.NationalId;
+
+            // Employment Information
+            entity.JobTitle = dto.JobTitle;
+            entity.EmploymentStatus = dto.EmploymentStatus;
+            entity.WorkShift = dto.WorkShift;
+            entity.JoiningDate = dto.JoiningDate;
+            entity.YearsOfExperience = dto.YearsOfExperience;
+
+            // Contact Information
+            entity.PhoneNumber = dto.PhoneNumber;
+            entity.AlternativePhone = dto.AlternativePhone;
+            entity.Email = dto.Email;
+            entity.Address = dto.Address;
+            entity.City = dto.City;
+            entity.Country = dto.Country;
+            entity.PostalCode = dto.PostalCode;
+
+            // Account Information
+            entity.Username = dto.Username;
+            entity.AllowLogin = dto.AllowLogin;
+            entity.AccountActive = dto.AccountActive;
+            entity.ReceiveNotifications = dto.ReceiveNotifications;
+
+            await _uow.LabTechnicians.UpdateAsync(entity);
+
+            return _mapper.Map<LabTechnicianReadDto>(entity);
+        }
+
+        public async Task<LabTechnicianReadDto> GetBySSNAsync(string ssn)
+        {
+            var entity = await _uow.LabTechnicians.GetByNationalIdAsync(ssn)
+                ?? throw new NotFoundException("LabTechnician", ssn);
+
+            return _mapper.Map<LabTechnicianReadDto>(entity);
+        }
+
+        public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(PaginationParams pagination)
+        {
+            var page = await _uow.LabTechnicians.GetAllActivePaginatedAsync(pagination);
+            return PaginatedResult<LabTechnicianReadDto>.Create(
+                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
+                page.TotalCount, pagination);
+        }
+
+        // Additional overload used by some callers that accept a filter DTO
+        public async Task<PaginatedResult<LabTechnicianReadDto>> GetAllAsync(Application.DTOs.LabTechnician.LabTechnicianFilterDto filter)
+        {
+            var page = await _uow.LabTechnicians.SearchAsync(
+                filter.Search,
+                filter.Laboratory,
+                filter.EmploymentStatus,
+                filter.WorkShift,
+                filter.JoiningDate,
+                filter);
+
+            return PaginatedResult<LabTechnicianReadDto>.Create(
+                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
+                page.TotalCount, filter);
+        }
+
+        public async Task DeleteAsync(string nationalId)
+        {
+            var technician = await _uow.PersonGeneric.FindBySSN(nationalId);
+
+
+            await _uow.LabTechnicians.SoftDeleteAsync(technician.Id);
+        }
+
+        // (int-based overloads implemented above)
+
+        // ===== NEW: Get technicians by Laboratory =====
+        public async Task<PaginatedResult<LabTechnicianReadDto>> GetByLaboratoryIdAsync(
+            int laboratoryId,
+            PaginationParams pagination,
+            string? searchTerm = null)
+        {
+            var page = await _uow.LabTechnicians.GetByLaboratoryIdAsync(laboratoryId, pagination, searchTerm);
+
+            return PaginatedResult<LabTechnicianReadDto>.Create(
+                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
+
+        public async Task<PaginatedResult<TechnicianBriefDto>>
+    GetAvailableForLaboratoryAsync(
+        int laboratoryId,
+        PaginationParams pagination,
+        string? searchTerm = null)
+        {
+            var page =
+                await _uow.LabTechnicians
+                    .GetAvailableForLaboratoryAsync(
+                        laboratoryId,
+                        pagination,
+                        searchTerm);
+
+            return PaginatedResult<TechnicianBriefDto>.Create(
+                _mapper.Map<IEnumerable<TechnicianBriefDto>>(
+                    page.Items),
+                page.TotalCount,
+                pagination);
+        }
+
+        public async Task<PaginatedResult<TechnicianBriefDto>>
+      GetAvailableForNewLaboratoryAsync(
+          PaginationParams pagination,
+          string? searchTerm = null)
+        {
+            var page =
+                await _uow.LabTechnicians
+                    .GetAvailableForNewLaboratoryAsync(
+                        pagination,
+                        searchTerm);
+
+            var technicians = page.Items.Select(t =>
+                new TechnicianBriefDto
+                {
+                    Id = t.Id,
+                    Name = $"{t.FirstName} {t.LastName}".Trim(),
+                    LaboratoryName = t.Laboratory?.Name
+                });
+
+            return PaginatedResult<TechnicianBriefDto>.Create(
+                technicians,
+                page.TotalCount,
+                pagination);
+        }
+    }
+}

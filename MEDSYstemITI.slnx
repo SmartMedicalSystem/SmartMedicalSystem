@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Application/">
+    <Project Path="Application/Application.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Domain/Domain.csproj" />
+  </Folder>
+  <Folder Name="/infrastructure/">
+    <Project Path="Infrastructure/Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/presentationAPI/">
+    <Project Path="MEDSYstemITI/MEDSYstemITI.csproj" />
+  </Folder>
+  <Folder Name="/Testing/">
+    <Project Path="Testing/Application/Application.csproj" Id="79acc656-6312-43af-a01d-b5b392eb3763" />
+    <Project Path="Testing/Domain/Domain.csproj" Id="bc8f8b00-8748-418b-b037-3a6e06aa0768" />
+    <Project Path="Testing/Infrastructure/Infrastructure.csproj" Id="389973a6-2b4c-4865-9775-7bbf21dc7cdd" />
+    <Project Path="Testing/presentationAPI/presentationAPI.csproj" Id="1b544571-e6b2-4cce-8ce1-d89c3b88e436" />
+  </Folder>
+</Solution>

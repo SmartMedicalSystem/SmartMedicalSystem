@@ -1,0 +1,339 @@
+================================================================================
+                   PAGINATION QUICK REFERENCE CARD
+================================================================================
+
+📚 MODELS
+────────────────────────────────────────────────────────────────────────────
+
+Input Model: PaginationParams
+   Location: Domain\Models\PaginationParams.cs
+   Constructor: new PaginationParams(pageNumber = 1, pageSize = 10)
+
+   Properties:
+      int PageNumber       // 1-based page number (default: 1)
+      int PageSize         // Items per page (default: 10, max: 100)
+      int MaxPageSize      // Constant limit (100)
+
+   Methods:
+      int CalculateSkip()  // Returns (PageNumber - 1) * PageSize
+      bool IsValid()       // Validates parameters
+
+Output Model: PaginatedResult<T>
+   Location: Domain\Models\PaginatedResult.cs
+
+   Properties:
+      IEnumerable<T> Items
+      int PageNumber
+      int PageSize
+      int TotalCount       // Total items across all pages
+      int TotalPages       // Calculated: ceil(TotalCount / PageSize)
+      bool HasNextPage     // PageNumber < TotalPages
+      bool HasPreviousPage // PageNumber > 1
+      int FirstItemIndex   // Display first item number
+      int LastItemIndex    // Display last item number
+
+   Methods:
+      static Create<T>(items, totalCount, pagination)
+      static Empty()
+      string GetSummary()  // "Showing X to Y of Z"
+
+================================================================================
+                      IMPLEMENTATION CHECKLIST
+================================================================================
+
+For each GET method:
+
+Step 1: Count Total
+   var totalCount = await _context.Entity
+       .Where(e => !e.IsDeleted)
+       .CountAsync();
+
+Step 2: Get Paginated Items
+   var items = await _context.Entity
+       .Where(e => !e.IsDeleted)
+       .OrderBy(e => e.SomeField)
+       .Skip(pagination.CalculateSkip())
+       .Take(pagination.PageSize)
+       .ToListAsync();
+
+Step 3: Return Result
+   return PaginatedResult<Entity>.Create(items, totalCount, pagination);
+
+================================================================================
+                        PAGINATION METHODS SUMMARY
+================================================================================
+
+LabTechnicianRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+
+DoctorRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+   ✅ GetByDepartmentPaginatedAsync(int)
+   ✅ GetBySpecializationPaginatedAsync(string)
+
+DepartmentRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+
+PatientRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+   ✅ GetAllWithSessionsPaginatedAsync()
+
+LabTestRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+
+TestElementRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+
+SessionRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+   ✅ GetByPatientPaginatedAsync(int)
+   ✅ GetByDoctorPaginatedAsync(int)
+   ✅ GetByDepartmentPaginatedAsync(int)
+
+RequestLabsRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+   ✅ GetBySessionPaginatedAsync(int)
+   ✅ GetByStatusPaginatedAsync(LabRequestStatus)
+
+PatientResultRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+   ✅ GetByPatientPaginatedAsync(int)
+   ✅ GetBySessionPaginatedAsync(int)
+   ✅ GetByLabTestPaginatedAsync(int)
+
+PatientResultElementRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+   ✅ GetByPatientResultPaginatedAsync(int)
+   ✅ GetByTestElementPaginatedAsync(int)
+   ✅ GetByTechnicianPaginatedAsync(int)
+
+NotificationRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetAllActivePaginatedAsync()
+   ✅ GetByUserPaginatedAsync(int)
+   ✅ GetUnreadByUserPaginatedAsync(int)
+
+LabTestElementRepository:
+   ✅ GetAllPaginatedAsync()
+   ✅ GetByLabTestPaginatedAsync(int)
+   ✅ GetByTestElementPaginatedAsync(int)
+
+================================================================================
+                        CONTROLLER USAGE PATTERNS
+================================================================================
+
+Basic GET with pagination:
+
+[HttpGet]
+public async Task<ActionResult<PaginatedResult<Doctor>>> GetDoctors(
+    [FromQuery] int pageNumber = 1, 
+    [FromQuery] int pageSize = 10)
+{
+    var pagination = new PaginationParams(pageNumber, pageSize);
+    var result = await _doctorRepo.GetAllPaginatedAsync(pagination);
+    return Ok(result);
+}
+
+Filter + Pagination:
+
+[HttpGet("department/{id}")]
+public async Task<ActionResult<PaginatedResult<Doctor>>> GetDoctorsByDepartment(
+    int id,
+    [FromQuery] int pageNumber = 1, 
+    [FromQuery] int pageSize = 10)
+{
+    var pagination = new PaginationParams(pageNumber, pageSize);
+    var result = await _doctorRepo.GetByDepartmentPaginatedAsync(id, pagination);
+    return Ok(result);
+}
+
+With Validation:
+
+[HttpGet]
+public async Task<ActionResult<PaginatedResult<Session>>> GetSessions(
+    [FromQuery] PaginationParams pagination)
+{
+    if (!pagination.IsValid())
+        return BadRequest("Invalid pagination parameters");
+
+    var result = await _sessionRepo.GetAllPaginatedAsync(pagination);
+    return Ok(result);
+}
+
+================================================================================
+                        RESPONSE EXAMPLES
+================================================================================
+
+Success Response:
+
+{
+    "items": [
+        { "id": 1, "name": "Dr. Ahmed", ... },
+        { "id": 2, "name": "Dr. Sarah", ... },
+        ...
+    ],
+    "pageNumber": 1,
+    "pageSize": 10,
+    "totalCount": 250,
+    "totalPages": 25,
+    "hasNextPage": true,
+    "hasPreviousPage": false
+}
+
+With Summary:
+
+{
+    "items": [...],
+    "pageNumber": 2,
+    "pageSize": 10,
+    "totalCount": 250,
+    "totalPages": 25,
+    "summary": "Showing 11 to 20 of 250"
+}
+
+Last Page Response:
+
+{
+    "items": [...],  // Only 10 items (last page)
+    "pageNumber": 25,
+    "pageSize": 10,
+    "totalCount": 250,
+    "totalPages": 25,
+    "hasNextPage": false,
+    "hasPreviousPage": true
+}
+
+================================================================================
+                        QUERY PARAMETERS
+================================================================================
+
+Standard pagination query format:
+
+   /api/doctors?pageNumber=2&pageSize=10
+
+With filters:
+
+   /api/doctors/department/5?pageNumber=1&pageSize=20
+   /api/sessions/patient/3?pageNumber=1&pageSize=15
+   /api/notifications/user/1/unread?pageNumber=1&pageSize=25
+
+Defaults (if not specified):
+   - pageNumber = 1 (first page)
+   - pageSize = 10 (10 items per page)
+   - maxPageSize = 100 (enforced limit)
+
+================================================================================
+                        LINQ PAGINATION FORMULAS
+================================================================================
+
+Calculate Skip Count:
+   skip = (pageNumber - 1) * pageSize
+
+   Examples:
+   Page 1: (1-1)*10 = 0 (skip 0, return items 1-10)
+   Page 2: (2-1)*10 = 10 (skip 10, return items 11-20)
+   Page 3: (3-1)*10 = 20 (skip 20, return items 21-30)
+
+Calculate Total Pages:
+   totalPages = ceil(totalCount / pageSize)
+   = (totalCount + pageSize - 1) / pageSize
+
+   Examples:
+   250 items, size 10: (250+10-1)/10 = 25 pages
+   100 items, size 20: (100+20-1)/20 = 6 pages
+   15 items, size 10: (15+10-1)/10 = 2 pages
+
+First Item Index:
+   firstIndex = ((pageNumber - 1) * pageSize) + 1
+
+   Examples:
+   Page 1: ((1-1)*10)+1 = 1
+   Page 2: ((2-1)*10)+1 = 11
+   Page 3: ((3-1)*10)+1 = 21
+
+Last Item Index:
+   lastIndex = firstIndex + itemsOnPage - 1
+
+Summary:
+   "Showing {firstIndex} to {lastIndex} of {totalCount}"
+
+================================================================================
+                        COMMON PATTERNS
+================================================================================
+
+Empty Result Set:
+   - TotalCount = 0
+   - TotalPages = 1 (forced to minimum 1)
+   - Items = empty collection
+   - Summary = "No items to display"
+
+Single Page:
+   - PageNumber = 1
+   - TotalPages = 1
+   - HasNextPage = false
+   - HasPreviousPage = false
+
+Boundary Page:
+   - First: HasPreviousPage = false
+   - Last: HasNextPage = false
+
+Invalid PageNumber:
+   - Use pageNumber > totalPages: Returns empty items
+   - Suggest validation in controller
+   - Return error or redirect to page 1
+
+MaxPageSize Enforcement:
+   - pageSize = 150 → clamped to 100
+   - Done in PaginationParams setter
+   - Prevents performance issues
+
+================================================================================
+                        TESTING PAGINATION
+================================================================================
+
+Unit Test Example:
+
+[Test]
+public async Task GetAllPaginatedAsync_ReturnsCorrectPage()
+{
+    // Arrange
+    var pagination = new PaginationParams(pageNumber: 2, pageSize: 10);
+
+    // Act
+    var result = await _repository.GetAllPaginatedAsync(pagination);
+
+    // Assert
+    Assert.That(result.PageNumber, Is.EqualTo(2));
+    Assert.That(result.Items.Count(), Is.LessThanOrEqualTo(10));
+    Assert.That(result.TotalPages, Is.GreaterThan(1));
+}
+
+Integration Test Example:
+
+[Test]
+public async Task GetAllPaginatedAsync_WithLargeDataSet()
+{
+    // Arrange: Create 500 test records
+    var pagination = new PaginationParams(pageNumber: 1, pageSize: 20);
+
+    // Act: Get first page
+    var result = await _repository.GetAllPaginatedAsync(pagination);
+
+    // Assert
+    Assert.That(result.TotalCount, Is.EqualTo(500));
+    Assert.That(result.TotalPages, Is.EqualTo(25));
+    Assert.That(result.Items.Count(), Is.EqualTo(20));
+    Assert.That(result.HasNextPage, Is.True);
+}
+
+================================================================================
