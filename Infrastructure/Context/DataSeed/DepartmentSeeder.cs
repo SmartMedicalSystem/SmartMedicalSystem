@@ -18,13 +18,13 @@ public static class DepartmentSeeder
         var departments = new List<Department>
        {
            new Department("Cardiology",          "Dr. Ahmed Hassan")       { CreatedAt = DateTime.UtcNow },
-           new Department("Neurology",            "Dr. Sara Mohamed")       { CreatedAt = DateTime.UtcNow },
+           new Department("Neurology",            "Dr. mohamed saied")       { CreatedAt = DateTime.UtcNow },
            new Department("Orthopedics",          "Dr. Khaled Ali")         { CreatedAt = DateTime.UtcNow },
            new Department("Pediatrics",           "Dr. Mona Ibrahim")       { CreatedAt = DateTime.UtcNow },
            new Department("Oncology",             "Dr. Youssef Nasser")     { CreatedAt = DateTime.UtcNow },
            new Department("Radiology",            "Dr. Nadia Farouk")       { CreatedAt = DateTime.UtcNow },
            new Department("General Surgery",      "Dr. Tarek Mostafa")      { CreatedAt = DateTime.UtcNow },
-           new Department("Internal Medicine",    "Dr. Heba Salah")         { CreatedAt = DateTime.UtcNow },
+           new Department("Internal Medicine",    "Dr. salwa sayed")         { CreatedAt = DateTime.UtcNow },
            new Department("Dermatology",          "Dr. Omar Zaki")          { CreatedAt = DateTime.UtcNow },
            new Department("Laboratory",           "Dr. Rania Adel")         { CreatedAt = DateTime.UtcNow },
        };

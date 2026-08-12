@@ -29,7 +29,27 @@ namespace Application.Services.AI
             var patientResult = await _uow.PatientResults.GetWithResultElementsAsync(patientResultId)
                 ?? throw new NotFoundException("PatientResult", patientResultId);
 
-            return BuildBaseDto(patientResult);
+            var dto = BuildBaseDto(patientResult);
+
+            // If the patient result already contains a summary/report/suggestion, ensure it's
+            // indexed into the RAG vector store so retrieval-based QA can find it later.
+            if (!string.IsNullOrWhiteSpace(dto.Summary))
+            {
+                await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceTypes.ResultSummary,
+                    $"[{dto.LabTestName}] Summary: {dto.Summary}", cancellationToken);
+            }
+            if (!string.IsNullOrWhiteSpace(dto.AIClassifiedReport))
+            {
+                await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceTypes.ResultReport,
+                    $"[{dto.LabTestName}] Classified report: {dto.AIClassifiedReport}", cancellationToken);
+            }
+            if (!string.IsNullOrWhiteSpace(dto.AISuggestion))
+            {
+                await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceTypes.ResultSuggestion,
+                    $"[{dto.LabTestName}] Suggestion: {dto.AISuggestion}", cancellationToken);
+            }
+
+            return dto;
         }
 
         public async Task<PatientResultAIAnalysisDto> GenerateAnalysisAsync(int patientResultId, CancellationToken cancellationToken = default)
@@ -97,6 +117,7 @@ namespace Application.Services.AI
                 LabTestId = patientResult.LabTestId,
                 LabTestName = patientResult.labTest?.TestName ?? $"LabTest #{patientResult.LabTestId}",
                 GeneratedAtUtc = DateTime.UtcNow,
+                TestDate = patientResult.Session?.SessionDate ?? default,
                 Elements = elements,
                 Summary = patientResult.Summary,
                 AIClassifiedReport = patientResult.AIClassifiedReport,
