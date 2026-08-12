@@ -50,8 +50,7 @@ namespace Application.Services
                 cancellationToken);
         }
 
-        public async Task<PatientResultReadDto> CreateAsync(
-            PatientResultCreateDto dto)
+        public async Task<PatientResultReadDto> CreateAsync(PatientResultCreateDto dto)
         {
             _ = await _uow.Patients.GetByIdAsync(dto.PatientId)
                 ?? throw new NotFoundException(
@@ -167,6 +166,7 @@ namespace Application.Services
                 // Ignore notification/email failures
             }
 
+
             return _mapper.Map<PatientResultReadDto>(
                 entity);
         }
@@ -192,8 +192,7 @@ namespace Application.Services
                 entity);
         }
 
-        public async Task<PatientResultReadDto> GetByIdAsync(
-            int id)
+        public async Task<PatientResultReadDto> GetByIdAsync(int id)
         {
             var entity =
                 await _uow.PatientResults
@@ -206,8 +205,7 @@ namespace Application.Services
                 entity);
         }
 
-        public async Task<PaginatedResult<PatientResultReadDto>>
-            GetByPatientAsync(
+        public async Task<PaginatedResult<PatientResultReadDto>> GetByPatientAsync(
                 int patientId,
                 PaginationParams pagination)
         {
@@ -223,5 +221,41 @@ namespace Application.Services
                 page.TotalCount,
                 pagination);
         }
+
+        // notify the patient when the result is ready
+        public async Task NotifyPatientAsync(PatientResultAIAnalysisDto dto)
+        {
+            var result = await _uow.PatientResults.GetByIdAsync(dto.PatientResultId)
+                ?? throw new NotFoundException(
+                    "PatientResult",
+                    dto.PatientResultId);
+            if (result.Patient != null &&
+                !string.IsNullOrWhiteSpace(result.Patient.Email))
+            {
+                var message =
+                    new Application.DTOs.Email.Message(new List<string>
+                        {
+                            result.Patient.Email
+                        },
+                        $"Your Lab Results Are Ready - Result #{result.Id}",
+                        $@"
+                            <h2>Your Laboratory Results Are Ready</h2>
+                            <p>
+                                Your laboratory results are now available.
+                            </p>
+                            <p>
+                                {result.Summary}
+                            </p>
+                            <p>
+                                You can review your results and any AI-generated suggestions by logging into the system.
+                            </p>
+                        ");
+                if (_emailSender != null)
+                {
+                    await _emailSender.SendEmailAsync(message);
+                }
+            }
+        }
+
     }
 }

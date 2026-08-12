@@ -19,5 +19,8 @@ namespace Application.Services.Abstraction
         /// text into the RAG vector store. Same pipeline the MCP tools call.
         /// </summary>
         Task<PatientResultAIAnalysisDto> GenerateAIAnalysisAsync(int id, CancellationToken cancellationToken = default);
+
+        Task NotifyPatientAsync(PatientResultAIAnalysisDto dto);
+
     }
 }
