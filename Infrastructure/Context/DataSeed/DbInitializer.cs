@@ -11,7 +11,7 @@ namespace Infrastructure.DataSeed;
 public static class DbInitializer
 {
     public const string DefaultAdminEmail =
-        "admin@medsystem.local";
+       "mohamedsaiedhassan308@gmail.com"; //"admin@medsystem.local";
 
     public const string DefaultAdminPassword =
         "Admin@12345";

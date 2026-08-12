@@ -1,5 +1,6 @@
-using System;
 using Domain.Common;
+using Microsoft.Data.SqlTypes;
+using System;
 
 namespace Domain.Entities
 {
@@ -22,12 +23,12 @@ namespace Domain.Entities
     /// patient, together with its embedding vector, used as the knowledge base for the
     /// Retrieval-Augmented-Generation (RAG) chatbot exposed to the front-end.
     ///
-    /// The embedding is stored as a JSON-encoded array of floats (<see cref="EmbeddingJson"/>)
-    /// rather than a native SQL Server VECTOR column so the schema stays portable across any
-    /// supported SQL Server version. Similarity search (cosine similarity) is performed in the
-    /// application layer - see Application.Services.RagService. If you are running SQL Server
-    /// 2025+ you can migrate this column to the native VECTOR type and push the similarity
-    /// search down to the database for better performance at scale.
+    /// The embedding is persisted using SQL Server 2025's native VECTOR(1536) column type via
+    /// EF Core 10's built-in <see cref="SqlVector{T}"/> support (see
+    /// Infrastructure.Context.Configurations.PatientRagDocumentConfiguration). Similarity search
+    /// is pushed down to the database with EF.Functions.VectorDistance ("cosine") instead of
+    /// being computed in the application layer - see
+    /// Infrastructure.Repository.PatientRagDocumentRepository / Application.Services.AI.RagService.
     /// </summary>
     public class PatientRagDocument : BaseEntity
     {
@@ -42,8 +43,12 @@ namespace Domain.Entities
         /// <summary>The raw text that was embedded (also used as the RAG "passage" returned to the LLM).</summary>
         public string Content { get; private set; } = string.Empty;
 
-        /// <summary>JSON-serialized float[] embedding vector produced by the embedding model.</summary>
-        public string EmbeddingJson { get; private set; } = "[]";
+        /// <summary>
+        /// Native SQL Server 2025 VECTOR(1536) column. Always populated - a document can't exist
+        /// without an embedding, enforced both here (constructor requires it) and at the database
+        /// level (see PatientRagDocumentConfiguration: HasColumnType("vector(1536)").IsRequired()).
+        /// </summary>
+        public SqlVector<float> EmbeddingVector { get; private set; }
 
         /// <summary>Number of dimensions in the embedding vector (cached for quick sanity checks).</summary>
         public int EmbeddingDimensions { get; private set; }
@@ -71,16 +76,17 @@ namespace Domain.Entities
         public void SetEmbedding(float[] embedding)
         {
             ArgumentNullException.ThrowIfNull(embedding);
-            EmbeddingJson = System.Text.Json.JsonSerializer.Serialize(embedding);
+
+            if (embedding.Length == 0)
+                throw new ArgumentException("Embedding cannot be empty.", nameof(embedding));
+
+            EmbeddingVector = new SqlVector<float>(embedding);
             EmbeddingDimensions = embedding.Length;
         }
 
         public float[] GetEmbedding()
         {
-            if (string.IsNullOrWhiteSpace(EmbeddingJson))
-                return Array.Empty<float>();
-
-            return System.Text.Json.JsonSerializer.Deserialize<float[]>(EmbeddingJson) ?? Array.Empty<float>();
+            return EmbeddingVector.Memory.ToArray();
         }
 
         public void UpdateContent(string content, float[] embedding, string embeddingModel)

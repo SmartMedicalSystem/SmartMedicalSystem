@@ -1,6 +1,7 @@
 using Application.DTOs.Rag;
 using Application.Services.Abstraction.AI;
 using Domain.IRepository;
+using Microsoft.Data.SqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,13 @@ using System.Threading.Tasks;
 namespace Application.Services.AI
 {
     /// <summary>
-    /// Reference RAG implementation: embeddings are stored as JSON float[] on PatientRagDocument
-    /// (see Domain.Entities.PatientRagDocument) and similarity search is a brute-force in-memory
-    /// cosine similarity over the candidate set (all of a patient's documents, or the whole table
-    /// when no patient filter is given).
-    ///
-    /// This is intentionally simple and fully portable across any SQL Server edition/version. It
-    /// scales fine for a single patient's lab history (dozens to low hundreds of chunks). If the
-    /// unfiltered (cross-patient) search needs to scale to a very large table, either add a
-    /// SQL Server 2025+ native VECTOR column with VECTOR_DISTANCE, or move the vector index to a
-    /// dedicated vector database (Qdrant, pgvector, Azure AI Search, ...) behind this same interface.
+    /// RAG implementation backed by SQL Server 2025's native VECTOR type. Embeddings are stored as
+    /// SqlVector&lt;float&gt; on PatientRagDocument (see Domain.Entities.PatientRagDocument), and
+    /// similarity search is pushed down to the database via EF.Functions.VectorDistance ("cosine")
+    /// - see Infrastructure.Repository.PatientRagDocumentRepository - instead of pulling every
+    /// candidate row into memory and scoring it in C#. SQL Server does the nearest-neighbor ranking
+    /// itself, which scales far better than the old brute-force in-memory approach once the table
+    /// grows beyond a single patient's handful of chunks.
     /// </summary>
     public class RagService : IRagService
     {
@@ -62,55 +60,29 @@ namespace Application.Services.AI
             if (string.IsNullOrWhiteSpace(query))
                 return new List<RagSourceDto>();
 
-            var candidates = patientId.HasValue
-                ? await _uow.PatientRagDocuments.GetByPatientAsync(patientId.Value)
-                : await _uow.PatientRagDocuments.GetAllActiveDocumentsAsync();
-
-            var candidateList = candidates.ToList();
-            if (candidateList.Count == 0)
-                return new List<RagSourceDto>();
+            var effectiveTopK = topK <= 0 ? 5 : topK;
 
             var queryEmbedding = await _aiClient.EmbedAsync(query, cancellationToken);
+            var queryVector = new SqlVector<float>(queryEmbedding);
 
-            var scored = candidateList
-                .Select(doc => new
-                {
-                    Doc = doc,
-                    Score = CosineSimilarity(queryEmbedding, doc.GetEmbedding())
-                })
-                .OrderByDescending(x => x.Score)
-                .Take(topK <= 0 ? 5 : topK)
-                .ToList();
+            var results = patientId.HasValue
+                ? await _uow.PatientRagDocuments.SearchByPatientAsync(patientId.Value, queryVector, effectiveTopK, cancellationToken)
+                : await _uow.PatientRagDocuments.SearchAllActiveAsync(queryVector, effectiveTopK, cancellationToken);
 
-            return scored.Select(x => new RagSourceDto
+            return results.Select(r => new RagSourceDto
             {
-                DocumentId = x.Doc.Id,
-                PatientId = x.Doc.PatientId,
-                PatientResultId = x.Doc.PatientResultId,
-                SourceType = x.Doc.SourceType,
-                Content = x.Doc.Content,
-                SimilarityScore = Math.Round(x.Score, 4)
+                DocumentId = r.Document.Id,
+                PatientId = r.Document.PatientId,
+                PatientResultId = r.Document.PatientResultId,
+                SourceType = r.Document.SourceType,
+                Content = r.Document.Content,
+                // SQL Server's VECTOR_DISTANCE("cosine", ...) returns a *distance* in [0, 2]
+                // (0 = identical). Convert back to a similarity score in the same [-1, 1] range
+                // the previous in-memory cosine-similarity implementation produced, so callers
+                // (RagChatService, the chat-by-patient and chat-by-group/GroupByPatient modes,
+                // and the API response shape) don't need to change.
+                SimilarityScore = Math.Round(1d - r.Distance, 4)
             }).ToList();
-        }
-
-        private static double CosineSimilarity(float[] a, float[] b)
-        {
-            var length = Math.Min(a.Length, b.Length);
-            if (length == 0)
-                return 0d;
-
-            double dot = 0, normA = 0, normB = 0;
-            for (var i = 0; i < length; i++)
-            {
-                dot += a[i] * b[i];
-                normA += a[i] * a[i];
-                normB += b[i] * b[i];
-            }
-
-            if (normA == 0 || normB == 0)
-                return 0d;
-
-            return dot / (Math.Sqrt(normA) * Math.Sqrt(normB));
         }
     }
 }

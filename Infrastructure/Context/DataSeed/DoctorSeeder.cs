@@ -52,20 +52,20 @@ public static class DoctorSeeder
                 Gender.Male,
                 DepartmentId("Cardiology"),
                 new DateTime(1975, 3, 15),
-                "ahmed.hassan@medsystem.local",
+                "mohamed48289@gmail.com",
                 "12 Tahrir Square",
                 "Cairo"),
 
 
             CreateDoctor(
-                "Sara",
-                "Mohamed",
+                "mohamed",
+                "saied",
                 "Neurology",
                 "01012345678",
-                Gender.Female,
+                Gender.Male,
                 DepartmentId("Neurology"),
                 new DateTime(1980, 7, 22),
-                "sara.mohamed@medsystem.local",
+                "mohamedsaiedhassan308@gmail.com",
                 "45 Nile Street",
                 "Giza"),
 
@@ -130,26 +130,26 @@ public static class DoctorSeeder
                 "Cairo"),
 
             CreateDoctor(
-                "Heba",
-                "Salah",
+                "salwa",
+                "sayed",
                 "Internal Medicine",
                 "01078901234",
                 Gender.Female,
                 DepartmentId("Internal Medicine"),
                 new DateTime(1982, 12, 8),
-                "heba.salah@medsystem.local",
+                "salwasayed522@gmail.com",
                 "5 Corniche El-Nil",
                 "Cairo"),
 
             CreateDoctor(
-                "Omar",
-                "Zaki",
+                "yara",
+                "mohamed",
                 "Dermatology",
                 "01089012345",
                 Gender.Male,
                 DepartmentId("Dermatology"),
                 new DateTime(1988, 2, 19),
-                "omar.zaki@medsystem.local",
+                "yaraamohamedds232@gmail.com",
                 "29 Ahmed Urabi Street",
                 "Cairo"),
 
