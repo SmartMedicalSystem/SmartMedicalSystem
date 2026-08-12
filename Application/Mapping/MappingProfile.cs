@@ -166,9 +166,31 @@ namespace Application.Mapping
 
 
 
-            CreateMap<DomainEntities.Notification, NotificationDto.NotificationReadDto>();
+            CreateMap<DomainEntities.Notification, NotificationDto.NotificationReadDto>()
+    .ForMember(d => d.Type,
+        o => o.MapFrom(s => s.Type))
 
-            CreateMap<NotificationDto.NotificationReadDto, DomainEntities.Notification>();
+    .ForMember(d => d.RequestLabsId,
+        o => o.MapFrom(s => s.RequestLabsId))
+
+    .ForMember(d => d.PatientResultId,
+        o => o.MapFrom(s => s.PatientResultId))
+
+    .ForMember(d => d.SessionId,
+        o => o.MapFrom(s =>
+            s.RequestLabs != null
+                ? s.RequestLabs.SessionId
+                : s.PatientResult != null
+                    ? s.PatientResult.SessionId
+                    : (int?)null))
+
+    .ForMember(d => d.PatientId,
+        o => o.MapFrom(s =>
+            s.RequestLabs != null
+                ? s.RequestLabs.Session.PatientId
+                : s.PatientResult != null
+                    ? s.PatientResult.PatientId
+                    : (int?)null));
 
 
 

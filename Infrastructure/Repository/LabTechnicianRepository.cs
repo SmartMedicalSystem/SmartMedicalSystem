@@ -101,34 +101,25 @@ namespace Infrastructure.Repository
         }
 
         public async Task<PaginatedResult<LabTechnician>> GetByLaboratoryIdAsync(
-            int laboratoryId,
-            PaginationParams pagination,
-            string? searchTerm = null)
+    int laboratoryId,
+    PaginationParams pagination)
         {
             var query = _context.LabTechnicians
-                .Include(t => t.Laboratory)
-                .Where(t => !t.IsDeleted && t.LaboratoryId == laboratoryId);
-
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                var search = searchTerm.Trim().ToLower();
-
-                query = query.Where(t =>
-                    (t.FirstName + " " + t.LastName).ToLower().Contains(search) ||
-                    t.JobTitle.ToLower().Contains(search) ||
-                    t.Username.ToLower().Contains(search));
-            }
+                .Include(x => x.User)
+                .Where(x => x.LaboratoryId == laboratoryId);
 
             var totalCount = await query.CountAsync();
 
             var items = await query
-                .OrderBy(t => t.FirstName)
-                .ThenBy(t => t.LastName)
+                .OrderBy(x => x.Id)
                 .Skip(pagination.CalculateSkip())
                 .Take(pagination.PageSize)
                 .ToListAsync();
 
-            return PaginatedResult<LabTechnician>.Create(items, totalCount, pagination);
+            return PaginatedResult<LabTechnician>.Create(
+                items,
+                totalCount,
+                pagination);
         }
 
         public async Task<PaginatedResult<LabTechnician>> GetAvailableForLaboratoryAsync(

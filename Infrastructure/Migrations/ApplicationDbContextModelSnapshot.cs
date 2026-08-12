@@ -220,26 +220,41 @@ namespace Infrastructure.Migrations
                 b.Property<bool>("IsDeleted")
                     .HasColumnType("bit");
 
-                b.Property<bool>("IsRead")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                 b.Property<string>("Message")
                     .IsRequired()
                     .HasMaxLength(1000)
                     .HasColumnType("nvarchar(1000)");
 
-                b.Property<DateTime>("SentAt")
-                    .HasColumnType("datetime2");
+                    b.Property<int?>("PatientResultId")
+                        .HasColumnType("int");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<int?>("RequestLabsId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                 b.Property<int>("UserId")
                     .HasColumnType("int");
 
                 b.HasKey("Id");
 
-                b.HasIndex("UserId");
+                    b.HasIndex("PatientResultId");
+
+                    b.HasIndex("RequestLabsId");
+
+                    b.HasIndex("UserId");
 
                 b.ToTable("Notifications", (string)null);
             });
@@ -887,8 +902,8 @@ namespace Infrastructure.Migrations
             {
                 b.HasBaseType("Domain.Entities.Person.BasePerson");
 
-                b.ToTable("AdminPersons", (string)null);
-            });
+                    b.ToTable("AdminPersons");
+                });
 
             modelBuilder.Entity("Domain.Entities.Doctor", b =>
             {
@@ -1008,15 +1023,29 @@ namespace Infrastructure.Migrations
             });
 
             modelBuilder.Entity("Domain.Entities.Notification", b =>
-            {
-                b.HasOne("Domain.Identity.ApplicationUser", "User")
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Domain.Entities.PatientResult", "PatientResult")
+                        .WithMany()
+                        .HasForeignKey("PatientResultId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
-                b.Navigation("User");
-            });
+                    b.HasOne("Domain.Entities.RequestLabs", "RequestLabs")
+                        .WithMany()
+                        .HasForeignKey("RequestLabsId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Domain.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PatientResult");
+
+                    b.Navigation("RequestLabs");
+
+                    b.Navigation("User");
+                });
 
             modelBuilder.Entity("Domain.Entities.PatientRagDocument", b =>
             {

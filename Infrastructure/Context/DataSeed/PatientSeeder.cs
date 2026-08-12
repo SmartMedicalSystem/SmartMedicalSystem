@@ -49,15 +49,15 @@ public static class PatientSeeder
                 "mohamed48289@gmail.com"),
 
             CreatePatient(
-                "Nour",
-                "Ahmed",
+                "Yara",
+                "Mohamed",
                 "20400004",
                 new DateTime(1978, 11, 17),
                 Gender.Female,
                 "1045678901",
                 "20 Smouha, Alexandria",
                 BloodType.ABPositive,
-                "nour.ahmed@medsystem.local"),
+                "yaraamohamedd232@gmail.com"),
 
             CreatePatient(
                 "Karim",

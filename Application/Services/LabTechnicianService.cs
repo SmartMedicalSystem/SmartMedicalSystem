@@ -46,6 +46,7 @@ namespace Application.Services
 
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;
+            entity.AssignToLaboratory(dto.AssignedLaboratory != null ? int.Parse(dto.AssignedLaboratory) : entity.LaboratoryId);
             entity.WorkShift = dto.WorkShift;
             entity.JoiningDate = dto.JoiningDate;
             entity.YearsOfExperience = dto.YearsOfExperience;
@@ -250,11 +251,13 @@ namespace Application.Services
             PaginationParams pagination,
             string? searchTerm = null)
         {
-            var page = await _uow.LabTechnicians.GetByLaboratoryIdAsync(laboratoryId, pagination, searchTerm);
-
+            var result = await _uow.LabTechnicians
+    .GetByLaboratoryIdAsync(
+        laboratoryId,
+        pagination);
             return PaginatedResult<LabTechnicianReadDto>.Create(
-                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(page.Items),
-                page.TotalCount,
+                _mapper.Map<IEnumerable<LabTechnicianReadDto>>(result.Items),
+                result.TotalCount,
                 pagination);
         }
 

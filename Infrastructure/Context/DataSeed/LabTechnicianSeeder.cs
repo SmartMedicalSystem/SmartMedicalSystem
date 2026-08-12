@@ -9,7 +9,7 @@ namespace Infrastructure.DataSeed;
 
 public static class LabTechnicianSeeder
 {
-    public static async Task SeedAsync(    ApplicationDbContext context,UserManager<ApplicationUser> userManager)
+    public static async Task SeedAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         var laboratoryIds =
             await context.Laboratories

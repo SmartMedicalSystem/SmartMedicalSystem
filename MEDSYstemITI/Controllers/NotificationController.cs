@@ -9,7 +9,7 @@ namespace MEDSYstemITI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationAppService _notificationService;

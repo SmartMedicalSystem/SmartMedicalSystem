@@ -21,8 +21,7 @@ namespace Domain.IRepository
         // ===== NEW: Get technicians by Laboratory with Pagination =====
         Task<PaginatedResult<LabTechnician>> GetByLaboratoryIdAsync(
             int laboratoryId,
-            PaginationParams pagination,
-            string? searchTerm = null);
+            PaginationParams pagination);
 
         // ===== NEW:
         Task<PaginatedResult<LabTechnician>>
