@@ -22,17 +22,7 @@ public static class NotificationSeeder
         var drSara = await userManager.FindByEmailAsync("sara.mohamed@medsystem.local");
         var drHeba = await userManager.FindByEmailAsync("salwasayed522@gmail.com");
 
-        var drAhmed =
-            await userManager.FindByEmailAsync(
-                "ahmed.hassan@medsystem.local");
-
-        var drSara =
-            await userManager.FindByEmailAsync(
-                "sara.mohamed@medsystem.local");
-
-        var drHeba =
-            await userManager.FindByEmailAsync(
-                "heba.salah@medsystem.local");
+     
 
         var labTechAmir =
             await userManager.FindByNameAsync(
