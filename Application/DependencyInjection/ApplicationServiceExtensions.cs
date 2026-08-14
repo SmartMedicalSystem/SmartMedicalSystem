@@ -21,9 +21,12 @@ namespace Application.DependencyInjection
     /// </summary>
     public static class ApplicationServiceExtensions
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddApplicationServices(
+            this IServiceCollection services)
         {
-            services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
+            services.AddAutoMapper(
+                cfg => { },
+                typeof(MappingProfile).Assembly);
 
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IDoctorService, DoctorService>();
@@ -33,7 +36,7 @@ namespace Application.DependencyInjection
             services.AddScoped<ILabTestElementService, LabTestElementService>();
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<IRequestLabsService, RequestLabsService>();
-            services.AddScoped<INotificationService , NotificationService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<INotificationAppService, NotificationAppService>();
             services.AddScoped<ILabTechnicianService, LabTechnicianService>();
             services.AddScoped<IRequestLabTestService, RequestLabTestService>();
@@ -43,12 +46,38 @@ namespace Application.DependencyInjection
             services.AddScoped<IProfileService, ProfileService>();
 
             services.AddScoped<IAdminDashboardService, AdminDashboardService>();
-            // AI / RAG services (IMedicalAIClient itself is registered by Infrastructure's
-            // AddMedGemmaAI extension, called from Program.cs, since it needs an HttpClient).
+
+            // ============================================================
+            // AI / RAG Services
+            // ============================================================
+            // IMedicalAIClient itself is registered by Infrastructure's
+            // AddMedGemmaAI extension, called from Program.cs,
+            // since it needs an HttpClient.
 
             services.AddScoped<IPatientResultAIService, PatientResultAIService>();
             services.AddScoped<IRagService, RagService>();
             services.AddScoped<IRagChatService, RagChatService>();
+
+            // ============================================================
+            // Function Calling AI
+            // ============================================================
+
+            services.AddScoped<IPatientChatToolsService, PatientChatToolsService>();
+
+            services.AddScoped<
+                IFunctionCallingChatService,
+                FunctionCallingChatService>();
+
+            // Pending actions must survive between HTTP requests.
+            // FunctionCallingChatService itself remains Scoped.
+            services.AddSingleton<
+                IPendingActionStore,
+                PendingActionStore>();
+
+            // ============================================================
+            // User Service
+            // ============================================================
+
             services.AddScoped<IUserService, UserService>();
 
             return services;

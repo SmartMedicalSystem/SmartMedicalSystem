@@ -35,6 +35,25 @@ namespace Infrastructure.DependenciesInjection
                 client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
             });
 
+
+            services.Configure<FunctionCallingOptions>(configuration.GetSection("FunctionCallingAI"));
+
+            services.AddHttpClient<IFunctionCallingAIClient, OpenRouterFunctionCallingClient>((provider, client) =>
+            {
+                var options = configuration.GetSection("FunctionCallingAI").Get<FunctionCallingOptions>()
+                    ?? new FunctionCallingOptions();
+
+                if (!string.IsNullOrWhiteSpace(options.BaseUrl))
+                {
+                    var baseUrl = options.BaseUrl.EndsWith("/", StringComparison.Ordinal)
+                        ? options.BaseUrl
+                        : options.BaseUrl + "/";
+                    client.BaseAddress = new Uri(baseUrl);
+                }
+
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            });
+
             return services;
         }
     }
