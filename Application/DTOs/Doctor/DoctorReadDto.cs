@@ -28,6 +28,10 @@ namespace Application.DTOs.Doctor
 
         public string? DepartmentName { get; set; }
         public string? photoUrl;
+        public string?  city { get; set; }
+
+        public string? country { get; set; }
+        public string? postalCode { get; set; }
 
     }
 }
