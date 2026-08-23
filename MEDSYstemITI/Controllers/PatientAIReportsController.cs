@@ -1,4 +1,5 @@
 using Application.DTOs.AI;
+using Application.DTOs.PatientResult;
 using Application.Services.Abstraction;
 using Application.Services.Auth;
 using Domain.Enums;
@@ -40,6 +41,15 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
+        [HttpPut("patients/{patientResultId:int}/results/update")]
+
+        public async Task<ActionResult<PatientResultAIAnalysisDto>> UpdateForResult(
+            int patientResultId, [FromBody] PatientResultUpdateDto updatedAnalysis, CancellationToken cancellationToken)
+        {
+            var result = await _patientResultService.UpdateAsync(patientResultId, updatedAnalysis, cancellationToken);
+            return Ok(result);
+        }
+
         /// <summary>
         /// One consolidated report combining every AI summary/classified-report/suggestion
         /// generated for this patient's PatientResults, plus an AI-synthesized cross-result
@@ -53,5 +63,32 @@ namespace MEDSYstemITI.Controllers
             var report = await _patientService.GetFullAIReportAsync(patientId, cancellationToken);
             return Ok(report);
         }
+
+        /// <summary>
+        /// Returns the stored FullPatientReport document content from the RAG store if one exists.
+        /// </summary>
+        [HttpGet("patients/{patientId:int}/full-report/stored")]
+        public async Task<ActionResult<Application.DTOs.AI.StoredFullReportDto?>> GetStoredFullPatientReport(int patientId)
+        {
+            var stored = await _patientService.GetStoredFullAIReportAsync(patientId);
+            if (stored == null)
+                return NotFound();
+
+            return Ok(stored);
+        }
+
+        /// <summary>
+        /// Stores or replaces the FullPatientReport content in the RAG store. This will delete
+        /// any previous patient-level FullPatientReport chunks and index the provided content.
+        /// </summary>
+        [HttpPut("patients/{patientId:int}/full-report")]
+        //[HasPermission(Permissions.UpdateAiReport)]
+        public async Task<IActionResult> UpdateStoredFullPatientReport(int patientId, [FromBody] Application.DTOs.AI.StoredFullReportDto dto, CancellationToken cancellationToken)
+        {
+            await _patientService.UpdateStoredFullAIReportAsync(patientId, dto.Content, cancellationToken);
+            return NoContent();
+        }
+
+
     }
 }

@@ -26,5 +26,15 @@ namespace Application.Services.Abstraction
         /// analyzed on the fly so the report is always complete.
         /// </summary>
         Task<PatientFullAIReportDto> GetFullAIReportAsync(int patientId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns the stored full patient AI report content if one exists in the RAG store.
+        /// </summary>
+        Task<StoredFullReportDto?> GetStoredFullAIReportAsync(int patientId);
+
+        /// <summary>
+        /// Replaces the stored full patient AI report in the RAG store with the provided content.
+        /// </summary>
+        Task UpdateStoredFullAIReportAsync(int patientId, string content, CancellationToken cancellationToken = default);
     }
 }

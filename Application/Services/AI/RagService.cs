@@ -30,7 +30,7 @@ namespace Application.Services.AI
             _aiClient = aiClient;
         }
 
-        public async Task IndexAsync(int patientId, int? patientResultId, string sourceType, string content, CancellationToken cancellationToken = default)
+        public async Task IndexAsync(int patientId, int? patientResultId, Domain.Enums.RagSourceType sourceType, string content, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(content))
                 return;
@@ -45,6 +45,13 @@ namespace Application.Services.AI
                 {
                     await _uow.PatientRagDocuments.DeleteAsync(doc.Id);
                 }
+            }
+            else
+            {
+                // For patient-level sources (e.g. FullPatientReport) the index entry is not
+                // tied to a PatientResult. When updating the full report we need to replace
+                // the previous full-report document instead of appending a new one.
+                await _uow.PatientRagDocuments.RemoveByPatientAndSourceAsync(patientId, sourceType);
             }
 
             var embedding = await _aiClient.EmbedAsync(content, cancellationToken);
@@ -74,7 +81,7 @@ namespace Application.Services.AI
                 DocumentId = r.Document.Id,
                 PatientId = r.Document.PatientId,
                 PatientResultId = r.Document.PatientResultId,
-                SourceType = r.Document.SourceType,
+                SourceType = (Domain.Enums.RagSourceType)r.Document.SourceType,
                 Content = r.Document.Content,
                 // SQL Server's VECTOR_DISTANCE("cosine", ...) returns a *distance* in [0, 2]
                 // (0 = identical). Convert back to a similarity score in the same [-1, 1] range

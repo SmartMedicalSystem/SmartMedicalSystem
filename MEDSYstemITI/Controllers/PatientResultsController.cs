@@ -47,9 +47,20 @@ namespace MEDSYstemITI.Controllers
 
         [HttpPut("{id:int}")]
         //[HasPermission(Permissions.UpdateLabReport)]
-        public async Task<ActionResult<PatientResultReadDto>> Update(int id, [FromBody] PatientResultUpdateDto dto)
+        public async Task<ActionResult<PatientResultReadDto>> Update(int id, [FromBody] PatientResultUpdateDto dto, CancellationToken cancellationToken)
         {
-            var result = await _patientResultService.UpdateAsync(id, dto);
+            var result = await _patientResultService.UpdateAsync(id, dto, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Updates the AI report status for a PatientResult (e.g. Pending -> Approved).
+        /// </summary>
+        [HttpPatch("{id:int}/status")]
+        //[HasPermission(Permissions.ApproveAiReport)]
+        public async Task<ActionResult<PatientResultReadDto>> UpdateStatus(int id, [FromBody] Application.DTOs.PatientResult.PatientResultStatusUpdateDto dto, CancellationToken cancellationToken)
+        {
+            var result = await _patientResultService.UpdateStatusAsync(id, dto.Status);
             return Ok(result);
         }
     }

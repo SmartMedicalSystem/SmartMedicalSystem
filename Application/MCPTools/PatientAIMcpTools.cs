@@ -114,7 +114,7 @@ namespace Application.MCPTools
             [Description("The note text to embed and index.")] string content,
             CancellationToken cancellationToken = default)
         {
-            await _ragService.IndexAsync(patientId, null, Domain.Entities.RagSourceTypes.Manual, content, cancellationToken);
+            await _ragService.IndexAsync(patientId, null, Domain.Enums.RagSourceType.Manual, content, cancellationToken);
             return JsonSerializer.Serialize(new { indexed = true, patientId }, JsonOptions);
         }
     }

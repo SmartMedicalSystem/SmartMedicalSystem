@@ -54,7 +54,7 @@ namespace MEDSYstemITI.Controllers
             if (string.IsNullOrWhiteSpace(request.Content))
                 return BadRequest("Content is required.");
 
-            await _ragService.IndexAsync(request.PatientId, null, Domain.Entities.RagSourceTypes.Manual, request.Content, cancellationToken);
+            await _ragService.IndexAsync(request.PatientId, null, Domain.Enums.RagSourceType.Manual, request.Content, cancellationToken);
             return NoContent();
         }
     }

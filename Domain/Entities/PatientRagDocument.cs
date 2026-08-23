@@ -9,14 +9,7 @@ namespace Domain.Entities
     /// Kept as simple string constants (rather than an enum) so new AI-generated
     /// content types can be indexed without a migration to alter a check constraint.
     /// </summary>
-    public static class RagSourceTypes
-    {
-        public const string ResultSummary = "ResultSummary";
-        public const string ResultReport = "ResultReport";
-        public const string ResultSuggestion = "ResultSuggestion";
-        public const string FullPatientReport = "FullPatientReport";
-        public const string Manual = "Manual";
-    }
+    // RagSourceType moved to Domain.Enums.RagSourceType
 
     /// <summary>
     /// A single "chunk" of AI-generated (or manually supplied) medical text belonging to a
@@ -37,8 +30,8 @@ namespace Domain.Entities
         /// <summary>Optional link back to the PatientResult this chunk was generated from.</summary>
         public int? PatientResultId { get; private set; }
 
-        /// <summary>One of <see cref="RagSourceTypes"/>.</summary>
-        public string SourceType { get; private set; } = RagSourceTypes.Manual;
+        /// <summary>One of <see cref="Domain.Enums.RagSourceType"/>.</summary>
+        public Domain.Enums.RagSourceType SourceType { get; private set; } = Domain.Enums.RagSourceType.Manual;
 
         /// <summary>The raw text that was embedded (also used as the RAG "passage" returned to the LLM).</summary>
         public string Content { get; private set; } = string.Empty;
@@ -62,12 +55,12 @@ namespace Domain.Entities
 
         private PatientRagDocument() { }
 
-        public PatientRagDocument(int patientId, int? patientResultId, string sourceType, string content,
+        public PatientRagDocument(int patientId, int? patientResultId, Domain.Enums.RagSourceType sourceType, string content,
             float[] embedding, string embeddingModel)
         {
             PatientId = Guard.Positive(patientId, nameof(patientId));
             PatientResultId = patientResultId.HasValue ? Guard.Positive(patientResultId.Value, nameof(patientResultId)) : null;
-            SourceType = Guard.NotNullOrWhiteSpace(sourceType, nameof(sourceType), 50);
+            SourceType = sourceType;
             Content = Guard.NotNullOrWhiteSpace(content, nameof(content), 8000);
             EmbeddingModel = embeddingModel ?? string.Empty;
             SetEmbedding(embedding);

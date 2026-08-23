@@ -22,7 +22,9 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasKey(d => d.Id);
 
+            // Store enum as string in database for readability and compatibility with existing text values
             builder.Property(d => d.SourceType)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 

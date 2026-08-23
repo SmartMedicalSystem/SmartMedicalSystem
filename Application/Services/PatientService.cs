@@ -43,6 +43,23 @@ namespace Application.Services
             _ragService = ragService;
         }
 
+        public async Task<StoredFullReportDto?> GetStoredFullAIReportAsync(int patientId)
+        {
+            var doc = await _uow.PatientRagDocuments.GetByPatientAndSourceAsync(patientId, Domain.Enums.RagSourceType.FullPatientReport);
+            if (doc == null)
+                return null;
+
+            return new StoredFullReportDto { Content = doc.Content };
+        }
+
+        public async Task UpdateStoredFullAIReportAsync(int patientId, string content, CancellationToken cancellationToken = default)
+        {
+            if (_ragService == null)
+                throw new InvalidOperationException("RAG service not configured.");
+
+            await _ragService.IndexAsync(patientId, null, Domain.Enums.RagSourceType.FullPatientReport, content, cancellationToken);
+        }
+
         public async Task<PatientFullAIReportDto> GetFullAIReportAsync(int patientId, CancellationToken cancellationToken = default)
         {
             var patient = await _uow.Patients.GetByIdAsync(patientId)
@@ -82,7 +99,7 @@ namespace Application.Services
                 overallSummary = parsed.GetValueOrDefault("overallSummary") ?? parsed.GetValueOrDefault("raw") ?? string.Empty;
                 overallSuggestion = parsed.GetValueOrDefault("overallSuggestion") ?? string.Empty;
 
-                await _ragService.IndexAsync(patientId, null, RagSourceTypes.FullPatientReport,
+                await _ragService.IndexAsync(patientId, null, Domain.Enums.RagSourceType.FullPatientReport,
                     $"Overall AI summary for {patient.FullName}: {overallSummary}\nOverall AI suggestion: {overallSuggestion}",
                     cancellationToken);
             }

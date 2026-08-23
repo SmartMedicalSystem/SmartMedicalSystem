@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
+    using Domain.Entities;
+
     public class PatientResultService : IPatientResultService
     {
         private readonly IUnitOfWork _uow;
@@ -20,19 +22,22 @@ namespace Application.Services
         private readonly IPatientResultAIService? _patientResultAIService;
         private readonly INotificationService? _notificationService;
         private readonly IEmailSender? _emailSender;
+        private readonly IRagService? _ragService;
 
         public PatientResultService(
             IUnitOfWork uow,
             IMapper mapper,
             IPatientResultAIService? patientResultAIService = null,
             INotificationService? notificationService = null,
-            IEmailSender? emailSender = null)
+            IEmailSender? emailSender = null,
+            IRagService? ragService = null)
         {
             _uow = uow;
             _mapper = mapper;
             _patientResultAIService = patientResultAIService;
             _notificationService = notificationService;
             _emailSender = emailSender;
+            _ragService = ragService;
         }
 
         public Task<PatientResultAIAnalysisDto> GenerateAIAnalysisAsync(
@@ -173,7 +178,8 @@ namespace Application.Services
 
         public async Task<PatientResultReadDto> UpdateAsync(
             int id,
-            PatientResultUpdateDto dto)
+            PatientResultUpdateDto dto,
+            CancellationToken cancellationToken)
         {
             var entity =
                 await _uow.PatientResults.GetByIdAsync(id)
@@ -188,8 +194,45 @@ namespace Application.Services
 
             await _uow.PatientResults.UpdateAsync(entity);
 
+            // Index updated pieces into the RAG vector store so they replace previous chunks
+            if (_ragService != null)
+            {
+                // Try to obtain a lab test name for nicer indexing labels; fall back to id.
+                var labTest = await _uow.LabTests.GetByIdAsync(entity.LabTestId);
+                var labTestName = labTest?.TestName ?? $"LabTest #{entity.LabTestId}";
+
+                if (!string.IsNullOrWhiteSpace(entity.Summary))
+                {
+                    await _ragService.IndexAsync(entity.PatientId, entity.Id, Domain.Enums.RagSourceType.ResultSummary,
+                        $"[{labTestName}] Summary: {entity.Summary}", cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(entity.AIClassifiedReport))
+                {
+                    await _ragService.IndexAsync(entity.PatientId, entity.Id, Domain.Enums.RagSourceType.ResultReport,
+                        $"[{labTestName}] Classified report: {entity.AIClassifiedReport}", cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(entity.AISuggestion))
+                {
+                    await _ragService.IndexAsync(entity.PatientId, entity.Id, Domain.Enums.RagSourceType.ResultSuggestion,
+                        $"[{labTestName}] Suggestion: {entity.AISuggestion}", cancellationToken);
+                }
+            }
+
             return _mapper.Map<PatientResultReadDto>(
                 entity);
+        }
+
+        public async Task<PatientResultReadDto> UpdateStatusAsync(int id, Domain.Enums.PatinetResultAIReportStatus status)
+        {
+            var entity = await _uow.PatientResults.GetByIdAsync(id)
+                ?? throw new NotFoundException("PatientResult", id);
+
+            entity.AIReportStatus = status;
+            await _uow.PatientResults.UpdateAsync(entity);
+
+            return _mapper.Map<PatientResultReadDto>(entity);
         }
 
         public async Task<PatientResultReadDto> GetByIdAsync(
@@ -223,5 +266,16 @@ namespace Application.Services
                 page.TotalCount,
                 pagination);
         }
+
+        //public Task<PatientResultAIAnalysisDto> UpdateAIAnalysisAsync(int id, PatientResultAIAnalysisDto updatedAnalysis, CancellationToken cancellationToken = default)
+        //{
+        //    if (_patientResultAIService == null)
+        //    {
+        //        throw new InvalidOperationException(
+        //            "AI service not configured. Provide IPatientResultAIService to use UpdateAIAnalysisAsync.");
+        //    }
+        //    return _patientResultAIService.UpdateAnalysisAsync(id, updatedAnalysis, cancellationToken);
+
+        //}
     }
 }

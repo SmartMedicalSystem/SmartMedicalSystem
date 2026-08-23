@@ -9,10 +9,13 @@ namespace Application.Services.Abstraction
     public interface IPatientResultService
     {
         Task<PatientResultReadDto> CreateAsync(PatientResultCreateDto dto);
-        Task<PatientResultReadDto> UpdateAsync(int id, PatientResultUpdateDto dto);
+        Task<PatientResultReadDto> UpdateAsync(int id, PatientResultUpdateDto dto, CancellationToken cancellationToken);
+        Task<PatientResultReadDto> UpdateStatusAsync(int id, Domain.Enums.PatinetResultAIReportStatus status);
         Task<PatientResultReadDto> GetByIdAsync(int id);
         Task<PaginatedResult<PatientResultReadDto>> GetByPatientAsync(int patientId, PaginationParams pagination);
 
+
+        //Task<PatientResultAIAnalysisDto> UpdateAIAnalysisAsync(int id, PatientResultAIAnalysisDto updatedAnalysis, CancellationToken cancellationToken = default);
         /// <summary>
         /// Uses AI to summarize every PatientResultElement belonging to this PatientResult and
         /// generate its classified report + suggestions, persists them, and indexes the generated

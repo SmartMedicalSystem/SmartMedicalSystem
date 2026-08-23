@@ -76,5 +76,25 @@ namespace Infrastructure.Repository
             _context.PatientRagDocuments.RemoveRange(existing);
             await _context.SaveChangesAsync();
         }
+
+        public async Task RemoveByPatientAndSourceAsync(int patientId, Domain.Enums.RagSourceType sourceType)
+        {
+            var existing = await _context.PatientRagDocuments
+                .Where(d => d.PatientId == patientId && d.PatientResultId == null && d.SourceType == sourceType)
+                .ToListAsync();
+
+            if (existing.Count == 0)
+                return;
+
+            _context.PatientRagDocuments.RemoveRange(existing);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<PatientRagDocument?> GetByPatientAndSourceAsync(int patientId, Domain.Enums.RagSourceType sourceType)
+        {
+            return await _context.PatientRagDocuments
+                .Where(d => d.PatientId == patientId && d.PatientResultId == null && d.SourceType == sourceType && !d.IsDeleted)
+                .FirstOrDefaultAsync();
+        }
     }
 }

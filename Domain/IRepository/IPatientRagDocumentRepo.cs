@@ -29,5 +29,14 @@ namespace Domain.IRepository
 
         /// <summary>Hard-deletes every chunk indexed for a given PatientResult (used before re-indexing).</summary>
         Task RemoveByPatientResultAsync(int patientResultId);
+
+        /// <summary>Hard-deletes every chunk indexed for a given patient and source type where the chunk is not linked to a PatientResult (used for FullPatientReport updates).</summary>
+        Task RemoveByPatientAndSourceAsync(int patientId, Domain.Enums.RagSourceType sourceType);
+
+        /// <summary>
+        /// Returns a single patient-level document for the given patient and source type
+        /// (e.g. FullPatientReport). Patient-level documents have PatientResultId == null.
+        /// </summary>
+        Task<PatientRagDocument?> GetByPatientAndSourceAsync(int patientId, Domain.Enums.RagSourceType sourceType);
     }
 }
