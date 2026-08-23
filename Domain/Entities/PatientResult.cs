@@ -18,6 +18,8 @@ namespace Domain.Entities
 
         public string Summary { get;  set; } = string.Empty;
 
+        public PatinetResultAIReportStatus AIReportStatus { get; set; } = PatinetResultAIReportStatus.Pending;
+
         // Navigation Properties
         public Patient Patient { get; set; } = null!;
 
