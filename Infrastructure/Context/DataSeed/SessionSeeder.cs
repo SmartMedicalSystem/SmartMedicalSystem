@@ -11,20 +11,44 @@ public static class SessionSeeder
         if (await context.Sessions.AnyAsync())
             return;
 
-        var patientIds = await context.Patients
-            .ToDictionaryAsync(p => $"{p.FirstName} {p.LastName}", p => p.Id);
-        var doctorIds = await context.Doctors
-            .Where(d => d.Email != null)
-            .ToDictionaryAsync(d => d.Email!, d => d.Id);
-        var departmentIds = await context.Departments
-            .ToDictionaryAsync(d => d.Name, d => d.Id);
+        static string Normalize(string? value) =>
+            string.IsNullOrWhiteSpace(value)
+                ? string.Empty
+                : string.Join(" ", value.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                    .ToLowerInvariant();
+
+        var patients = await context.Patients.AsNoTracking().ToListAsync();
+        var patientIds = patients
+            .GroupBy(p => Normalize($"{p.FirstName} {p.LastName}"))
+            .ToDictionary(g => g.Key, g => g.First().Id);
+
+        var doctors = await context.Doctors.AsNoTracking().Where(d => d.Email != null).ToListAsync();
+        var doctorIds = doctors
+            .GroupBy(d => Normalize(d.Email))
+            .ToDictionary(g => g.Key, g => g.First().Id);
+
+        var departments = await context.Departments.AsNoTracking().ToListAsync();
+        var departmentIds = departments
+            .GroupBy(d => Normalize(d.Name))
+            .ToDictionary(g => g.Key, g => g.First().Id);
 
         if (patientIds.Count == 0 || doctorIds.Count == 0 || departmentIds.Count == 0)
             return;
 
-        int PatientId(string name) => patientIds[name];
-        int DoctorId(string email) => doctorIds[email];
-        int DepartmentId(string name) => departmentIds[name];
+        int PatientId(string name) =>
+            patientIds.TryGetValue(Normalize(name), out var id)
+                ? id
+                : throw new InvalidOperationException($"Session seed patient '{name}' was not found.");
+
+        int DoctorId(string email) =>
+            doctorIds.TryGetValue(Normalize(email), out var id)
+                ? id
+                : throw new InvalidOperationException($"Session seed doctor '{email}' was not found.");
+
+        int DepartmentId(string name) =>
+            departmentIds.TryGetValue(Normalize(name), out var id)
+                ? id
+                : throw new InvalidOperationException($"Session seed department '{name}' was not found.");
 
         var sessions = new List<Session>
         {
@@ -40,7 +64,10 @@ public static class SessionSeeder
                 new DateTime(2024, 2, 5, 10, 30, 0, DateTimeKind.Utc),
                 "Migraine with aura. MRI of the brain recommended."),
 
-            Create(PatientId("Nour Ahmed"), DoctorId("mohamedsaiedhassan308@gmail.com"), DepartmentId("Neurology"),
+            // ⚠️ كانت "Nour Ahmed" - المريض ده مش موجود خالص في PatientSeeder الحالي.
+            // استبدلتها بـ "Yara Mohamed" (المريض التاني اللي اسمه Yara بحرف Y كابيتال،
+            // كان الوحيد من الـ 12 مريض اللي مش متستخدم في أي session تحت).
+            Create(PatientId("Yara Mohamed"), DoctorId("mohamedsaiedhassan308@gmail.com"), DepartmentId("Neurology"),
                 new DateTime(2024, 2, 12, 14, 0, 0, DateTimeKind.Utc),
                 "Peripheral neuropathy work-up. Blood glucose and B12 ordered."),
 

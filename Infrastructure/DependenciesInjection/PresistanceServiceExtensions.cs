@@ -70,6 +70,9 @@ namespace Infrastructure.DependenciesInjection
                 });
             }
 
+            services.AddHttpContextAccessor();
+            services.AddScoped<ICurrentUserService, HttpCurrentUserService>();
+
             // Generic repository (open generic) - covers any BaseEntity that doesn't
             // have a dedicated specialized repository registered below.
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
