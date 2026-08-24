@@ -13,6 +13,7 @@ namespace Application.Services.Abstraction
         Task<PatientResultReadDto> UpdateStatusAsync(int id, Domain.Enums.PatinetResultAIReportStatus status);
         Task<PatientResultReadDto> GetByIdAsync(int id);
         Task<PaginatedResult<PatientResultReadDto>> GetByPatientAsync(int patientId, PaginationParams pagination);
+        Task<PaginatedResult<PatientResultReadDto>> GetByDoctorAsync(int doctorId, PaginationParams pagination);
 
 
         //Task<PatientResultAIAnalysisDto> UpdateAIAnalysisAsync(int id, PatientResultAIAnalysisDto updatedAnalysis, CancellationToken cancellationToken = default);

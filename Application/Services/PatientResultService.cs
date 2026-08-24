@@ -267,6 +267,24 @@ namespace Application.Services
                 pagination);
         }
 
+        public async Task<PaginatedResult<PatientResultReadDto>>
+            GetByDoctorAsync(
+                int doctorId,
+                PaginationParams pagination)
+        {
+            var page =
+                await _uow.PatientResults
+                    .GetByDoctorPaginatedAsync(
+                        doctorId,
+                        pagination);
+
+            return PaginatedResult<PatientResultReadDto>.Create(
+                _mapper.Map<IEnumerable<PatientResultReadDto>>(
+                    page.Items),
+                page.TotalCount,
+                pagination);
+        }
+
         //public Task<PatientResultAIAnalysisDto> UpdateAIAnalysisAsync(int id, PatientResultAIAnalysisDto updatedAnalysis, CancellationToken cancellationToken = default)
         //{
         //    if (_patientResultAIService == null)

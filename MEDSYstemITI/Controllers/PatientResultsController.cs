@@ -29,6 +29,15 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("by-doctor/{doctorId:int}")]
+        //[HasPermission(Permissions.ReadLabReport)]
+        public async Task<ActionResult<PaginatedResult<PatientResultReadDto>>> GetByDoctor(
+            int doctorId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var result = await _patientResultService.GetByDoctorAsync(doctorId, new PaginationParams(pageNumber, pageSize));
+            return Ok(result);
+        }
+
         [HttpGet("{id:int}")]
         [HasPermission(Permissions.ReadLabReport)]
         public async Task<ActionResult<PatientResultReadDto>> GetById(int id)

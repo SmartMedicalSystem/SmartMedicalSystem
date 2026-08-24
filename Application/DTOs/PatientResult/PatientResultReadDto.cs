@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Application.DTOs.PatientResult
 {
 
@@ -10,5 +12,6 @@ namespace Application.DTOs.PatientResult
         public string Summary { get; set; } = null!;
         public string AIClassifiedReport { get; set; } = null!;
         public string AISuggestion { get; set; } = null!;
+        public PatinetResultAIReportStatus AIReportStatus { get; set; }
     }
 }

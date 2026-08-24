@@ -171,5 +171,27 @@ namespace Infrastructure.Repository
 
             return PaginatedResult<PatientResult>.Create(items, totalCount, pagination);
         }
+
+        /// <summary>
+        /// Retrieves patient results for a specific doctor (via session) in paginated format.
+        /// </summary>
+        public async Task<PaginatedResult<PatientResult>> GetByDoctorPaginatedAsync(int doctorId, PaginationParams pagination)
+        {
+            var totalCount = await _context.PatientResults
+                .Where(pr => pr.Session.DoctorId == doctorId && !pr.IsDeleted)
+                .CountAsync();
+
+            var items = await _context.PatientResults
+                .Include(pr => pr.Session)
+                .Include(pr => pr.labTest)
+                .Include(pr => pr.Patient)
+                .Where(pr => pr.Session.DoctorId == doctorId && !pr.IsDeleted)
+                .OrderByDescending(pr => pr.CreatedAt)
+                .Skip(pagination.CalculateSkip())
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return PaginatedResult<PatientResult>.Create(items, totalCount, pagination);
+        }
     }
 }

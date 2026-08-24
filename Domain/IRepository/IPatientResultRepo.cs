@@ -17,5 +17,6 @@ namespace Domain.IRepository
         Task<PaginatedResult<PatientResult>> GetByPatientPaginatedAsync(int patientId, PaginationParams pagination);
         Task<PaginatedResult<PatientResult>> GetBySessionPaginatedAsync(int sessionId, PaginationParams pagination);
         Task<PaginatedResult<PatientResult>> GetByLabTestPaginatedAsync(int labTestId, PaginationParams pagination);
+        Task<PaginatedResult<PatientResult>> GetByDoctorPaginatedAsync(int doctorId, PaginationParams pagination);
     }
 }
