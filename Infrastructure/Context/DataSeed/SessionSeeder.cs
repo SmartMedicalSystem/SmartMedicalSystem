@@ -28,19 +28,19 @@ public static class SessionSeeder
 
         var sessions = new List<Session>
         {
-            Create(PatientId("Mohamed Youssef"), DoctorId("ahmed.hassan@medsystem.local"), DepartmentId("Cardiology"),
+            Create(PatientId("Mohamed Saied"), DoctorId("mohamed48289@gmail.com"), DepartmentId("Cardiology"),
                 new DateTime(2024, 1, 10, 9, 0, 0, DateTimeKind.Utc),
                 "Patient presents with chest tightness. ECG ordered."),
 
-            Create(PatientId("Fatima Hassan"), DoctorId("ahmed.hassan@medsystem.local"), DepartmentId("Cardiology"),
+            Create(PatientId("yara mohamed"), DoctorId("mohamed48289@gmail.com"), DepartmentId("Cardiology"),
                 new DateTime(2024, 1, 15, 11, 0, 0, DateTimeKind.Utc),
                 "Follow-up for hypertension management."),
 
-            Create(PatientId("Ali Ibrahim"), DoctorId("sara.mohamed@medsystem.local"), DepartmentId("Neurology"),
+            Create(PatientId("mohamed hassan"), DoctorId("mohamedsaiedhassan308@gmail.com"), DepartmentId("Neurology"),
                 new DateTime(2024, 2, 5, 10, 30, 0, DateTimeKind.Utc),
                 "Migraine with aura. MRI of the brain recommended."),
 
-            Create(PatientId("Nour Ahmed"), DoctorId("sara.mohamed@medsystem.local"), DepartmentId("Neurology"),
+            Create(PatientId("Nour Ahmed"), DoctorId("mohamedsaiedhassan308@gmail.com"), DepartmentId("Neurology"),
                 new DateTime(2024, 2, 12, 14, 0, 0, DateTimeKind.Utc),
                 "Peripheral neuropathy work-up. Blood glucose and B12 ordered."),
 
@@ -56,19 +56,19 @@ public static class SessionSeeder
                 new DateTime(2024, 3, 8, 10, 0, 0, DateTimeKind.Utc),
                 "Routine growth assessment. Vaccination updated."),
 
-            Create(PatientId("Salma Tarek"), DoctorId("heba.salah@medsystem.local"), DepartmentId("Internal Medicine"),
+            Create(PatientId("Salma Tarek"), DoctorId("salwasayed522@gmail.com"), DepartmentId("Internal Medicine"),
                 new DateTime(2024, 3, 14, 13, 0, 0, DateTimeKind.Utc),
                 "Type 2 Diabetes follow-up. HbA1c and lipid profile ordered."),
 
-            Create(PatientId("Omar Farouk"), DoctorId("heba.salah@medsystem.local"), DepartmentId("Internal Medicine"),
+            Create(PatientId("Omar Farouk"), DoctorId("salwasayed522@gmail.com"), DepartmentId("Internal Medicine"),
                 new DateTime(2024, 3, 21, 15, 0, 0, DateTimeKind.Utc),
                 "Fatigue and weight loss. CBC and thyroid panel ordered."),
 
-            Create(PatientId("Dina Mustafa"), DoctorId("heba.salah@medsystem.local"), DepartmentId("Internal Medicine"),
+            Create(PatientId("Dina Mustafa"), DoctorId("salwasayed522@gmail.com"), DepartmentId("Internal Medicine"),
                 new DateTime(2024, 4, 2, 9, 0, 0, DateTimeKind.Utc),
                 "Hypertension assessment. Electrolytes and KFT ordered."),
 
-            Create(PatientId("Mahmoud Refaat"), DoctorId("omar.zaki@medsystem.local"), DepartmentId("Dermatology"),
+            Create(PatientId("Mahmoud Refaat"), DoctorId("yaraamohamedds232@gmail.com"), DepartmentId("Dermatology"),
                 new DateTime(2024, 4, 10, 11, 30, 0, DateTimeKind.Utc),
                 "Chronic urticaria. LFT and CBC for baseline."),
 

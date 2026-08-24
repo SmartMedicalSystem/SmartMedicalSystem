@@ -1,4 +1,3 @@
-
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Identity;
@@ -10,9 +9,7 @@ namespace Infrastructure.DataSeed;
 
 public static class LabTechnicianSeeder
 {
-    public static async Task SeedAsync(
-        ApplicationDbContext context,
-        UserManager<ApplicationUser> userManager)
+    public static async Task SeedAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         var laboratoryIds =
             await context.Laboratories
@@ -35,7 +32,7 @@ public static class LabTechnicianSeeder
                 "Amir",
                 "Hassan",
                 "01112345678",
-                "amir.hassan@medsystem.local",
+                "mohamed48289@gmail.com",
                 "tech.amir.hassan",
                 LaboratoryId("LAB-HEMA"),
                 "Senior Lab Technician",
@@ -48,27 +45,27 @@ public static class LabTechnicianSeeder
                 "Cairo"),
 
             CreateTechnician(
-                "Samira",
-                "Nour",
+                "lotfy",
+                "khattab",
                 "01123456789",
-                "samira.nour@medsystem.local",
-                "tech.samira.nour",
+                "lotfykhattab95@gmail.com",
+                "tech.lotfy.khattab",
                 LaboratoryId("LAB-CHEM"),
                 "Lab Technician",
                 EmploymentStatus.FullTime,
                 WorkShift.Morning,
                 new DateOnly(2019, 9, 15),
                 6,
-                Gender.Female,
+                Gender.Male,
                 new DateTime(1992, 2, 20),
                 "Giza"),
 
             CreateTechnician(
-                "Bassem",
-                "Fouad",
+                "akram",
+                "muhammad",
                 "01134567890",
-                "bassem.fouad@medsystem.local",
-                "tech.bassem.fouad",
+                "akramuhammad95@gmail.com",
+                "tech.akram.muhammad",
                 LaboratoryId("LAB-MICRO"),
                 "Lab Technician",
                 EmploymentStatus.FullTime,
@@ -157,22 +154,7 @@ public static class LabTechnicianSeeder
                 3,
                 Gender.Female,
                 new DateTime(1998, 6, 22),
-                "Aswan"),
-            CreateTechnician(
-    "Mohamed",
-    "48289",
-    "01000000001",
-    "mohamed48289@gmail.com",
-    "mohamed48289",
-    LaboratoryId("LAB-PATH"),
-    "Lab Technician",
-    EmploymentStatus.FullTime,
-    WorkShift.Morning,
-    new DateOnly(2026, 1, 1),
-    1,
-    Gender.Male,
-    new DateTime(1998, 1, 1),
-    "Cairo")
+                "Aswan")
         };
 
         foreach (var technician in technicians)
@@ -255,8 +237,6 @@ public static class LabTechnicianSeeder
                 user,
                 Roles.LabTechnician.ToString());
         }
-
-        
     }
 
     private static LabTechnician CreateTechnician(

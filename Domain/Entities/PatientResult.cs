@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Domain.Common;
+using Domain.Enums;
 
 namespace Domain.Entities
 {
@@ -17,6 +18,8 @@ namespace Domain.Entities
         public string AISuggestion { get;  set; } = string.Empty;
 
         public string Summary { get;  set; } = string.Empty;
+        
+        public PatinetResultAIReportStatus AIReportStatus { get; set; } = PatinetResultAIReportStatus.Pending;
 
         // Navigation Properties
         public Patient Patient { get; set; } = null!;

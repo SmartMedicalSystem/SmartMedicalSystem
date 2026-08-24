@@ -1,21 +1,42 @@
 using Domain.Entities;
+using Microsoft.Data.SqlTypes;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Domain.IRepository
 {
     public interface IPatientRagDocumentRepo : IGenericRepository<PatientRagDocument>
     {
-        /// <summary>All active (non-deleted) chunks belonging to a patient - the candidate set for similarity search.</summary>
-        Task<IEnumerable<PatientRagDocument>> GetByPatientAsync(int patientId);
+        /// <summary>
+        /// Returns the topK chunks belonging to <paramref name="patientId"/> that are closest to
+        /// <paramref name="queryVector"/>, ordered nearest-first. Ranking is performed by SQL
+        /// Server itself via VECTOR_DISTANCE (pushed down through EF.Functions.VectorDistance),
+        /// not in application memory.
+        /// </summary>
+        Task<List<(PatientRagDocument Document, double Distance)>> SearchByPatientAsync(
+            int patientId, SqlVector<float> queryVector, int topK, CancellationToken cancellationToken = default);
 
-        /// <summary>All active chunks across every patient - used when the chatbot query isn't scoped to one patient.</summary>
-        Task<IEnumerable<PatientRagDocument>> GetAllActiveDocumentsAsync();
+        /// <summary>
+        /// Same as <see cref="SearchByPatientAsync"/> but across every active document (used for
+        /// the cross-patient / GroupByPatient chatbot mode).
+        /// </summary>
+        Task<List<(PatientRagDocument Document, double Distance)>> SearchAllActiveAsync(
+            SqlVector<float> queryVector, int topK, CancellationToken cancellationToken = default);
 
         /// <summary>All chunks previously indexed for a given PatientResult (so they can be replaced instead of duplicated on re-generation).</summary>
         Task<IEnumerable<PatientRagDocument>> GetByPatientResultAsync(int patientResultId);
 
         /// <summary>Hard-deletes every chunk indexed for a given PatientResult (used before re-indexing).</summary>
         Task RemoveByPatientResultAsync(int patientResultId);
+
+        /// <summary>Hard-deletes every chunk indexed for a given patient and source type where the chunk is not linked to a PatientResult (used for FullPatientReport updates).</summary>
+        Task RemoveByPatientAndSourceAsync(int patientId, Domain.Enums.RagSourceType sourceType);
+
+        /// <summary>
+        /// Returns a single patient-level document for the given patient and source type
+        /// (e.g. FullPatientReport). Patient-level documents have PatientResultId == null.
+        /// </summary>
+        Task<PatientRagDocument?> GetByPatientAndSourceAsync(int patientId, Domain.Enums.RagSourceType sourceType);
     }
 }

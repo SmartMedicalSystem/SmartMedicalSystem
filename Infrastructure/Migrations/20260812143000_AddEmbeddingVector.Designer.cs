@@ -5,6 +5,7 @@ using Microsoft.Data.SqlTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,9 +13,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260812143000_AddEmbeddingVector")]
+    partial class AddEmbeddingVector
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,26 +224,15 @@ namespace Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int?>("PatientResultId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RequestLabsId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -249,10 +241,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PatientResultId");
-
-                    b.HasIndex("RequestLabsId");
 
                     b.HasIndex("UserId");
 
@@ -278,13 +266,14 @@ namespace Infrastructure.Migrations
                     b.Property<int>("EmbeddingDimensions")
                         .HasColumnType("int");
 
+                    b.Property<SqlVector<float>>("EmbeddingVector")
+                        .IsRequired()
+                        .HasColumnType("vector(1536)");
+
                     b.Property<string>("EmbeddingModel")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<SqlVector<float>>("EmbeddingVector")
-                        .HasColumnType("vector(1536)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -326,9 +315,6 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
-
-                    b.Property<int>("AIReportStatus")
-                        .HasColumnType("int");
 
                     b.Property<string>("AISuggestion")
                         .IsRequired()
@@ -904,7 +890,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.Entities.Person.BasePerson");
 
-                    b.ToTable("AdminPersons");
+                    b.ToTable("AdminPersons", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Doctor", b =>
@@ -1026,25 +1012,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
-                    b.HasOne("Domain.Entities.PatientResult", "PatientResult")
-                        .WithMany()
-                        .HasForeignKey("PatientResultId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("Domain.Entities.RequestLabs", "RequestLabs")
-                        .WithMany()
-                        .HasForeignKey("RequestLabsId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("Domain.Identity.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("PatientResult");
-
-                    b.Navigation("RequestLabs");
 
                     b.Navigation("User");
                 });

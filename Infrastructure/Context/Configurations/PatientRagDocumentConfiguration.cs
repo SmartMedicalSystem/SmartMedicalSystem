@@ -7,11 +7,12 @@ namespace Infrastructure.Data.Configurations
     /// <summary>
     /// EF Core configuration for the RAG vector-store table.
     ///
-    /// The embedding vector is persisted as an nvarchar(max) JSON array (see
-    /// PatientRagDocument.EmbeddingJson) so this works unmodified on any supported SQL Server
-    /// edition/version. If you are on SQL Server 2025+ and want native vector search, swap the
-    /// EmbeddingJson column for a VECTOR(n) column here and push similarity search down to SQL
-    /// via VECTOR_DISTANCE instead of the in-memory cosine similarity used by RagService.
+    /// The embedding is persisted using SQL Server 2025's native VECTOR(n) type via EF Core 10's
+    /// built-in SqlVector support, which lets similarity search be pushed down to the database
+    /// with EF.Functions.VectorDistance ("cosine") instead of being computed in memory.
+    /// The dimension (1536) must match whatever embedding model IMedicalAIClient.EmbedAsync uses -
+    /// changing embedding models to a different dimensionality requires a migration that alters
+    /// this column (and re-indexing every existing document).
     /// </summary>
     public class PatientRagDocumentConfiguration : IEntityTypeConfiguration<PatientRagDocument>
     {
@@ -21,7 +22,9 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasKey(d => d.Id);
 
+            // Store enum as string in database for readability and compatibility with existing text values
             builder.Property(d => d.SourceType)
+                .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
 
@@ -29,8 +32,8 @@ namespace Infrastructure.Data.Configurations
                 .HasMaxLength(8000)
                 .IsRequired();
 
-            builder.Property(d => d.EmbeddingJson)
-                .HasColumnType("nvarchar(max)")
+            builder.Property(d => d.EmbeddingVector)
+                .HasColumnType("vector(1536)")
                 .IsRequired();
 
             builder.Property(d => d.EmbeddingModel)

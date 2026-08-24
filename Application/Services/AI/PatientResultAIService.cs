@@ -3,6 +3,7 @@ using Application.DTOs.AI;
 using Application.Services.Abstraction.AI;
 using Domain.Entities;
 using Domain.IRepository;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,27 @@ namespace Application.Services.AI
             var patientResult = await _uow.PatientResults.GetWithResultElementsAsync(patientResultId)
                 ?? throw new NotFoundException("PatientResult", patientResultId);
 
-            return BuildBaseDto(patientResult);
+            var dto = BuildBaseDto(patientResult);
+
+            // If the patient result already contains a summary/report/suggestion, ensure it's
+            // indexed into the RAG vector store so retrieval-based QA can find it later.
+            if (!string.IsNullOrWhiteSpace(dto.Summary))
+            {
+                await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSummary,
+                    $"[{dto.LabTestName}] Summary: {dto.Summary}", cancellationToken);
+            }
+            if (!string.IsNullOrWhiteSpace(dto.AIClassifiedReport))
+            {
+                await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultReport,
+                    $"[{dto.LabTestName}] Classified report: {dto.AIClassifiedReport}", cancellationToken);
+            }
+            if (!string.IsNullOrWhiteSpace(dto.AISuggestion))
+            {
+                await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSuggestion,
+                    $"[{dto.LabTestName}] Suggestion: {dto.AISuggestion}", cancellationToken);
+            }
+
+            return dto;
         }
 
         public async Task<PatientResultAIAnalysisDto> GenerateAnalysisAsync(int patientResultId, CancellationToken cancellationToken = default)
@@ -62,11 +83,11 @@ namespace Application.Services.AI
 
             // Index each piece separately so the chatbot can retrieve the most relevant slice
             // (a question about "next steps" should match the suggestion chunk, not the summary).
-            await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceTypes.ResultSummary,
+            await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSummary,
                 $"[{dto.LabTestName}] Summary: {dto.Summary}", cancellationToken);
-            await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceTypes.ResultReport,
+            await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultReport,
                 $"[{dto.LabTestName}] Classified report: {dto.AIClassifiedReport}", cancellationToken);
-            await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceTypes.ResultSuggestion,
+            await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSuggestion,
                 $"[{dto.LabTestName}] Suggestion: {dto.AISuggestion}", cancellationToken);
 
             return dto;
@@ -97,6 +118,7 @@ namespace Application.Services.AI
                 LabTestId = patientResult.LabTestId,
                 LabTestName = patientResult.labTest?.TestName ?? $"LabTest #{patientResult.LabTestId}",
                 GeneratedAtUtc = DateTime.UtcNow,
+                TestDate = patientResult.Session?.SessionDate ?? default,
                 Elements = elements,
                 Summary = patientResult.Summary,
                 AIClassifiedReport = patientResult.AIClassifiedReport,

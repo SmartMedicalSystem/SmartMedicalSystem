@@ -17,47 +17,47 @@ public static class PatientSeeder
         {
             CreatePatient(
                 "Mohamed",
-                "Youssef",
+                "Saied",
                 "20100001",
                 new DateTime(1990, 3, 12),
                 Gender.Male,
                 "1012345678",
                 "15 Heliopolis St., Cairo",
                 BloodType.APositive,
-                "mohamed.youssef@medsystem.local"),
+                "mohamedsaiedhassan308@gmail.com"),
 
             CreatePatient(
-                "Fatima",
-                "Hassan",
+                "yara",
+                "mohamed",
                 "20200002",
                 new DateTime(1985, 7, 24),
                 Gender.Female,
                 "1023456789",
                 "32 Mohandiseen Blvd., Giza",
                 BloodType.BNegative,
-                "fatima.hassan@medsystem.local"),
+                "yaraamohamedds232@gmail.com"),
 
             CreatePatient(
-                "Ali",
-                "Ibrahim",
+                "mohamed",
+                "hassan",
                 "20300003",
                 new DateTime(2000, 1, 5),
                 Gender.Male,
                 "1034567890",
                 "7 El-Maadi, Cairo",
                 BloodType.OPositive,
-                "ali.ibrahim@medsystem.local"),
+                "mohamed48289@gmail.com"),
 
             CreatePatient(
-                "Nour",
-                "Ahmed",
+                "Yara",
+                "Mohamed",
                 "20400004",
                 new DateTime(1978, 11, 17),
                 Gender.Female,
                 "1045678901",
                 "20 Smouha, Alexandria",
                 BloodType.ABPositive,
-                "nour.ahmed@medsystem.local"),
+                "yaraamohamedd232@gmail.com"),
 
             CreatePatient(
                 "Karim",

@@ -42,6 +42,21 @@ namespace Application.Services.AI
             "Keep answers concise and clinically precise. Always remind the physician to verify against the primary chart.\n\n" +
             "CONTEXT:\n{0}";
 
+        //public const string GroupChatSystemPromptTemplate =
+        //   "You are a clinical decision-support chatbot for physicians, answering questions about a specific patient's lab history. " +
+        //   "Answer ONLY using the CONTEXT passages provided below - they are excerpts from that patient's previously generated AI lab summaries/reports. " +
+        //   "If the context does not contain the answer, say so plainly instead of guessing. " +
+        //   "Keep answers concise and clinically precise. Always remind the physician to verify against the primary chart.\n\n" +
+        //   "CONTEXT:\n{0} Dont't mention the pateint's id or personal data in the response ";
+
+        public const string GroupChatSystemPromptTemplate = "You are a clinical decision-support chatbot for physicians, answering " +
+            "questions about a specific patient's laboratory history.\r\n\r\nAnswer ONLY using the CONTEXT passages provided below. " +
+            "The context contains excerpts from that patient's previously generated AI lab summaries/reports.\r\n\r\n### Privacy and Safety Rules\r\n\r\n* " +
+            "NEVER mention, repeat, quote, or expose the patient's ID.\r\n* NEVER mention the patient's name or any other personally identifiable information (PII)." +
+            "\r\n* Do NOT include identifiers even if they appear in the CONTEXT.\r\n* Do NOT infer or reconstruct personal information from the CONTEXT.\r\n* When answering, " +
+            "refer to the person only as \"the patient\".\r\n* Focus only on the clinical/laboratory information necessary to answer the physician's question.\r\n\r\n### Answering " +
+            "Rules\r\n\r\n* If the CONTEXT does not contain the answer, say so plainly instead of guessing.\r\n* Keep answers concise and clinically precise.\r\n* Do not introduce information " +
+            "that is not supported by the CONTEXT.\r\n* Always remind the physician to verify the information against the primary chart.\r\n\r\nCONTEXT:\r\n{0}\r\n";
         public static string BuildResultAnalysisUserPrompt(string labTestName, IReadOnlyList<PatientResultElementSummaryDto> elements)
         {
             var sb = new StringBuilder();
@@ -83,6 +98,31 @@ namespace Application.Services.AI
                 : string.Join("\n---\n", contextChunks.Select((c, i) => $"Passage {i + 1}:\n{c}"));
 
             return string.Format(ChatSystemPromptTemplate, context);
+        }
+
+        public static string BuildChatSystemPromptGroupedByPatient(IReadOnlyList<Application.DTOs.Rag.RagSourceDto> sources)
+        {
+            if (sources == null || sources.Count == 0)
+                return string.Format(GroupChatSystemPromptTemplate, "(no matching indexed documents were found for this query)");
+
+            var sb = new StringBuilder();
+
+            var groups = sources.GroupBy(s => s.PatientId).OrderBy(g => g.Key).ToList();
+            var patientIndex = 1;
+            foreach (var g in groups)
+            {
+                // Use de-identified patient labels instead of exposing internal PatientId values
+                sb.AppendLine($"Patient #{patientIndex} (de-identified):");
+                var passages = g.Select((s, i) => $"- [{s.SourceType}] {s.Content.Replace('\n', ' ').Trim()}");
+                foreach (var p in passages)
+                {
+                    sb.AppendLine(p);
+                }
+                sb.AppendLine();
+                patientIndex++;
+            }
+
+            return string.Format(GroupChatSystemPromptTemplate, sb.ToString());
         }
 
         /// <summary>

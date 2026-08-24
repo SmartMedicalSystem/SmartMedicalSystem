@@ -17,7 +17,7 @@ namespace Application.Services.Abstraction.AI
         /// that same PatientResult+sourceType are removed first so regenerating a report doesn't
         /// leave stale duplicates in the vector store.
         /// </summary>
-        Task IndexAsync(int patientId, int? patientResultId, string sourceType, string content, CancellationToken cancellationToken = default);
+        Task IndexAsync(int patientId, int? patientResultId, Domain.Enums.RagSourceType sourceType, string content, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Embeds <paramref name="query"/> and returns the topK most similar indexed chunks

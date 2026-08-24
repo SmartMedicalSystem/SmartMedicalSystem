@@ -16,21 +16,13 @@ public static class NotificationSeeder
         if (await context.Notifications.AnyAsync())
             return;
 
-        var adminUser =
-            await userManager.FindByEmailAsync(
-                "admin@medsystem.local");
+        // Resolve users that are known to exist after the other seeders run
+        var adminUser = await userManager.FindByEmailAsync("mohamedsaiedhassan308@gmail.com");
+        var drAhmed = await userManager.FindByEmailAsync("mohamed48289@gmail.com");
+        var drSara = await userManager.FindByEmailAsync("sara.mohamed@medsystem.local");
+        var drHeba = await userManager.FindByEmailAsync("salwasayed522@gmail.com");
 
-        var drAhmed =
-            await userManager.FindByEmailAsync(
-                "ahmed.hassan@medsystem.local");
-
-        var drSara =
-            await userManager.FindByEmailAsync(
-                "sara.mohamed@medsystem.local");
-
-        var drHeba =
-            await userManager.FindByEmailAsync(
-                "heba.salah@medsystem.local");
+     
 
         var labTechAmir =
             await userManager.FindByNameAsync(

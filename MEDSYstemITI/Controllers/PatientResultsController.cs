@@ -49,7 +49,7 @@ namespace MEDSYstemITI.Controllers
         [HasPermission(Permissions.UpdateLabReport)]
         public async Task<ActionResult<PatientResultReadDto>> Update(int id, [FromBody] PatientResultUpdateDto dto)
         {
-            var result = await _patientResultService.UpdateAsync(id, dto);
+            var result = await _patientResultService.UpdateStatusAsync(id, dto.Status);
             return Ok(result);
         }
     }

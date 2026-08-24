@@ -89,7 +89,7 @@ namespace Application.MCPTools
         [McpServerTool(Name = "ask_patient_rag_chatbot"),
          Description("Answers a natural-language question about a patient's lab history using Retrieval-Augmented " +
                      "Generation over previously AI-indexed summaries/reports/suggestions for that patient. Returns the " +
-                     "answer together with the source chunks used, as JSON.")]
+                     "answer together with the source chunks used, as JSON. don't mention patient's id")]
         public async Task<string> AskPatientRagChatbot(
             [Description("The physician's question, e.g. 'has the patient's kidney function been trending down?'")] string question,
             [Description("Optional: restrict retrieval to this patient's indexed documents only. Recommended for most questions.")] int? patientId = null,
@@ -114,7 +114,7 @@ namespace Application.MCPTools
             [Description("The note text to embed and index.")] string content,
             CancellationToken cancellationToken = default)
         {
-            await _ragService.IndexAsync(patientId, null, Domain.Entities.RagSourceTypes.Manual, content, cancellationToken);
+            await _ragService.IndexAsync(patientId, null, Domain.Enums.RagSourceType.Manual, content, cancellationToken);
             return JsonSerializer.Serialize(new { indexed = true, patientId }, JsonOptions);
         }
     }
