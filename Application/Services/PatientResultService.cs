@@ -55,8 +55,7 @@ namespace Application.Services
                 cancellationToken);
         }
 
-        public async Task<PatientResultReadDto> CreateAsync(
-            PatientResultCreateDto dto)
+        public async Task<PatientResultReadDto> CreateAsync(PatientResultCreateDto dto)
         {
             _ = await _uow.Patients.GetByIdAsync(dto.PatientId)
                 ?? throw new NotFoundException(
@@ -172,6 +171,7 @@ namespace Application.Services
                 // Ignore notification/email failures
             }
 
+
             return _mapper.Map<PatientResultReadDto>(
                 entity);
         }
@@ -249,8 +249,7 @@ namespace Application.Services
                 entity);
         }
 
-        public async Task<PaginatedResult<PatientResultReadDto>>
-            GetByPatientAsync(
+        public async Task<PaginatedResult<PatientResultReadDto>> GetByPatientAsync(
                 int patientId,
                 PaginationParams pagination)
         {
@@ -295,5 +294,12 @@ namespace Application.Services
         //    return _patientResultAIService.UpdateAnalysisAsync(id, updatedAnalysis, cancellationToken);
 
         //}
+
+        public async Task NotifyPatientAsync(PatientResultAIAnalysisDto dto)
+        {
+
+            
+        }
+
     }
 }

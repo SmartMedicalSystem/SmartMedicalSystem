@@ -38,6 +38,7 @@ namespace MEDSYstemITI.Controllers
             int patientResultId, CancellationToken cancellationToken)
         {
             var result = await _patientResultService.GenerateAIAnalysisAsync(patientResultId, cancellationToken);
+            await _patientResultService.NotifyPatientAsync(result);
             return Ok(result);
         }
 

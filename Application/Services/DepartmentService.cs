@@ -1,4 +1,4 @@
-using Application.Common;
+    using Application.Common;
 using Application.DTOs.Department;
 using Application.DTOs.Doctor;
 using Application.Services.Abstraction;

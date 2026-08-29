@@ -1,14 +1,13 @@
-﻿using Application.DTOs.Auth;
-using Application.DTOs.User;
-
 namespace Application.Services.Abstraction
 {
-    public interface IUserService
+    /// <summary>
+    /// Provides access to the authenticated HTTP user's identity and permissions.
+    /// Implemented by Infrastructure so Application contracts do not depend on ASP.NET infrastructure.
+    /// </summary>
+    public interface ICurrentUserService
     {
         int? UserId { get; }
         int? BasePersonId { get; }
-
-        Task<AuthResponseDto> CreateUserAsync(CreateUserRequestDto request);
-
+        bool HasPermission(string permission);
     }
 }
