@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Data.SqlTypes;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -256,31 +257,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Departments",
                 columns: table => new
                 {
@@ -508,6 +484,7 @@ namespace Infrastructure.Migrations
                     AIClassifiedReport = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
                     AISuggestion = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
                     Summary = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    AIReportStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -536,27 +513,70 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RequestLabsLabTests",
+                name: "RequestLabTests",
                 columns: table => new
                 {
-                    LabTestsId = table.Column<int>(type: "int", nullable: false),
-                    RequestLabsId = table.Column<int>(type: "int", nullable: false)
+                    RequestLabId = table.Column<int>(type: "int", nullable: false),
+                    LabTestId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RequestLabsLabTests", x => new { x.LabTestsId, x.RequestLabsId });
+                    table.PrimaryKey("PK_RequestLabTests", x => new { x.RequestLabId, x.LabTestId });
                     table.ForeignKey(
-                        name: "FK_RequestLabsLabTests_LabTests_LabTestsId",
-                        column: x => x.LabTestsId,
+                        name: "FK_RequestLabTests_LabTests_LabTestId",
+                        column: x => x.LabTestId,
                         principalTable: "LabTests",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RequestLabsLabTests_RequestLabs_RequestLabsId",
-                        column: x => x.RequestLabsId,
+                        name: "FK_RequestLabTests_RequestLabs_RequestLabId",
+                        column: x => x.RequestLabId,
                         principalTable: "RequestLabs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    RequestLabsId = table.Column<int>(type: "int", nullable: true),
+                    PatientResultId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Notifications_PatientResults_PatientResultId",
+                        column: x => x.PatientResultId,
+                        principalTable: "PatientResults",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Notifications_RequestLabs_RequestLabsId",
+                        column: x => x.RequestLabsId,
+                        principalTable: "RequestLabs",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -569,7 +589,7 @@ namespace Infrastructure.Migrations
                     PatientResultId = table.Column<int>(type: "int", nullable: true),
                     SourceType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false),
-                    EmbeddingJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmbeddingVector = table.Column<SqlVector<float>>(type: "vector(1536)", nullable: false),
                     EmbeddingDimensions = table.Column<int>(type: "int", nullable: false),
                     EmbeddingModel = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -742,6 +762,16 @@ namespace Infrastructure.Migrations
                 column: "LaboratoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notifications_PatientResultId",
+                table: "Notifications",
+                column: "PatientResultId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_RequestLabsId",
+                table: "Notifications",
+                column: "RequestLabsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
                 table: "Notifications",
                 column: "UserId");
@@ -797,9 +827,9 @@ namespace Infrastructure.Migrations
                 column: "SessionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RequestLabsLabTests_RequestLabsId",
-                table: "RequestLabsLabTests",
-                column: "RequestLabsId");
+                name: "IX_RequestLabTests_LabTestId",
+                table: "RequestLabTests",
+                column: "LabTestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sessions_DeptId",
@@ -887,7 +917,7 @@ namespace Infrastructure.Migrations
                 name: "PatientResultElements");
 
             migrationBuilder.DropTable(
-                name: "RequestLabsLabTests");
+                name: "RequestLabTests");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

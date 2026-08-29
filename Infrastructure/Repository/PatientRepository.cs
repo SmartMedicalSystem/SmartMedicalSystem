@@ -69,17 +69,24 @@ namespace Infrastructure.Repository
                 query = query.Where(
                     p => p.Gender == filter.Gender.Value);
             }
+            var today = DateTime.Today;
 
             if (filter.MinAge.HasValue)
             {
+                var maxDateOfBirth =
+                    today.AddYears(-filter.MinAge.Value);
+
                 query = query.Where(
-                    p => p.Age >= filter.MinAge.Value);
+                    p => p.DateOfBirth <= maxDateOfBirth);
             }
 
             if (filter.MaxAge.HasValue)
             {
+                var minDateOfBirth =
+                    today.AddYears(-(filter.MaxAge.Value + 1));
+
                 query = query.Where(
-                    p => p.Age <= filter.MaxAge.Value);
+                    p => p.DateOfBirth > minDateOfBirth);
             }
 
             // No search

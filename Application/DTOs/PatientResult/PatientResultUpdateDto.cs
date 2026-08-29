@@ -5,5 +5,6 @@ namespace Application.DTOs.PatientResult
         public string Summary { get; set; } = null!;
         public string AIClassifiedReport { get; set; } = string.Empty;
         public string AISuggestion { get; set; } = string.Empty;
+        public Domain.Enums.PatinetResultAIReportStatus Status { get; set; } 
     }
 }

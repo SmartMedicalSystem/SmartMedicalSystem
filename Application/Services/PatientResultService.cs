@@ -276,5 +276,12 @@ namespace Application.Services
         //    return _patientResultAIService.UpdateAnalysisAsync(id, updatedAnalysis, cancellationToken);
 
         //}
+
+        public async Task NotifyPatientAsync(PatientResultAIAnalysisDto dto)
+        {
+
+            
+        }
+
     }
 }
