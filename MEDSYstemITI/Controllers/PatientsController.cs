@@ -46,6 +46,15 @@ namespace MEDSYstemITI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("all-paginated")]
+        [HasPermission(Permissions.ReadPatient)]
+        public async Task<ActionResult<PaginatedResult<PatientReadDto>>> GetAllWithSessionsPaginated(
+            [FromQuery] PaginationParams pagination)
+        {
+            var result = await _patientService.GetAllPaginatedAsync(pagination);
+            return Ok(result);
+        }
+
         [HttpGet("{ssn}")]
         [HasPermission(Permissions.ReadPatient)]
         public async Task<ActionResult<PatientReadDto>> GetBySSN(string ssn)
