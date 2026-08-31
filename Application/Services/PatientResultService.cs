@@ -192,6 +192,11 @@ namespace Application.Services
                 dto.AISuggestion,
                 dto.Summary);
 
+            if (dto.Status != 0)
+            {
+                entity.AIReportStatus = dto.Status;
+            }
+
             await _uow.PatientResults.UpdateAsync(entity);
 
             // Index updated pieces into the RAG vector store so they replace previous chunks
