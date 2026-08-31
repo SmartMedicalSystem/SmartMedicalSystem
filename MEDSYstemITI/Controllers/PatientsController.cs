@@ -25,9 +25,24 @@ namespace MEDSYstemITI.Controllers
         [HttpGet]
         [HasPermission(Permissions.ReadPatient)]
         public async Task<ActionResult<PaginatedResult<PatientReadDto>>> GetAll(
-    [FromQuery] PatientFilterDto filter)
+            [FromQuery] PatientFilterDto filter)
         {
+            if (string.IsNullOrWhiteSpace(filter.Search) && !filter.Gender.HasValue && !filter.MinAge.HasValue && !filter.MaxAge.HasValue)
+            {
+                var simpleResult = await _patientService.GetAllPaginatedAsync(filter);
+                return Ok(simpleResult);
+            }
+
             var result = await _patientService.GetAllAsync(filter);
+            return Ok(result);
+        }
+
+        [HttpGet("paginated")]
+        [HasPermission(Permissions.ReadPatient)]
+        public async Task<ActionResult<PaginatedResult<PatientReadDto>>> GetAllPaginated(
+            [FromQuery] PaginationParams pagination)
+        {
+            var result = await _patientService.GetAllPaginatedAsync(pagination);
             return Ok(result);
         }
 

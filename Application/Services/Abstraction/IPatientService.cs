@@ -11,6 +11,7 @@ namespace Application.Services.Abstraction
     {
         Task<PatientReadDto> CreateAsync(PatientCreateDto dto);
         Task<PatientReadDto> UpdateAsync(string ssn, PatientUpdateDto dto);
+        Task<PaginatedResult<PatientReadDto>> GetAllPaginatedAsync(PaginationParams pagination);
         Task<PaginatedResult<PatientReadDto>> GetAllAsync(PatientFilterDto pagination);
         Task<PatientReadDto> GetByIdAsync(int id);
         Task<PatientReadDto> UpdateAsync(int id, PatientUpdateDto dto);

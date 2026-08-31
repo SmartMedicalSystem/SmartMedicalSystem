@@ -169,6 +169,16 @@ namespace Application.Services
             return _mapper.Map<PatientReadDto>(entity);
         }
 
+        public async Task<PaginatedResult<PatientReadDto>> GetAllPaginatedAsync(PaginationParams pagination)
+        {
+            var page = await _uow.Patients.GetAllPaginatedAsync(pagination);
+
+            return PaginatedResult<PatientReadDto>.Create(
+                _mapper.Map<IEnumerable<PatientReadDto>>(page.Items),
+                page.TotalCount,
+                pagination);
+        }
+
         public async Task<PaginatedResult<PatientReadDto>> GetAllAsync(PatientFilterDto filter)
         {
             // filter نفسه من نوع PatientFilterParams أصلاً (بالوراثة)، فبيتبعت

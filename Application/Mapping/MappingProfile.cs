@@ -247,7 +247,11 @@ namespace Application.Mapping
                 .ForMember(d => d.SessionDate,
                     o => o.MapFrom(s => s.Session != null
                         ? s.Session.SessionDate
-                        : default(DateTime)));
+                        : default(DateTime)))
+                .ForMember(d => d.LabTestName,
+                    o => o.MapFrom(s => s.labTest != null
+                        ? s.labTest.TestName
+                        : string.Empty));
             CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
 
             CreateMap<PatientResultDto.PatientResultUpdateDto, DomainEntities.PatientResult>();

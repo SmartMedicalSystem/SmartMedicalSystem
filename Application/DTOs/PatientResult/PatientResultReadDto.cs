@@ -14,6 +14,8 @@ namespace Application.DTOs.PatientResult
         /// <summary>The date the session/lab test was performed.</summary>
         public DateTime SessionDate { get; set; }
         public int LabTestId { get; set; }
+        /// <summary>Name of the lab test.</summary>
+        public string LabTestName { get; set; } = string.Empty;
         public string Summary { get; set; } = null!;
         public string AIClassifiedReport { get; set; } = null!;
         public string AISuggestion { get; set; } = null!;
