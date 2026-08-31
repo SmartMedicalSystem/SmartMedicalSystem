@@ -34,20 +34,24 @@ namespace Application.Services.AI
 
             // If the patient result already contains a summary/report/suggestion, ensure it's
             // indexed into the RAG vector store so retrieval-based QA can find it later.
+            var testDateLabel = dto.TestDate != default
+                ? dto.TestDate.ToString("yyyy-MM-dd")
+                : dto.GeneratedAtUtc.ToString("yyyy-MM-dd");
+
             if (!string.IsNullOrWhiteSpace(dto.Summary))
             {
                 await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSummary,
-                    $"[{dto.LabTestName}] Summary: {dto.Summary}", cancellationToken);
+                    $"[{dto.LabTestName} | Test Date: {testDateLabel}] Summary: {dto.Summary}", cancellationToken);
             }
             if (!string.IsNullOrWhiteSpace(dto.AIClassifiedReport))
             {
                 await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultReport,
-                    $"[{dto.LabTestName}] Classified report: {dto.AIClassifiedReport}", cancellationToken);
+                    $"[{dto.LabTestName} | Test Date: {testDateLabel}] Classified report: {dto.AIClassifiedReport}", cancellationToken);
             }
             if (!string.IsNullOrWhiteSpace(dto.AISuggestion))
             {
                 await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSuggestion,
-                    $"[{dto.LabTestName}] Suggestion: {dto.AISuggestion}", cancellationToken);
+                    $"[{dto.LabTestName} | Test Date: {testDateLabel}] Suggestion: {dto.AISuggestion}", cancellationToken);
             }
 
             return dto;
@@ -81,14 +85,19 @@ namespace Application.Services.AI
             dto.AISuggestion = patientResult.AISuggestion;
             dto.GeneratedAtUtc = DateTime.UtcNow;
 
+            var testDateLabel = dto.TestDate != default
+                ? dto.TestDate.ToString("yyyy-MM-dd")
+                : dto.GeneratedAtUtc.ToString("yyyy-MM-dd");
+
             // Index each piece separately so the chatbot can retrieve the most relevant slice
             // (a question about "next steps" should match the suggestion chunk, not the summary).
+            // Test Date is included so RAG retrieval has temporal context.
             await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSummary,
-                $"[{dto.LabTestName}] Summary: {dto.Summary}", cancellationToken);
+                $"[{dto.LabTestName} | Test Date: {testDateLabel}] Summary: {dto.Summary}", cancellationToken);
             await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultReport,
-                $"[{dto.LabTestName}] Classified report: {dto.AIClassifiedReport}", cancellationToken);
+                $"[{dto.LabTestName} | Test Date: {testDateLabel}] Classified report: {dto.AIClassifiedReport}", cancellationToken);
             await _ragService.IndexAsync(dto.PatientId, dto.PatientResultId, RagSourceType.ResultSuggestion,
-                $"[{dto.LabTestName}] Suggestion: {dto.AISuggestion}", cancellationToken);
+                $"[{dto.LabTestName} | Test Date: {testDateLabel}] Suggestion: {dto.AISuggestion}", cancellationToken);
 
             return dto;
         }

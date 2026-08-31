@@ -239,7 +239,15 @@ namespace Application.Mapping
             CreateMap<LabTechnicianDto.LabTechnicianUpdateDto, DomainEntities.LabTechnician>();
 
 
-            CreateMap<DomainEntities.PatientResult, PatientResultDto.PatientResultReadDto>();
+            CreateMap<DomainEntities.PatientResult, PatientResultDto.PatientResultReadDto>()
+                .ForMember(d => d.PatientName,
+                    o => o.MapFrom(s => s.Patient != null
+                        ? s.Patient.FirstName + " " + s.Patient.LastName
+                        : string.Empty))
+                .ForMember(d => d.SessionDate,
+                    o => o.MapFrom(s => s.Session != null
+                        ? s.Session.SessionDate
+                        : default(DateTime)));
             CreateMap<PatientResultDto.PatientResultCreateDto, DomainEntities.PatientResult>();
 
             CreateMap<PatientResultDto.PatientResultUpdateDto, DomainEntities.PatientResult>();

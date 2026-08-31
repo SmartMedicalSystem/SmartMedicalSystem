@@ -201,22 +201,28 @@ namespace Application.Services
                 var labTest = await _uow.LabTests.GetByIdAsync(entity.LabTestId);
                 var labTestName = labTest?.TestName ?? $"LabTest #{entity.LabTestId}";
 
+                // Include the session date so RAG retrieval has temporal context.
+                var session = await _uow.Sessions.GetByIdAsync(entity.SessionId);
+                var testDateLabel = session != null
+                    ? session.SessionDate.ToString("yyyy-MM-dd")
+                    : DateTime.UtcNow.ToString("yyyy-MM-dd");
+
                 if (!string.IsNullOrWhiteSpace(entity.Summary))
                 {
                     await _ragService.IndexAsync(entity.PatientId, entity.Id, Domain.Enums.RagSourceType.ResultSummary,
-                        $"[{labTestName}] Summary: {entity.Summary}", cancellationToken);
+                        $"[{labTestName} | Test Date: {testDateLabel}] Summary: {entity.Summary}", cancellationToken);
                 }
 
                 if (!string.IsNullOrWhiteSpace(entity.AIClassifiedReport))
                 {
                     await _ragService.IndexAsync(entity.PatientId, entity.Id, Domain.Enums.RagSourceType.ResultReport,
-                        $"[{labTestName}] Classified report: {entity.AIClassifiedReport}", cancellationToken);
+                        $"[{labTestName} | Test Date: {testDateLabel}] Classified report: {entity.AIClassifiedReport}", cancellationToken);
                 }
 
                 if (!string.IsNullOrWhiteSpace(entity.AISuggestion))
                 {
                     await _ragService.IndexAsync(entity.PatientId, entity.Id, Domain.Enums.RagSourceType.ResultSuggestion,
-                        $"[{labTestName}] Suggestion: {entity.AISuggestion}", cancellationToken);
+                        $"[{labTestName} | Test Date: {testDateLabel}] Suggestion: {entity.AISuggestion}", cancellationToken);
                 }
             }
 

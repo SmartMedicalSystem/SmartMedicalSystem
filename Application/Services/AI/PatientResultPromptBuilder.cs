@@ -79,9 +79,11 @@ namespace Application.Services.AI
             sb.AppendLine($"Number of lab results on file: {results.Count}");
             sb.AppendLine();
 
-            foreach (var r in results.OrderByDescending(r => r.GeneratedAtUtc))
+            foreach (var r in results.OrderByDescending(r => r.TestDate == default ? r.GeneratedAtUtc : r.TestDate))
             {
-                sb.AppendLine($"[{r.GeneratedAtUtc:yyyy-MM-dd}] {r.LabTestName}");
+                // Use TestDate (when the test was done) instead of GeneratedAtUtc (when AI ran)
+                var resultDate = r.TestDate != default ? r.TestDate : r.GeneratedAtUtc;
+                sb.AppendLine($"[Test Date: {resultDate:yyyy-MM-dd}] {r.LabTestName}");
                 sb.AppendLine($"Summary: {r.Summary}");
                 sb.AppendLine($"Classification: {r.AIClassifiedReport}");
                 sb.AppendLine($"Suggestion: {r.AISuggestion}");

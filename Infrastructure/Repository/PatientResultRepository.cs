@@ -125,6 +125,8 @@ namespace Infrastructure.Repository
                 .CountAsync();
 
             var items = await _context.PatientResults
+                .Include(pr => pr.Patient)
+                .Include(pr => pr.Session)
                 .Where(pr => pr.PatientId == patientId && !pr.IsDeleted)
                 .OrderByDescending(pr => pr.CreatedAt)
                 .Skip(pagination.CalculateSkip())
