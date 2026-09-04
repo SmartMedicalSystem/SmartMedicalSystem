@@ -46,10 +46,10 @@ namespace Application.Services
 
             entity.JobTitle = dto.JobTitle;
             entity.EmploymentStatus = dto.EmploymentStatus;
-            entity.AssignToLaboratory(dto.AssignedLaboratory != null ? int.Parse(dto.AssignedLaboratory) : entity.LaboratoryId);
             entity.WorkShift = dto.WorkShift;
             entity.JoiningDate = dto.JoiningDate;
             entity.YearsOfExperience = dto.YearsOfExperience;
+            entity.LaboratoryId = dto.LaboratoryId;
 
             entity.PhoneNumber = dto.PhoneNumber;
             entity.AlternativePhone = dto.AlternativePhone;
@@ -172,7 +172,7 @@ namespace Application.Services
             entity.Gender = dto.Gender;
             entity.DateOfBirth = dto.DateOfBirth;
             entity.Nationality = dto.Nationality;
-
+            entity.LaboratoryId = dto.LaboratoryId;
             // National ID
             entity.EncryptedNationalId = dto.NationalId;
 
